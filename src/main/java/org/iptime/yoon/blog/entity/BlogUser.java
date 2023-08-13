@@ -6,9 +6,8 @@ import org.hibernate.annotations.Where;
 
 /**
  * @author rival
- * @since 2023-08-10
+ * @since 2023-08-11
  */
-
 
 @Entity
 @NoArgsConstructor
@@ -19,24 +18,17 @@ import org.hibernate.annotations.Where;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Where(clause = "deleted = false")
-public class Post extends Base{
+public class BlogUser extends Base {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
 
-    @Column(columnDefinition = "TEXT",nullable = false)
-    private String content;
+    @Column(unique = true)
+    private String email;
 
 
-    @ManyToOne
-    @JoinColumn // nullable = false
-    @ToString.Exclude
-    private BlogUser writer;
+    private String password;
 
-
-    private String writerEmail;
 }
