@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.dto.res;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -10,8 +11,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class ErrorResDto {
-
     private String error;
     private String message;
 }

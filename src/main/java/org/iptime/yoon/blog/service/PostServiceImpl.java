@@ -9,7 +9,7 @@ import org.iptime.yoon.blog.dto.res.PostResDto;
 import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
 import org.iptime.yoon.blog.repository.PostRepository;
-import org.iptime.yoon.blog.repository.projection.PostPreview;
+import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostPageResDto findPostList(Pageable pageable) {
         PostPageResDto postListRes = new PostPageResDto();
-        Page<PostPreview> postPreviewPage = postRepository.findPostList(pageable);
+        Page<PostPreviewProjection> postPreviewPage = postRepository.findPostList(pageable);
 
         List<PostPreviewDto> postList = postPreviewPage.getContent().stream().map(PostPreviewDto::fromPostPreview).toList();
 

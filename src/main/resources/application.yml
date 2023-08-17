@@ -23,9 +23,18 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
+  security:
+    debug: true
 minio:
   endpoint: http://192.168.0.16:9000
   accessKey: hxl7s3cZznGul93CThXW
   secretKey: usYxxR7oYuxAQr8hKEefC4Kb0wpg20zh2pO8f6zK
   bucketName: minio-bucket
+auth:
+  refresh-token:
+    refresh-exp-hours: 12
+  jwt:
+    auth-exp-minutes: 30
+    secret-key: "JwtSecretKey"
+    issuer: "JwtIssuer"
+
