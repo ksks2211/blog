@@ -1,8 +1,7 @@
 package org.iptime.yoon.blog.dto.res;
 
 import lombok.Data;
-import org.iptime.yoon.blog.entity.Post;
-import org.iptime.yoon.blog.repository.projection.PostPreview;
+import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +18,7 @@ public class PostPreviewDto {
     private LocalDateTime updatedAt;
     private String writerEmail;
 
-    public static PostPreviewDto fromPostPreview(PostPreview post){
+    public static PostPreviewDto fromPostPreview(PostPreviewProjection post){
         PostPreviewDto dto = new PostPreviewDto();
         dto.setId(post.getId());
         dto.setWriterEmail(post.getWriterEmail());

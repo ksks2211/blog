@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(value= AuditingEntityListener.class)
 @Data
-abstract class Base {
+public abstract class Base {
 
     @CreatedDate
     @Column(updatable = false)
@@ -31,6 +31,7 @@ abstract class Base {
 
     @Column
     private LocalDateTime deletedAt;
+
 
     @Column
     private boolean deleted;

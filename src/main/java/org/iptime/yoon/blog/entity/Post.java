@@ -3,6 +3,7 @@ package org.iptime.yoon.blog.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import org.iptime.yoon.blog.security.entity.BlogUser;
 
 /**
  * @author rival

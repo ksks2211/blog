@@ -1,8 +1,9 @@
-package org.iptime.yoon.blog.entity;
+package org.iptime.yoon.blog.security.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import org.iptime.yoon.blog.entity.Base;
 
 /**
  * @author rival
@@ -24,11 +25,11 @@ public class BlogUser extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(unique = true)
-    private String email;
-
-
+    private String username;
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private BlogRole role = BlogRole.USER;
 }

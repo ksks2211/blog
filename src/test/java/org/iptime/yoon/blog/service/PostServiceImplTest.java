@@ -3,9 +3,9 @@ package org.iptime.yoon.blog.service;
 import org.iptime.yoon.blog.config.JpaConfig;
 import org.iptime.yoon.blog.dto.req.PostReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
-import org.iptime.yoon.blog.entity.BlogUser;
+import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.iptime.yoon.blog.entity.Post;
-import org.iptime.yoon.blog.repository.BlogUserRepository;
+import org.iptime.yoon.blog.security.repository.BlogUserRepository;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ class PostServiceImplTest {
 
     public BlogUser createBlogUser(String email, String password){
         BlogUser user = BlogUser.builder()
-            .email(email)
+            .username(email)
             .password(password)
             .build();
         blogUserRepository.save(user);
@@ -53,7 +53,7 @@ class PostServiceImplTest {
     public Post createPost(BlogUser writer, String title, String content){
         Post post = Post.builder()
             .writer(writer)
-            .writerEmail(writer.getEmail())
+            .writerEmail(writer.getUsername())
             .title(title)
             .content(content)
             .build();

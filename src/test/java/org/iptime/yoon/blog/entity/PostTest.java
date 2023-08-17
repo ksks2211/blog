@@ -2,7 +2,8 @@ package org.iptime.yoon.blog.entity;
 
 import org.iptime.yoon.blog.config.JpaConfig;
 import org.iptime.yoon.blog.repository.PostRepository;
-import org.iptime.yoon.blog.repository.projection.PostPreview;
+import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
+import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ class PostTest {
 
     public BlogUser createBlogUser(String email, String password){
         BlogUser user = BlogUser.builder()
-            .email(email)
+            .username(email)
             .password(password)
             .build();
 
@@ -76,7 +77,7 @@ class PostTest {
         assertThat(foundPost.getTitle()).isEqualTo(title);
         assertThat(foundPost.getContent()).isEqualTo(content);
         assertThat(foundPost.getId()).isEqualTo(post.getId());
-        assertThat(foundPost.getWriter().getEmail()).isEqualTo(email);
+        assertThat(foundPost.getWriter().getUsername()).isEqualTo(email);
 
         logger.info("foundPost : {}",foundPost);
     }
@@ -132,14 +133,14 @@ class PostTest {
 
         List<Post> posts = new ArrayList<>();
         IntStream.range(0,numOfPosts).forEach(i->{
-            Post post = Post.builder().content("Content " + i).title("Title " + i).writer(writer).writerEmail(writer.getEmail()).build();
+            Post post = Post.builder().content("Content " + i).title("Title " + i).writer(writer).writerEmail(writer.getUsername()).build();
             posts.add(post);
         });
         postRepository.saveAll(posts);
 
 
         PageRequest pageRequest = PageRequest.of(numOfPage, numOfPageSize);
-        Page<PostPreview> page = postRepository.findPostList(pageRequest);
+        Page<PostPreviewProjection> page = postRepository.findPostList(pageRequest);
 
         assertThat(page.getTotalElements()).isEqualTo(numOfPosts);
         assertThat(page.getTotalPages()).isEqualTo(numOfPosts/numOfPageSize);

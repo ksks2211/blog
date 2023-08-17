@@ -1,7 +1,8 @@
 package org.iptime.yoon.blog.entity;
 
 import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.repository.BlogUserRepository;
+import org.iptime.yoon.blog.security.repository.BlogUserRepository;
+import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ class BlogUserTest {
 
     public BlogUser createBlogUser(String email, String password){
         BlogUser user = BlogUser.builder()
-            .email(email)
+            .username(email)
             .password(password)
             .build();
 
@@ -49,7 +50,7 @@ class BlogUserTest {
 
 
         assertThat(foundBlogUser).isNotNull();
-        assertThat(foundBlogUser.getEmail()).isEqualTo(email);
+        assertThat(foundBlogUser.getUsername()).isEqualTo(email);
         assertThat(foundBlogUser.getPassword()).isEqualTo(password);
 
 
