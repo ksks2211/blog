@@ -10,6 +10,6 @@ public interface RefreshTokenService {
     String createToken(String username);
     User validateTokenAndGetUser(String token);
 
-    void removeToken(String token);
+    void removeExpiredTokens();
 
 }

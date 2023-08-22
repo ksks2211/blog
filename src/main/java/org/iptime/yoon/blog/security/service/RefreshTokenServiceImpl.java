@@ -79,11 +79,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     }
 
     @Override
-    public void removeToken(String token) {
-        refreshTokenRepository.deleteById(token);
+    @Transactional
+    public void removeExpiredTokens() {
+        refreshTokenRepository.deleteAllExpiredTokens();
     }
-
-
 
 
 }
