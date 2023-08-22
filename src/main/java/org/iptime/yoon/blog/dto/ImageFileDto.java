@@ -1,11 +1,14 @@
 package org.iptime.yoon.blog.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.entity.ImageMetadata;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author rival
@@ -15,14 +18,18 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @Slf4j
-public class ImageFileDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ImageFileDto implements Serializable {
 
+
+    final static DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     private byte[] bytes;
     private String contentType;
     private Long id;
     private Long size;
     private String originalName;
-    private LocalDateTime createdAt;
+    private String createdDate;
 
     public static ImageFileDto createImageFile(ImageMetadata metadata, byte[] bytes){
         return ImageFileDto.builder()
@@ -30,10 +37,8 @@ public class ImageFileDto {
             .bytes(bytes)
             .contentType(metadata.getContentType())
             .size(metadata.getSize())
+            .createdDate(metadata.getCreatedAt().format(ISO_FORMATTER))
             .originalName(metadata.getOriginalName())
-            .createdAt(metadata.getCreatedAt())
             .build();
-
     }
-
 }

@@ -3,6 +3,7 @@ package org.iptime.yoon.blog.security.repository;
 import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.iptime.yoon.blog.security.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
@@ -14,4 +15,8 @@ import java.util.Optional;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken,String> {
 
     Optional<RefreshToken> findByUser(BlogUser user);
+
+    @Modifying
+    @Query("delete from RefreshToken rt  where rt.expiryDate < CURRENT_TIMESTAMP ")
+    void deleteAllExpiredTokens();
 }

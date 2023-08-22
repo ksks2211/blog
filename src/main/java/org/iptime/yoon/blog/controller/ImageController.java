@@ -6,7 +6,7 @@ import org.iptime.yoon.blog.dto.ImageFileDto;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.dto.res.ImageMetaResDto;
 import org.iptime.yoon.blog.exception.ImageEntityNotFoundException;
-import org.iptime.yoon.blog.service.ImageServiceImpl;
+import org.iptime.yoon.blog.service.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class ImageController {
 
 
-    private final ImageServiceImpl imageServiceImpl;
+    private final ImageService imageService;
 
     private boolean isImageFile(MultipartFile uploadFile){
         return uploadFile !=null && uploadFile.getContentType() != null && uploadFile.getContentType().startsWith("image");
@@ -50,13 +50,13 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String filename = generateRandomFilename();
-        ImageMetaResDto imageMetaResDto = imageServiceImpl.uploadImageFile(uploadFile,filename);
+        ImageMetaResDto imageMetaResDto = imageService.uploadImageFile(uploadFile,filename);
         return new ResponseEntity<>(imageMetaResDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> downloadImage(@PathVariable(name="id") Long id) throws Exception{
-        ImageFileDto imageFileDto = imageServiceImpl.downloadImageFile(id);
+        ImageFileDto imageFileDto = imageService.downloadImageFile(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, imageFileDto.getContentType());
         return new ResponseEntity<>(imageFileDto.getBytes(), headers,HttpStatus.OK);
@@ -64,7 +64,7 @@ public class ImageController {
 
     @GetMapping("/thumbnail/{id}")
     public ResponseEntity<?> downloadThumbnailImage(@PathVariable(name="id") Long id) throws Exception{
-        ImageFileDto imageFileDto = imageServiceImpl.downloadImageThumbnailFile(id);
+        ImageFileDto imageFileDto = imageService.downloadImageThumbnailFile(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, imageFileDto.getContentType());
         return new ResponseEntity<>(imageFileDto.getBytes(), headers,HttpStatus.OK);
@@ -72,7 +72,7 @@ public class ImageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteImage(@PathVariable(name="id")Long id) {
-        imageServiceImpl.deleteImageFile(id);
+        imageService.deleteImageFile(id);
         return ResponseEntity.noContent().build();
     }
 

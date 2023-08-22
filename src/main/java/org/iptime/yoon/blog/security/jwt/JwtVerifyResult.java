@@ -18,4 +18,5 @@ public class JwtVerifyResult {
     private String subject;
     private List<String> authorities;
     private Date expiryDate;
+
 }
