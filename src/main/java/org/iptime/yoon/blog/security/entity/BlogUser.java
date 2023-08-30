@@ -29,6 +29,8 @@ public class BlogUser extends Base {
     private String username;
     private String password;
 
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private BlogRole role = BlogRole.USER;

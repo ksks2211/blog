@@ -14,4 +14,5 @@ import org.springframework.data.jpa.repository.Query;
 public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("select p.id as id, p.title as title, p.writerEmail as writerEmail, p.createdAt as createdAt, p.updatedAt as updatedAt from Post p")
     Page<PostPreviewProjection> findPostList(Pageable pageable);
+
 }

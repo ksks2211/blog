@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import org.iptime.yoon.blog.entity.Base;
-import org.iptime.yoon.blog.security.entity.BlogUser;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * @author rival

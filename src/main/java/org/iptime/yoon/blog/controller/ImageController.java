@@ -44,6 +44,7 @@ public class ImageController {
 
         return String.format("%s/%s/%s/%s", year, month, day, uuid);
     }
+
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(MultipartFile uploadFile) throws Exception {
         if(!isImageFile(uploadFile)){

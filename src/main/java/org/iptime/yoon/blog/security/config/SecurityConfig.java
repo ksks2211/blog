@@ -98,7 +98,8 @@ public class SecurityConfig{
         http.addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class);
         http.addFilterAt(jwtSignInFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests((auth)->
-            auth.requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll().anyRequest().authenticated());
+            auth.requestMatchers(new AntPathRequestMatcher("/auth/**"), new AntPathRequestMatcher("/health")).permitAll()
+                .anyRequest().authenticated());
         return  http.build();
     }
 

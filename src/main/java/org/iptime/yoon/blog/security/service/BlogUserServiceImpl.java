@@ -28,14 +28,11 @@ public class BlogUserServiceImpl implements UserDetailsService {
     private final BlogUserRepository blogUserRepository;
     private final PasswordEncoder passwordEncoder;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         BlogUser blogUser = blogUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found"));
         return fromEntity(blogUser);
     }
-
-
 
     @Transactional
     public  void createBlogUser(BlogUserRegisterReqDto dto){
@@ -46,7 +43,6 @@ public class BlogUserServiceImpl implements UserDetailsService {
         BlogUser blogUser = toEntity(username, dto.getPassword());
         blogUserRepository.save(blogUser);
     }
-
 
 
     public static List<GrantedAuthority> getAuthorities(BlogRole role){
@@ -65,8 +61,5 @@ public class BlogUserServiceImpl implements UserDetailsService {
             .password(passwordEncoder.encode(password))
             .build();
     }
-
-
-
 
 }

@@ -38,14 +38,9 @@ public class JwtRefreshFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest httpRequest = (HttpServletRequest)request;
-
         if(refreshURI.equals(httpRequest.getRequestURI())){
-
-
             String refreshToken = null;
-
             Cookie[] cookies = httpRequest.getCookies();
             if(cookies != null){
                 for(Cookie cookie : cookies){
@@ -57,7 +52,6 @@ public class JwtRefreshFilter implements Filter {
 
             if(refreshToken==null) throw new InvalidRefreshTokenException(null);
             User user = refreshTokenService.validateTokenAndGetUser(refreshToken);
-
 
             String token = jwtManager.createToken(user);
             JwtLogInResDto body = JwtLogInResDto.builder()

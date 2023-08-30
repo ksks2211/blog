@@ -18,12 +18,13 @@ import org.iptime.yoon.blog.security.entity.BlogUser;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Where(clause = "deleted = false")
 public class Post extends Base{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false)
@@ -37,7 +38,6 @@ public class Post extends Base{
     @JoinColumn // nullable = false
     @ToString.Exclude
     private BlogUser writer;
-
 
     private String writerEmail;
 }
