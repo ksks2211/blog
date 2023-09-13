@@ -9,6 +9,8 @@ import org.iptime.yoon.blog.entity.ImageMetadata;
 import org.iptime.yoon.blog.exception.ImageEntityNotFoundException;
 import org.iptime.yoon.blog.exception.ImageUploadException;
 import org.iptime.yoon.blog.repository.ImageMetadataRepository;
+import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,7 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
-    public ImageMetaResDto uploadImageFile(MultipartFile multipartFile,String filename) throws Exception {
+    public ImageMetaResDto uploadImageFile(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
             byte[] thumbData = createThumbnail(imageData);
@@ -54,8 +56,10 @@ public class ImageServiceImpl implements ImageService{
             log.error("Failed to upload file: " + filename, e);
             throw new ImageUploadException(filename, e);
         }
+
         ImageMetadata imageMetadata = ImageMetadata.builder()
             .filename(filename)
+            .owner(BlogUser.builder().id(userId).build())
             .originalName(multipartFile.getOriginalFilename())
             .contentType(multipartFile.getContentType())
             .size(multipartFile.getSize())

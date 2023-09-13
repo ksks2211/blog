@@ -64,22 +64,38 @@ class PostTagTest {
         String email ="email@email.com";
         String password="password";
         String keyword = "key";
+        String keyword2 = "key2";
         BlogUser user = createBlogUser(email,password);
         Post post = createPost(user,"title","content");
         Tag tag = createTag(keyword);
+        Tag tag2 = createTag(keyword2);
 
 
-        // when
+        // When
         PostTag postTag = PostTag.builder()
             .post(post)
             .tag(tag)
             .build();
         postTagRepository.save(postTag);
+        postTag = PostTag.builder()
+            .post(post)
+            .tag(tag2)
+            .build();
+        postTagRepository.save(postTag);
         List<PostTag> postTagList = postTagRepository.findAllByTag(keyword);
 
 
+        List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
+
+
+        // Then
         assertThat(postTagList).isNotNull();
         assertThat(postTagList.size()).isEqualTo(1);
+
+
+        assertThat(tags).isNotNull();
+        assertThat(tags.size()).isEqualTo(2);
+
 
     }
 

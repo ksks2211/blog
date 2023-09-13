@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.iptime.yoon.blog.security.dto.User;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(jwtVerifyResult.isVerified()){
                 List<SimpleGrantedAuthority> authorities = jwtVerifyResult.getAuthorities().stream().map(SimpleGrantedAuthority::new).toList();
 
-                User user = new User(jwtVerifyResult.getSubject(), jwtVerifyResult.getSubject(),authorities);
+                User user = new User(jwtVerifyResult.getSubject(), jwtVerifyResult.getSubject(),authorities,jwtVerifyResult.getId());
                 user.eraseCredentials();
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -59,9 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 context.setAuthentication(authenticationToken);
                 SecurityContextHolder.setContext(context);
 
-                log.info("Username : {} authenticated",user.getUsername());
+                log.info("User(={}) is authenticated",user.getUsername());
             }else if(jwtVerifyResult.isDecoded()){
-                log.info("Username : {} fail to authenticate",jwtVerifyResult.getSubject());
+                log.info("User(={}) fail to authenticate",jwtVerifyResult.getSubject());
             }else{
                 log.info("Invalid authentication attempt");
             }

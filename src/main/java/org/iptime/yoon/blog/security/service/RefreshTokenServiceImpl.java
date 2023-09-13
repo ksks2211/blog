@@ -1,15 +1,15 @@
 package org.iptime.yoon.blog.security.service;
 
 import lombok.RequiredArgsConstructor;
+import org.iptime.yoon.blog.security.dto.User;
 import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.iptime.yoon.blog.security.entity.RefreshToken;
 import org.iptime.yoon.blog.security.exception.ExpiredRefreshTokenException;
+import org.iptime.yoon.blog.security.exception.InvalidBlogUserDataException;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;
 import org.iptime.yoon.blog.security.repository.BlogUserRepository;
 import org.iptime.yoon.blog.security.repository.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +39,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     @Override
     @Transactional
-    public String createToken(String username){
-        Long id = blogUserRepository.findIdByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found")).getId();
+    public String createToken(Long id){
+
+        if(!blogUserRepository.existsById(id)){
+            throw new InvalidBlogUserDataException("ID : "+id + " User Not Found");
+        }
 
         BlogUser user = BlogUser.builder().id(id).build();
         RefreshToken token;

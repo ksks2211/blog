@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public interface PostPreviewProjection {
     Long getId();
     String getTitle();
-    String getWriterEmail();
+    String getWriterName();
 
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();

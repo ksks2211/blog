@@ -8,7 +8,7 @@ import lombok.Data;
  */
 
 @Data
-public class BlogUserSignInReqDto {
+public class BlogUserLogInReqDto {
 
     private String username;
     private String password;

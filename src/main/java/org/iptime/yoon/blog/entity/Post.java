@@ -5,6 +5,9 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 import org.iptime.yoon.blog.security.entity.BlogUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author rival
  * @since 2023-08-10
@@ -33,11 +36,22 @@ public class Post extends Base{
     @Column(columnDefinition = "TEXT",nullable = false)
     private String content;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn // nullable = false
     @ToString.Exclude
     private BlogUser writer;
+    private String writerName;
 
-    private String writerEmail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    @ToString.Exclude
+    private Category category;
+
+
+    // Read-Only
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @Builder.Default
+    @ToString.Exclude
+    private List<PostTag> postTags = new ArrayList<>();
+
 }

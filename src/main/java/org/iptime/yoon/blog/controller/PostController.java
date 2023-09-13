@@ -7,10 +7,12 @@ import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
 import org.iptime.yoon.blog.dto.res.PostResDto;
 import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
+import org.iptime.yoon.blog.security.dto.User;
 import org.iptime.yoon.blog.service.PostService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,8 +33,8 @@ public class PostController {
 
     // CREATE
     @PostMapping("")
-    public ResponseEntity<?> createPost(@RequestBody PostReqDto postReqDto){
-        PostResDto postResDto = postService.create(postReqDto);
+    public ResponseEntity<?> createPost(@AuthenticationPrincipal User user, @RequestBody PostReqDto postReqDto){
+        PostResDto postResDto = postService.create(postReqDto, user);
         return new ResponseEntity<>(postResDto, HttpStatus.CREATED);
     }
 

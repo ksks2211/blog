@@ -6,13 +6,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.iptime.yoon.blog.security.dto.User;
 import org.iptime.yoon.blog.security.dto.res.JwtLogInResDto;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.service.RefreshTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
 
 import java.io.IOException;
 

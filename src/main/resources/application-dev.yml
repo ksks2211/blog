@@ -1,0 +1,11 @@
+server:
+  error:
+    include-stacktrace: always
+    include-message: always
+    include-exception: true
+    whitelabel:
+      enabled: false
+  servlet:
+    session:
+      cookie:
+        same-site: none

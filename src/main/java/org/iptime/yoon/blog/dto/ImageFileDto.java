@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 public class ImageFileDto implements Serializable {
 
 
-    final static DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     private byte[] bytes;
     private String contentType;
     private Long id;
@@ -37,7 +36,7 @@ public class ImageFileDto implements Serializable {
             .bytes(bytes)
             .contentType(metadata.getContentType())
             .size(metadata.getSize())
-            .createdDate(metadata.getCreatedAt().format(ISO_FORMATTER))
+            .createdDate(metadata.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME))
             .originalName(metadata.getOriginalName())
             .build();
     }

@@ -2,6 +2,7 @@ package org.iptime.yoon.blog.service;
 
 import org.iptime.yoon.blog.dto.ImageFileDto;
 import org.iptime.yoon.blog.dto.res.ImageMetaResDto;
+import org.iptime.yoon.blog.security.dto.User;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -9,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2023-08-17
  */
 public interface ImageService {
-    ImageMetaResDto uploadImageFile(MultipartFile multipartFile, String filename) throws Exception;
+    ImageMetaResDto uploadImageFile(MultipartFile multipartFile, String filename, Long userId) throws Exception;
 
     ImageFileDto downloadImageFile(Long id) throws Exception;
 

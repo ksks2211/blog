@@ -6,11 +6,13 @@ import org.iptime.yoon.blog.dto.ImageFileDto;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.dto.res.ImageMetaResDto;
 import org.iptime.yoon.blog.exception.ImageEntityNotFoundException;
+import org.iptime.yoon.blog.security.dto.User;
 import org.iptime.yoon.blog.service.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,40 +37,42 @@ public class ImageController {
         return uploadFile !=null && uploadFile.getContentType() != null && uploadFile.getContentType().startsWith("image");
     }
 
-    public String generateRandomFilename() {
+    public String generateRandomFilename(final String username) {
         LocalDate currentDate = LocalDate.now();
         String year = String.valueOf(currentDate.getYear());
         String month = String.format("%02d", currentDate.getMonthValue());
         String day = String.format("%02d", currentDate.getDayOfMonth());
         String uuid = UUID.randomUUID().toString();
 
-        return String.format("%s/%s/%s/%s", year, month, day, uuid);
+        return String.format("%s/%s/%s/%s/%s",username, year, month, day, uuid);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImage(MultipartFile uploadFile) throws Exception {
+    public ResponseEntity<?> uploadImage(@AuthenticationPrincipal User user, MultipartFile uploadFile) throws Exception {
         if(!isImageFile(uploadFile)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        String filename = generateRandomFilename();
-        ImageMetaResDto imageMetaResDto = imageService.uploadImageFile(uploadFile,filename);
+        String filename = generateRandomFilename(user.getUsername());
+        ImageMetaResDto imageMetaResDto = imageService.uploadImageFile(uploadFile,filename,user.getId());
         return new ResponseEntity<>(imageMetaResDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> downloadImage(@PathVariable(name="id") Long id) throws Exception{
-        ImageFileDto imageFileDto = imageService.downloadImageFile(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, imageFileDto.getContentType());
-        return new ResponseEntity<>(imageFileDto.getBytes(), headers,HttpStatus.OK);
-    }
+    public ResponseEntity<?> downloadImage(
+        @PathVariable(name="id") Long id,
+        @RequestParam(value = "thumbnail", defaultValue = "false") boolean isThumbnail
+    ) throws Exception {
+        ImageFileDto imageFileDto;
 
-    @GetMapping("/thumbnail/{id}")
-    public ResponseEntity<?> downloadThumbnailImage(@PathVariable(name="id") Long id) throws Exception{
-        ImageFileDto imageFileDto = imageService.downloadImageThumbnailFile(id);
+        if (isThumbnail) {
+            imageFileDto = imageService.downloadImageThumbnailFile(id);
+        } else {
+            imageFileDto = imageService.downloadImageFile(id);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, imageFileDto.getContentType());
-        return new ResponseEntity<>(imageFileDto.getBytes(), headers,HttpStatus.OK);
+        return new ResponseEntity<>(imageFileDto.getBytes(), headers, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

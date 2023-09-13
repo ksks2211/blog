@@ -29,4 +29,10 @@ public class PostTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Post post;
+
+    @ToString.Exclude
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn
+    private ImageMetadata profile;
+
 }

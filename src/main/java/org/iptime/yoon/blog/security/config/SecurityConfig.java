@@ -29,6 +29,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author rival
@@ -88,12 +94,27 @@ public class SecurityConfig{
     public JwtRefreshFilter jwtRefreshFilter(){
         return new JwtRefreshFilter("/refresh",refreshTokenService, jwtManager);
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3306"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        final var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()));
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(man->man.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(Customizer.withDefaults());
-
         http.addFilterBefore(jwtRefreshFilter(), BasicAuthenticationFilter.class);
         http.addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class);
         http.addFilterAt(jwtSignInFilter(), UsernamePasswordAuthenticationFilter.class);

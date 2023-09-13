@@ -7,7 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
-import org.iptime.yoon.blog.security.dto.req.BlogUserSignInReqDto;
+import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.req.BlogUserLogInReqDto;
 import org.iptime.yoon.blog.security.dto.res.JwtLogInResDto;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.service.RefreshTokenService;
@@ -18,7 +19,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -53,7 +53,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         }
 
         try(InputStream inputStream = request.getInputStream()){
-            BlogUserSignInReqDto credential = objectMapper.readValue(inputStream, BlogUserSignInReqDto.class);
+            BlogUserLogInReqDto credential = objectMapper.readValue(inputStream, BlogUserLogInReqDto.class);
             String username = credential.getUsername();
             String password = credential.getPassword();
             if(!StringUtils.hasText(username) || !StringUtils.hasText(password)){
@@ -85,14 +85,16 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
             .build();
 
         log.info("JWT Issued : {}",token);
+
+
         // Refresh Token
-        String refreshToken = refreshTokenService.createToken(user.getUsername());
+        String refreshToken = refreshTokenService.createToken(user.getId());
 
         log.info("Refresh Token Issued : {}",refreshToken);
 
         Cookie cookie = new Cookie("refreshToken",refreshToken);
         cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
+        // cookie.setSecure(true); // CORS need to be secure
         cookie.setPath("/refresh");
 
         response.addCookie(cookie);
@@ -107,7 +109,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         ErrorResDto body = ErrorResDto.builder()
             .message("Check your username and password.")
-            .error("Authentication failed.")
+            .status(HttpStatus.BAD_REQUEST.value())
             .build();
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

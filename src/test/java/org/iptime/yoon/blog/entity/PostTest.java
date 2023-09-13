@@ -133,7 +133,7 @@ class PostTest {
 
         List<Post> posts = new ArrayList<>();
         IntStream.range(0,numOfPosts).forEach(i->{
-            Post post = Post.builder().content("Content " + i).title("Title " + i).writer(writer).writerEmail(writer.getUsername()).build();
+            Post post = Post.builder().content("Content " + i).title("Title " + i).writer(writer).writerName(writer.getUsername()).build();
             posts.add(post);
         });
         postRepository.saveAll(posts);

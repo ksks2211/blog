@@ -1,15 +1,12 @@
 package org.iptime.yoon.blog.security.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.security.dto.res.BlogUserRegisterResDto;
 import org.iptime.yoon.blog.security.dto.req.BlogUserRegisterReqDto;
-import org.iptime.yoon.blog.security.service.BlogUserServiceImpl;
+import org.iptime.yoon.blog.security.dto.res.BlogUserRegisterResDto;
+import org.iptime.yoon.blog.security.service.BlogUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author rival
@@ -21,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final BlogUserServiceImpl blogUserService;
+    private final BlogUserService blogUserService;
 
 
     // UsernameAlreadyTakenException
@@ -33,12 +30,23 @@ public class AuthController {
     }
 
 
-    // "/log-in"
+    // "/log-in" : JwtLoginFilter
+    // "/refresh" : JwtRefreshFilter
+
+
     // "/log-out"
-    // "/refresh"
 
 
 
-
+    // "/is-username-taken?username=xyzxyz"
+    @GetMapping("/is-username-taken")
+    public ResponseEntity<String> isUsernameTaken(@RequestParam String username) {
+        boolean taken = blogUserService.isUsernameTaken(username);
+        if (taken) {
+            return new ResponseEntity<>("Username is already taken", HttpStatus.CONFLICT);
+        } else {
+            return new ResponseEntity<>("Username is available", HttpStatus.OK);
+        }
+    }
 
 }

@@ -3,6 +3,7 @@ package org.iptime.yoon.blog.service;
 import org.iptime.yoon.blog.dto.req.PostReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
 import org.iptime.yoon.blog.dto.res.PostResDto;
+import org.iptime.yoon.blog.security.dto.User;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -14,7 +15,7 @@ public interface PostService {
 
 
     // Create
-    PostResDto create(PostReqDto createReqDto);
+    PostResDto create(PostReqDto createReqDto, User user);
 
     // Read
     PostResDto findById(Long id);

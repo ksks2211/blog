@@ -6,9 +6,9 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
+import org.iptime.yoon.blog.security.dto.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -49,6 +49,7 @@ public class JwtManager {
             .withIssuer(JWT_ISSUER)
             .withIssuedAt(Instant.now())
             .withClaim("auths",authorities)
+            .withClaim("id",user.getId())
             .sign(JWT_ALGORITHM);
     }
 
@@ -67,9 +68,11 @@ public class JwtManager {
 
 
             List<String> authorities = result.getClaim("auths").asList(String.class);
+            Long id = result.getClaim("id").asLong();
 
             jwtVerifyResult.setSubject(result.getSubject());
             jwtVerifyResult.setAuthorities(authorities);
+            jwtVerifyResult.setId(id);
             jwtVerifyResult.setVerified(true);
             jwtVerifyResult.setDecoded(true);
             jwtVerifyResult.setExpiryDate(result.getExpiresAt());

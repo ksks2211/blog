@@ -13,6 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ErrorResDto {
-    private String error;
+    private int status;
     private String message;
+    private Exception exception;
 }

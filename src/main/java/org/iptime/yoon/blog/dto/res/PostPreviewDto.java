@@ -16,12 +16,12 @@ public class PostPreviewDto {
     private String title;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String writerEmail;
+    private String writer;
 
     public static PostPreviewDto fromPostPreview(PostPreviewProjection post){
         PostPreviewDto dto = new PostPreviewDto();
         dto.setId(post.getId());
-        dto.setWriterEmail(post.getWriterEmail());
+        dto.setWriter(post.getWriterName());
         dto.setTitle(post.getTitle());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setUpdatedAt(post.getUpdatedAt());
