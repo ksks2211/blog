@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(indexes = @Index(name = "index_category_root", columnList = "root"))
+@ToString
 public class Category {
 
     @Id
@@ -26,12 +27,16 @@ public class Category {
     private String root;
 
     @Column(unique = true)
-    private String category;
+    private String fullName;
 
     @Builder.Default
-    private Integer fileCount = 0;
+    private Integer postCount = 0;
 
-    public void increaseFileCount(){
-        this.fileCount++;
+    public void increasePostCount(){
+        this.postCount++;
+    }
+
+    public void decreasePostCount(){
+        this.postCount--;
     }
 }

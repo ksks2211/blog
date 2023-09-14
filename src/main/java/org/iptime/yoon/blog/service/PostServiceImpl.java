@@ -43,19 +43,22 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
 
 
+
+
     @Override
     @Transactional
     public PostResDto create(PostReqDto postReqDto, User user) {
 
         // Create category
-        String userCategory = user.getUsername() + postReqDto.getCategory();
-        Category category = categoryRepository.findByCategory(userCategory)
-            .orElseGet(() ->
-                Category.builder()
-                    .category(userCategory)
-                    .root(user.getUsername()).build());
-        category.increaseFileCount();
+        String fullName = user.getUsername() + postReqDto.getCategory();
+        Category category = categoryRepository.findByFullName(fullName)
+            .orElseGet(() -> Category.builder()
+                .fullName(fullName)
+                .root(user.getUsername())
+                .build());
+        category.increasePostCount();
         categoryRepository.save(category);
+
 
         // Create post
         Post post = postReqDto.toEntity(user.getId(), user.getUsername());
@@ -79,7 +82,7 @@ public class PostServiceImpl implements PostService {
         tagRepository.saveAll(tags);
         postTagRepository.saveAll(postTags);
 
-        return PostResDto.fromEntity(post, postReqDto.getTags(),userCategory);
+        return PostResDto.fromEntity(post, postReqDto.getTags(),postReqDto.getCategory());
     }
 
     @Override
@@ -88,7 +91,7 @@ public class PostServiceImpl implements PostService {
     public PostResDto findById(Long id) throws EntityNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         List<String> tags = postTagRepository.findAllTagsByPostId(id);
-        return PostResDto.fromEntity(post, tags, post.getCategory().getCategory());
+        return PostResDto.fromEntity(post, tags, post.getCategory().getFullName());
     }
 
     @Override
@@ -110,7 +113,7 @@ public class PostServiceImpl implements PostService {
         post.setTitle(postReqDto.getTitle());
         post.setContent(postReqDto.getContent());
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
-        return PostResDto.fromEntity(postRepository.save(post), tags, post.getCategory().getCategory());
+        return PostResDto.fromEntity(postRepository.save(post), tags, post.getCategory().getFullName());
     }
     // changeTags
 
@@ -119,8 +122,10 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @CacheEvict(value = "posts", key = "#id")
     public void delete(Long id) {
-        postTagRepository.deleteAllByPost(Post.builder().id(id).build());
-        postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
-        postRepository.deleteById(id);
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
+        postTagRepository.deleteAllByPost(post);
+        post.getCategory().decreasePostCount();
+        post.setCategory(null);
+        postRepository.delete(post);
     }
 }

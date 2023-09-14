@@ -87,6 +87,7 @@ public class ImageController {
     public ResponseEntity<?> imageNotFoundExceptionHandler(ImageEntityNotFoundException e){
         log.info(e.getClass().getName());
         log.info(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResDto("Image Not Found", e.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResDto.builder().message(e.getMessage()).status(HttpStatus.NOT_FOUND.value()).build());
     }
 }

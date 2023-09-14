@@ -32,9 +32,9 @@ class PostServiceImplTest {
     @Autowired
     private PostService postService;
 
-
     @Autowired
     private BlogUserRepository blogUserRepository;
+
     @Autowired
     private PostRepository postRepository;
 
@@ -53,7 +53,7 @@ class PostServiceImplTest {
     public Post createPost(BlogUser writer, String title, String content){
         Post post = Post.builder()
             .writer(writer)
-            .writerEmail(writer.getUsername())
+            .writerName(writer.getUsername())
             .title(title)
             .content(content)
             .build();
