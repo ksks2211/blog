@@ -11,6 +11,8 @@ public interface PostPreviewProjection {
     String getTitle();
     String getWriterName();
 
+    String getDescription();
+
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
 }

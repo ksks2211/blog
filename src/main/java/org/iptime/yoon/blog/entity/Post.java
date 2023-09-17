@@ -33,6 +33,9 @@ public class Post extends Base{
     @Column(nullable = false)
     private String title;
 
+
+    private String description;
+
     @Column(columnDefinition = "TEXT",nullable = false)
     private String content;
 
@@ -46,6 +49,9 @@ public class Post extends Base{
     @JoinColumn
     @ToString.Exclude
     private Category category;
+
+
+
 
 
     // Read-Only

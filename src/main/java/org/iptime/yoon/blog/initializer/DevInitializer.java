@@ -51,17 +51,40 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
             post.setTitle("Title Of Post"+i);
             post.setContent("Content Of Post"+i);
             post.setCategory("/dir1/dir2");
+            post.setDescription("Describe My Post ...... "+i);
             postService.create(post,admin);
         });
 
-        PostReqDto taggedPost = new PostReqDto();
-        taggedPost.setTitle("Title Of taggedPost");
-        taggedPost.setContent("Content Of taggedPost");
-        taggedPost.setTags(Set.of("java", "python", "javascript"));
-        taggedPost.setCategory("/folder1/folder2");
+        PostReqDto taggedPost = getPostReqDto();
 
         Long id = postService.create(taggedPost, admin).getId();
         log.info("Post(Id = {}) with 3 tags created",id);
+    }
 
+    @NotNull
+    private static PostReqDto getPostReqDto() {
+        PostReqDto taggedPost = new PostReqDto();
+        taggedPost.setTitle("Title Of taggedPost");
+
+        taggedPost.setContent("""
+            ## Content Of taggedPost
+            - Hello World!\s
+            - Greetings
+            ```js
+            const a = 10;
+            const b = a + 20;
+            ```
+            Here's a paragraph with a [link](https://www.example.com/).
+            1. This is a numbered list item.
+            2. This is another item
+                        
+            - [x] #739
+            - [ ] https://github.com/octo-org/octo-repo/issues/740
+            - [ ] Add delight to the experience when all tasks are complete :tada""");
+
+        taggedPost.setTags(Set.of("java", "python", "javascript"));
+        taggedPost.setCategory("/folder1/folder2");
+        taggedPost.setDescription("Describe My Post ...... Tagged");
+        return taggedPost;
     }
 }

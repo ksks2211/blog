@@ -58,6 +58,30 @@ class PostTest {
     }
 
     @Test
+    public void testFindingPrevAndNext(){
+
+        // Given
+        String email="email@email.com";
+        String password="12341234";
+        BlogUser writer = createBlogUser(email, password);
+
+        IntStream.range(0,5).forEach(i->{
+            String title = "post title " + i;
+            String content = "post content" + i;
+            createPost(writer, title, content);
+        });
+
+        List<Post> posts = postRepository.findAll();
+
+        Post post = posts.get(2);
+        PostPreviewProjection prev = postRepository.findPrevPost(post.getId()).get();
+        PostPreviewProjection next = postRepository.findNextPost(post.getId()).get();
+
+        assertThat(post.getId()).isGreaterThan(prev.getId());
+        assertThat(post.getId()).isLessThan(next.getId());
+    }
+
+    @Test
     public void testSaveAndFindPost(){
         // Given
         String email="email@email.com";

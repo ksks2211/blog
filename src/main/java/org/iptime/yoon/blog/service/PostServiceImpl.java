@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.iptime.yoon.blog.dto.req.PostReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
+import org.iptime.yoon.blog.dto.res.PostPrevAndNextResDto;
 import org.iptime.yoon.blog.dto.res.PostPreviewDto;
 import org.iptime.yoon.blog.dto.res.PostResDto;
 import org.iptime.yoon.blog.entity.Category;
@@ -11,7 +12,6 @@ import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.entity.PostTag;
 import org.iptime.yoon.blog.entity.Tag;
 import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
-import org.iptime.yoon.blog.repository.CategoryRepository;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.PostTagRepository;
 import org.iptime.yoon.blog.repository.TagRepository;
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author rival
@@ -40,8 +41,9 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
     private final TagRepository tagRepository;
-    private final CategoryRepository categoryRepository;
+//    private final CategoryRepository categoryRepository;
 
+    private final CategoryService categoryService;
 
 
 
@@ -50,14 +52,8 @@ public class PostServiceImpl implements PostService {
     public PostResDto create(PostReqDto postReqDto, User user) {
 
         // Create category
-        String fullName = user.getUsername() + postReqDto.getCategory();
-        Category category = categoryRepository.findByFullName(fullName)
-            .orElseGet(() -> Category.builder()
-                .fullName(fullName)
-                .root(user.getUsername())
-                .build());
-        category.increasePostCount();
-        categoryRepository.save(category);
+        Category category = categoryService.getCategory(user.getUsername(),postReqDto.getCategory());
+        categoryService.increasePostCount(category);
 
 
         // Create post
@@ -104,6 +100,15 @@ public class PostServiceImpl implements PostService {
         return postListRes;
     }
 
+    @Override
+    @Transactional
+    public PostPrevAndNextResDto findPrevAndNextPosts(Long id) {
+        PostPrevAndNextResDto prevAndNext = new PostPrevAndNextResDto();
+        postRepository.findNextPost(id).ifPresent(next->prevAndNext.setNext(PostPreviewDto.fromPostPreview(next)));
+        postRepository.findPrevPost(id).ifPresent(prev->prevAndNext.setPrev(PostPreviewDto.fromPostPreview(prev)));
+        return prevAndNext;
+    }
+
 
     @Override
     @Transactional
@@ -112,6 +117,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         post.setTitle(postReqDto.getTitle());
         post.setContent(postReqDto.getContent());
+        post.setDescription(postReqDto.getDescription());
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
         return PostResDto.fromEntity(postRepository.save(post), tags, post.getCategory().getFullName());
     }
@@ -124,8 +130,9 @@ public class PostServiceImpl implements PostService {
     public void delete(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         postTagRepository.deleteAllByPost(post);
-        post.getCategory().decreasePostCount();
         post.setCategory(null);
         postRepository.delete(post);
+        Category category = post.getCategory();
+        categoryService.decreasePostCount(category);
     }
 }

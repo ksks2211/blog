@@ -16,6 +16,7 @@ import java.util.Set;
 public class PostReqDto {
     private String title;
     private String content;
+    private String description;
 
     private Set<String> tags = new HashSet<>();
 
@@ -27,6 +28,7 @@ public class PostReqDto {
         return Post.builder()
             .title(title)
             .content(content)
+            .description(description)
             .writer(BlogUser.builder().id(id).build())
             .writerName(username).build();
     }

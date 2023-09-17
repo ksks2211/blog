@@ -2,6 +2,7 @@ package org.iptime.yoon.blog.service;
 
 import org.iptime.yoon.blog.dto.req.PostReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
+import org.iptime.yoon.blog.dto.res.PostPrevAndNextResDto;
 import org.iptime.yoon.blog.dto.res.PostResDto;
 import org.iptime.yoon.blog.security.dto.User;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,8 @@ public interface PostService {
 
 
     PostPageResDto findPostList(Pageable pageable);
+
+    PostPrevAndNextResDto findPrevAndNextPosts(Long id);
 
 
     // Update
