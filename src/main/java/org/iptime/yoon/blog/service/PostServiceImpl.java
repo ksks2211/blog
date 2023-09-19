@@ -12,6 +12,7 @@ import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.entity.PostTag;
 import org.iptime.yoon.blog.entity.Tag;
 import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
+import org.iptime.yoon.blog.exception.CategoryNotFoundException;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.PostTagRepository;
 import org.iptime.yoon.blog.repository.TagRepository;
@@ -27,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author rival
@@ -46,13 +46,12 @@ public class PostServiceImpl implements PostService {
     private final CategoryService categoryService;
 
 
-
     @Override
     @Transactional
     public PostResDto create(PostReqDto postReqDto, User user) {
 
         // Create category
-        Category category = categoryService.getCategory(user.getUsername(),postReqDto.getCategory());
+        Category category = categoryService.getCategory(user.getUsername(), postReqDto.getCategory());
         categoryService.increasePostCount(category);
 
 
@@ -78,7 +77,7 @@ public class PostServiceImpl implements PostService {
         tagRepository.saveAll(tags);
         postTagRepository.saveAll(postTags);
 
-        return PostResDto.fromEntity(post, postReqDto.getTags(),postReqDto.getCategory());
+        return PostResDto.fromEntity(post, postReqDto.getTags(), postReqDto.getCategory());
     }
 
     @Override
@@ -102,10 +101,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    public PostPageResDto findPostListByCategory(Pageable pageable, String root, String sub) {
+        Category category = categoryService.getCategory(root, sub);
+        if (category.getId() == null) throw new CategoryNotFoundException(category.getFullName());
+
+        PostPageResDto postListRes = new PostPageResDto();
+        Page<PostPreviewProjection> postPreviewPage = postRepository.findPostListByCategory(pageable, category);
+        List<PostPreviewDto> postList = postPreviewPage.getContent().stream().map(PostPreviewDto::fromPostPreview).toList();
+        postListRes.setPostList(postList);
+        postListRes.setTotalPages(postPreviewPage.getTotalPages());
+        return postListRes;
+    }
+
+
+    @Override
+    @Transactional
     public PostPrevAndNextResDto findPrevAndNextPosts(Long id) {
         PostPrevAndNextResDto prevAndNext = new PostPrevAndNextResDto();
-        postRepository.findNextPost(id).ifPresent(next->prevAndNext.setNext(PostPreviewDto.fromPostPreview(next)));
-        postRepository.findPrevPost(id).ifPresent(prev->prevAndNext.setPrev(PostPreviewDto.fromPostPreview(prev)));
+        postRepository.findNextPost(id).ifPresent(next -> prevAndNext.setNext(PostPreviewDto.fromPostPreview(next)));
+        postRepository.findPrevPost(id).ifPresent(prev -> prevAndNext.setPrev(PostPreviewDto.fromPostPreview(prev)));
         return prevAndNext;
     }
 

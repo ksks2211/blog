@@ -33,6 +33,7 @@ public class CategoryRootDto {
             if(i==parts.length -1){
                 newCategory.numOfPosts=numOfPosts;
             }
+            newCategory.numOfAllPosts+=numOfPosts;
             current = newCategory.getSubCategories();
         }
     }

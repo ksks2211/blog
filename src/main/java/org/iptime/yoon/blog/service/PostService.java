@@ -23,6 +23,7 @@ public interface PostService {
 
 
     PostPageResDto findPostList(Pageable pageable);
+    PostPageResDto findPostListByCategory(Pageable pageable,  String root, String sub);
 
     PostPrevAndNextResDto findPrevAndNextPosts(Long id);
 

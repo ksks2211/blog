@@ -137,25 +137,23 @@ public class SecurityConfig {
                     ErrorResDto error = ErrorResDto.builder()
                         .status(HttpServletResponse.SC_UNAUTHORIZED)
                         .message("Unauthorized Request")
-                        .exception(authException)
+                        //.exception(authException)
                         .build();
                     response.getWriter().write(objectMapper.writeValueAsString(error));
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 });
-                config.accessDeniedHandler((request,response,accessDeniedException)->{
+                config.accessDeniedHandler((request,response,accessDeniedException) -> {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     ErrorResDto error = ErrorResDto.builder()
                         .status(HttpServletResponse.SC_FORBIDDEN)
                         .message("Forbidden Request")
-                        .exception(accessDeniedException)
+                        //.exception(accessDeniedException)
                         .build();
                     response.getWriter().write(objectMapper.writeValueAsString(error));
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 });
             }
-
-
         );
         return http.build();
     }

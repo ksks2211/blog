@@ -37,10 +37,18 @@ class PostTagTest {
         return user;
     }
 
-    public Post createPost(BlogUser blogUser,String title,String content){
+    public Category createCategory(String fullName){
+        Category category = Category.builder().root("ADMIN").fullName(fullName).build();
+        em.persist(category);
+
+        return category;
+    }
+
+    public Post createPost(BlogUser blogUser,String title,String content, Category category){
         Post post = Post.builder()
             .writer(blogUser)
             .title(title)
+            .category(category)
             .content(content)
             .build();
         em.persist(post);
@@ -66,7 +74,8 @@ class PostTagTest {
         String keyword = "key";
         String keyword2 = "key2";
         BlogUser user = createBlogUser(email,password);
-        Post post = createPost(user,"title","content");
+        Category category = createCategory("ADMIN/HELLO/WORLD");
+        Post post = createPost(user,"title","content",category);
         Tag tag = createTag(keyword);
         Tag tag2 = createTag(keyword2);
 
@@ -98,5 +107,8 @@ class PostTagTest {
 
 
     }
+
+
+
 
 }

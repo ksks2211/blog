@@ -65,7 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }else{
                 log.info("Invalid authentication attempt");
             }
+        }else{
+            log.info("Request without AUTHORIZATION header");
         }
+
         filterChain.doFilter(request,response);
     }
 }

@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+
     @Autowired
     private TestEntityManager entityManager;
 
@@ -56,6 +57,25 @@ class PostTest {
         entityManager.persist(post);
         return post;
     }
+
+
+    public Post createPostWithCategory(BlogUser writer, String title, String content,Category category){
+        Post post = Post.builder()
+            .writer(writer)
+            .title(title)
+            .content(content)
+            .category(category)
+            .build();
+        entityManager.persist(post);
+        return post;
+    }
+
+    public Category createCategory(String fullName){
+        Category category = Category.builder().root("ADMIN").fullName(fullName).build();
+        entityManager.persist(category);
+        return category;
+    }
+
 
     @Test
     public void testFindingPrevAndNext(){
@@ -146,6 +166,30 @@ class PostTest {
         posts.forEach(post->logger.info("{}",post));
     }
 
+
+    @Test
+    public void getPostByCategory(){
+        // Given
+        String email ="email@email.com";
+        String password="password";
+        BlogUser user = createBlogUser(email,password);
+        Category category = createCategory("ADMIN/HELLO/WORLD");
+
+        String title = "Hello World";
+        createPostWithCategory(user,title,"content 123125",category);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        Page<PostPreviewProjection> result = postRepository.findPostListByCategory(pageRequest, category);
+
+
+        assertThat(result.getTotalElements()).isEqualTo(1L);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo(title);
+
+
+    }
 
     @Test
     public void testCreatePostsAndFindPostsWithPaging(){

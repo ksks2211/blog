@@ -42,7 +42,7 @@ auth:
   refresh-token:
     refresh-exp-hours: 12
   jwt:
-    auth-exp-minutes: 30
+    auth-exp-minutes: 120
     secret-key: "JwtSecretKey"
     issuer: "JwtIssuer"
 

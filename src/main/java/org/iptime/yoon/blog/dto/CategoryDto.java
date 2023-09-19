@@ -21,6 +21,8 @@ public class CategoryDto {
     int numOfPosts = 0;
 
     @Builder.Default
-    Map<String, CategoryDto> subCategories = new HashMap<>();
+    int numOfAllPosts = 0;
 
+    @Builder.Default
+    Map<String, CategoryDto> subCategories = new HashMap<>();
 }

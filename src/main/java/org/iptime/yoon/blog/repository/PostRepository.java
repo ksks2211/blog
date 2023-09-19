@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.repository;
 
+import org.iptime.yoon.blog.entity.Category;
 import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
 import org.springframework.data.domain.Page;
@@ -26,4 +27,13 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("select p.id as id, p.title as title, p.writerName as writerName,  p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
         "from Post p where p.id < :id order by p.id desc limit 1")
     Optional<PostPreviewProjection> findPrevPost(Long id);
+
+
+
+    @Query("select " +
+        "p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
+        "from Post p "+
+        "where p.category = :category")
+    Page<PostPreviewProjection> findPostListByCategory(Pageable pageable, Category category);
+
 }
