@@ -6,8 +6,8 @@ import jakarta.persistence.EntityNotFoundException;
  * @author rival
  * @since 2023-09-20
  */
-public class CategoryNotFoundException extends EntityNotFoundException {
-    public CategoryNotFoundException(String fullName) {
+public class CategoryEntityNotFoundException extends EntityNotFoundException {
+    public CategoryEntityNotFoundException(String fullName) {
         super("Category "+fullName+" is Not Found");
     }
 }

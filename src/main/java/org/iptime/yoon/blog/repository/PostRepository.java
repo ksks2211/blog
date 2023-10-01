@@ -15,25 +15,28 @@ import java.util.Optional;
  * @since 2023-08-10
  */
 public interface PostRepository extends JpaRepository<Post,Long> {
-    @Query("select " +
-        "p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
-        "from Post p")
+    @Query("select p.id, p.title, p.writerName,  p.createdAt, p.updatedAt, p.description " +
+        "from Post p "+
+        "where p.deleted = false")
     Page<PostPreviewProjection> findPostList(Pageable pageable);
 
-    @Query("select p.id as id, p.title as title, p.writerName as writerName,  p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
-        "from Post p where p.id > :id order by p.id asc limit 1")
+    @Query("select p.id, p.title, p.writerName,  p.createdAt, p.updatedAt, p.description " +
+        "from Post p " +
+        "where p.deleted = false and p.id > :id " +
+        "order by p.id asc limit 1")
     Optional<PostPreviewProjection> findNextPost(Long id);
 
-    @Query("select p.id as id, p.title as title, p.writerName as writerName,  p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
-        "from Post p where p.id < :id order by p.id desc limit 1")
+    @Query("select p.id, p.title, p.writerName,  p.createdAt, p.updatedAt, p.description " +
+        "from Post p " +
+        "where p.deleted = false and p.id < :id " +
+        "order by p.id desc limit 1")
     Optional<PostPreviewProjection> findPrevPost(Long id);
 
 
 
-    @Query("select " +
-        "p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
+    @Query("select p.id, p.title, p.writerName,  p.createdAt, p.updatedAt, p.description " +
         "from Post p "+
-        "where p.category = :category")
+        "where p.deleted = false and p.category = :category")
     Page<PostPreviewProjection> findPostListByCategory(Pageable pageable, Category category);
 
 }

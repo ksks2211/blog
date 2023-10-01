@@ -27,6 +27,7 @@ public class Category {
     private String root;
 
     @Column(unique = true)
+    @Setter
     private String fullName;
 
     @Builder.Default

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.iptime.yoon.blog.dto.CategoryDto;
 import org.iptime.yoon.blog.dto.CategoryRootDto;
 import org.iptime.yoon.blog.entity.Category;
+import org.iptime.yoon.blog.exception.CategoryEntityNotFoundException;
+import org.iptime.yoon.blog.exception.CategoryNotEmptyException;
 import org.iptime.yoon.blog.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,23 +19,12 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CategoryServiceImpl implements CategoryService{
 
     private final CategoryRepository categoryRepository;
 
-
-
-    @Transactional
-    public Category getCategory(String root, String sub){
-        String fullName = root + sub;
-        return categoryRepository.findByFullName(fullName)
-            .orElseGet(() -> Category.builder()
-                .fullName(fullName)
-                .root(root)
-                .build());
-    }
-
-    @Transactional
+    @Override
     public void increasePostCount(Category category){
         category.increasePostCount();
         categoryRepository.save(category);
@@ -45,22 +36,43 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.save(category);
     }
 
-    @Transactional
-    public Long  createIfNotExists(String root, String sub){
+
+
+    // Read
+    @Override
+    public Category getCategory(String root, String sub){
+        String fullName = root + sub;
+        return categoryRepository.findByFullName(fullName)
+            .orElseGet(() -> Category.builder()
+                .fullName(fullName)
+                .root(root)
+                .build());
+    }
+
+    // Create + Read
+    @Override
+    public Long createCategoryIfNotExists(String root, String sub){
         Category category = getCategory(root,sub);
         if(category.getId()==null)categoryRepository.save(category);
         return category.getId();
     }
 
-    public void deleteIfEmpty(String root, String sub){
-        String value = root+sub;
-        categoryRepository.findByFullName(value).ifPresent(category -> {
-            if(category.getPostCount()==0){
-                categoryRepository.delete(category);
-            }
-        });
+
+
+    // Delete
+    @Override
+    public void deleteCategoryIfEmpty(String root, String sub) throws CategoryNotEmptyException{
+        String fullName = root+sub;
+        Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
+        if(category.getPostCount() == 0){
+            categoryRepository.delete(category);
+        }else{
+            throw new CategoryNotEmptyException(fullName);
+        }
     }
 
+
+    // Read
     @Override
     public Map<String, CategoryDto> getCategories(String root) {
         List<Category> categories = categoryRepository.findAllByRoot(root);
@@ -68,5 +80,17 @@ public class CategoryServiceImpl implements CategoryService{
         categories.forEach(el-> categoryRoot.insert(el.getFullName(),el.getPostCount()));
         return categoryRoot.getRoot();
     }
+
+
+    // Update
+    @Override
+    public void changeCategory(String root, String beforeSub, String afterSub) {
+        String fullName = root+beforeSub;
+        Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
+        String newFullName = root+afterSub;
+        category.setFullName(newFullName);
+        categoryRepository.save(category);
+    }
+
 
 }

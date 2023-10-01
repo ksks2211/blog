@@ -28,10 +28,10 @@ class CategoryServiceTest {
         String sub2 = "/java/android";
         String sub3 = "/python/tensorflow";
         String sub4 = "/js/express";
-        categoryService.createIfNotExists(root,sub1);
-        categoryService.createIfNotExists(root,sub2);
-        categoryService.createIfNotExists(root,sub3);
-        categoryService.createIfNotExists(root,sub4);
+        categoryService.createCategoryIfNotExists(root,sub1);
+        categoryService.createCategoryIfNotExists(root,sub2);
+        categoryService.createCategoryIfNotExists(root,sub3);
+        categoryService.createCategoryIfNotExists(root,sub4);
 
         Map<String, CategoryDto> categories = categoryService.getCategories(root);
 

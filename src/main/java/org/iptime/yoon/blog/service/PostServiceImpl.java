@@ -12,7 +12,7 @@ import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.entity.PostTag;
 import org.iptime.yoon.blog.entity.Tag;
 import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
-import org.iptime.yoon.blog.exception.CategoryNotFoundException;
+import org.iptime.yoon.blog.exception.CategoryEntityNotFoundException;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.PostTagRepository;
 import org.iptime.yoon.blog.repository.TagRepository;
@@ -103,7 +103,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostPageResDto findPostListByCategory(Pageable pageable, String root, String sub) {
         Category category = categoryService.getCategory(root, sub);
-        if (category.getId() == null) throw new CategoryNotFoundException(category.getFullName());
+        if (category.getId() == null) throw new CategoryEntityNotFoundException(category.getFullName());
 
         PostPageResDto postListRes = new PostPageResDto();
         Page<PostPreviewProjection> postPreviewPage = postRepository.findPostListByCategory(pageable, category);
