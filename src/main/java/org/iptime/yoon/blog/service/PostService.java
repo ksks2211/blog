@@ -4,7 +4,7 @@ import org.iptime.yoon.blog.dto.req.PostReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
 import org.iptime.yoon.blog.dto.res.PostPrevAndNextResDto;
 import org.iptime.yoon.blog.dto.res.PostResDto;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -16,7 +16,7 @@ public interface PostService {
 
 
     // Create
-    PostResDto create(PostReqDto createReqDto, User user);
+    PostResDto createPost(PostReqDto createReqDto, User user);
 
     // Read
     PostResDto findById(Long id);
@@ -29,11 +29,11 @@ public interface PostService {
 
 
     // Update
-    PostResDto update(Long id, PostReqDto createReqDto);
+    PostResDto updatePost(Long id, PostReqDto createReqDto);
 
 
     // Delete
-    void delete(Long id);
+    void deletePost(Long id);
 
 
 }

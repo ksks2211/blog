@@ -1,6 +1,6 @@
 package org.iptime.yoon.blog.security.jwt;
 
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

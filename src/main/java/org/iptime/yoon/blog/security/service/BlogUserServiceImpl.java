@@ -1,7 +1,9 @@
 package org.iptime.yoon.blog.security.service;
 
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.dto.req.BlogUserUpdateReqDto;
+import org.iptime.yoon.blog.security.dto.res.BlogUserInfoResDto;
 import org.iptime.yoon.blog.security.entity.BlogRole;
 import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.iptime.yoon.blog.security.repository.BlogUserRepository;
@@ -28,14 +30,24 @@ public class BlogUserServiceImpl implements UserDetailsService, BlogUserService 
     private final BlogUserRepository blogUserRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+
+    private BlogUser loadBlogUserByUsername(String username){
+        return blogUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found"));
+    }
+
+    private BlogUserInfoResDto getBlogUserInfo(BlogUser blogUser){
+        return BlogUserInfoResDto.builder().email(blogUser.getEmail()).username(blogUser.getUsername()).build();
+    }
+
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        BlogUser blogUser = blogUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found"));
+    public UserDetails loadUserByUsername(String username){
+        BlogUser blogUser = loadBlogUserByUsername(username);
         return fromEntity(blogUser);
     }
 
     @Transactional
-    public  void createBlogUser(BlogUserRegisterReqDto dto){
+    public BlogUserInfoResDto createBlogUser(BlogUserRegisterReqDto dto){
         String username = dto.getUsername();
         if(blogUserRepository.existsByUsername(username)){
             throw new UsernameAlreadyTakenException("Username : "+username+" is already taken");
@@ -43,9 +55,42 @@ public class BlogUserServiceImpl implements UserDetailsService, BlogUserService 
         BlogUser blogUser = toEntity(username,dto.getEmail());
         blogUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         blogUserRepository.save(blogUser);
+
+        return getBlogUserInfo(blogUser);
     }
+
+    @Override
+    @Transactional
+    public BlogUserInfoResDto updateBlogUser(String username,BlogUserUpdateReqDto dto) {
+        BlogUser blogUser = loadBlogUserByUsername(username);
+        String email = dto.getEmail();
+        if(email!=null){
+            blogUser.setEmail(email);
+        }
+        String profile = dto.getProfile();
+        if(profile!=null){
+            blogUser.setProfile(profile);
+        }
+        blogUserRepository.save(blogUser);
+        return getBlogUserInfo(blogUser);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBlogUser(String username) {
+        BlogUser blogUser = loadBlogUserByUsername(username);
+        blogUser.softDelete();
+        blogUserRepository.save(blogUser);
+    }
+
     public boolean isUsernameTaken(String username){
         return blogUserRepository.existsByUsername(username);
+    }
+
+    @Override
+    public BlogUserInfoResDto getBlogUserInfo(String username) {
+        BlogUser blogUser = loadBlogUserByUsername(username);
+        return getBlogUserInfo(blogUser);
     }
 
     public static List<GrantedAuthority> getAuthorities(BlogRole role){
@@ -54,7 +99,13 @@ public class BlogUserServiceImpl implements UserDetailsService, BlogUserService 
     }
 
     public static User fromEntity(BlogUser blogUser){
-        return new User(blogUser.getUsername(),blogUser.getPassword(), getAuthorities(blogUser.getRole()), blogUser.getId());
+        return new User(
+            blogUser.getUsername(),
+            blogUser.getPassword(),
+            getAuthorities(blogUser.getRole()),
+            blogUser.getId(),
+            blogUser.getEmail(),
+            blogUser.getProfile());
     }
 
     public static BlogUser toEntity(String username, String email){

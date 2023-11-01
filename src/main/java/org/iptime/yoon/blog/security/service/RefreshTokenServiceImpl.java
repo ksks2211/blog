@@ -1,7 +1,7 @@
 package org.iptime.yoon.blog.security.service;
 
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.iptime.yoon.blog.security.entity.BlogUser;
 import org.iptime.yoon.blog.security.entity.RefreshToken;
 import org.iptime.yoon.blog.security.exception.ExpiredRefreshTokenException;
@@ -67,7 +67,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     @Transactional
     public User validateTokenAndGetUser(String token) throws InvalidRefreshTokenException, ExpiredRefreshTokenException {
 
-
         RefreshToken refreshToken = refreshTokenRepository.findById(token).orElseThrow(() -> new InvalidRefreshTokenException(token));
         if(refreshToken.isExpired()){
             refreshTokenRepository.delete(refreshToken);
@@ -75,7 +74,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         }
 
         BlogUser blogUser = refreshToken.getUser();
-
         User user  = fromEntity(blogUser);
         user.eraseCredentials();
         return user;

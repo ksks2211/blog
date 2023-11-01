@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
 import org.jetbrains.annotations.NotNull;

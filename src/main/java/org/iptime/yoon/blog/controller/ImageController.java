@@ -2,11 +2,11 @@ package org.iptime.yoon.blog.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.dto.ImageFileDto;
+import org.iptime.yoon.blog.dto.internal.ImageFileDto;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.dto.res.ImageMetaResDto;
 import org.iptime.yoon.blog.exception.ImageEntityNotFoundException;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.iptime.yoon.blog.service.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class ImageController {
         return uploadFile !=null && uploadFile.getContentType() != null && uploadFile.getContentType().startsWith("image");
     }
 
-    public String generateRandomFilename(final String username) {
+    private String generateRandomFilename(final String username) {
         LocalDate currentDate = LocalDate.now();
         String year = String.valueOf(currentDate.getYear());
         String month = String.format("%02d", currentDate.getMonthValue());
@@ -72,6 +72,8 @@ public class ImageController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, imageFileDto.getContentType());
+
+
         return new ResponseEntity<>(imageFileDto.getBytes(), headers, HttpStatus.OK);
     }
 

@@ -1,7 +1,7 @@
 package org.iptime.yoon.blog.security.service;
 
 
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 
 /**
  * @author rival

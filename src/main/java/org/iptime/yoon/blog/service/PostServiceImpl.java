@@ -17,7 +17,7 @@ import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.PostTagRepository;
 import org.iptime.yoon.blog.repository.TagRepository;
 import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,7 +48,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostResDto create(PostReqDto postReqDto, User user) {
+    public PostResDto createPost(PostReqDto postReqDto, User user) {
 
         // Create category
         Category category = categoryService.getCategory(user.getUsername(), postReqDto.getCategory());
@@ -127,7 +127,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     @CachePut(value = "posts", key = "#id")
-    public PostResDto update(Long id, PostReqDto postReqDto) {
+    public PostResDto updatePost(Long id, PostReqDto postReqDto) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         post.setTitle(postReqDto.getTitle());
         post.setContent(postReqDto.getContent());
@@ -141,7 +141,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     @CacheEvict(value = "posts", key = "#id")
-    public void delete(Long id) {
+    public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         postTagRepository.deleteAllByPost(post);
         post.setCategory(null);

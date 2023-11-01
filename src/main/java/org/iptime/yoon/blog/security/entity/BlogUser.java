@@ -19,8 +19,6 @@ import java.time.Period;
 @Builder
 @Getter
 @Setter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 @Where(clause = "deleted = false")
 public class BlogUser extends Base {
 
@@ -31,13 +29,9 @@ public class BlogUser extends Base {
     @Column(unique = true)
     private String username;
     private String password;
-
     private String email;
-
+    private String profile;
     private LocalDate dateOfBirth;
-
-
-
 
     public int getAge(){
         if(dateOfBirth != null && LocalDate.now().isAfter(dateOfBirth)){

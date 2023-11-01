@@ -1,10 +1,12 @@
 package org.iptime.yoon.blog.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -33,6 +35,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResDto> handleAccessDenied(AccessDeniedException e){
+        ErrorResDto error = ErrorResDto.builder()
+            .status(HttpServletResponse.SC_FORBIDDEN)
+            .message(e.getMessage())
+            //.exception(accessDeniedException)
+            .build();
+        log.info(e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+
+    }
 
     // Internal Server Error
     @ExceptionHandler(Exception.class)

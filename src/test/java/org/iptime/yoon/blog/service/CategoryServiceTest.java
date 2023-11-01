@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.dto.CategoryDto;
+import org.iptime.yoon.blog.dto.internal.CategoryDto;
 import org.iptime.yoon.blog.entity.Category;
 import org.iptime.yoon.blog.exception.CategoryNotEmptyException;
 import org.junit.jupiter.api.Test;

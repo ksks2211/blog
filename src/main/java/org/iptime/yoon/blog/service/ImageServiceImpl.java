@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
-import org.iptime.yoon.blog.dto.ImageFileDto;
+import org.iptime.yoon.blog.dto.internal.ImageFileDto;
 import org.iptime.yoon.blog.dto.res.ImageMetaResDto;
 import org.iptime.yoon.blog.entity.ImageMetadata;
 import org.iptime.yoon.blog.exception.ImageEntityNotFoundException;

@@ -3,9 +3,10 @@ package org.iptime.yoon.blog.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.dto.req.PostReqDto;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.iptime.yoon.blog.security.dto.req.BlogUserRegisterReqDto;
 import org.iptime.yoon.blog.security.service.BlogUserService;
+import org.iptime.yoon.blog.service.CategoryService;
 import org.iptime.yoon.blog.service.PostService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -30,6 +31,7 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
 
     private final BlogUserService blogUserService;
     private final PostService postService;
+    private final CategoryService categoryService;
 
 
     @Override
@@ -52,13 +54,16 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
             post.setContent("Content Of Post"+i);
             post.setCategory("/dir1/dir2");
             post.setDescription("Describe My Post ...... "+i);
-            postService.create(post,admin);
+            postService.createPost(post,admin);
         });
-
         PostReqDto taggedPost = getPostReqDto();
 
-        Long id = postService.create(taggedPost, admin).getId();
+        Long id = postService.createPost(taggedPost, admin).getId();
         log.info("Post(Id = {}) with 3 tags created",id);
+
+
+        // Create Empty Category
+        categoryService.createCategoryIfNotExists("ADMIN","/empty/category");
     }
 
     @NotNull

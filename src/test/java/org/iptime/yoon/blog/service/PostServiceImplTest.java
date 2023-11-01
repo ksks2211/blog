@@ -89,7 +89,7 @@ class PostServiceImplTest {
 
         Long id = post.getId();
 
-        postService.delete(id);
+        postService.deletePost(id);
 
 
         Post foundPost = postRepository.findById(id).orElse(null);
@@ -115,7 +115,7 @@ class PostServiceImplTest {
         updateReq.setContent(content);
         updateReq.setTitle(title);
 
-        postService.update(post.getId(),updateReq);
+        postService.updatePost(post.getId(),updateReq);
 
 
         Post updatedPost = postRepository.findById(post.getId()).get();

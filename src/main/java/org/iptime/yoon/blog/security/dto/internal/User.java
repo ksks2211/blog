@@ -1,4 +1,4 @@
-package org.iptime.yoon.blog.security.dto;
+package org.iptime.yoon.blog.security.dto.internal;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,9 +13,19 @@ import java.util.Collection;
 public class User extends org.springframework.security.core.userdetails.User {
 
     private Long id;
+    private String email;
+    private String profile;
+
     public User(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id) {
         super(username, password, authorities);
         this.id=id;
+    }
+
+    public User(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id,String email, String profile) {
+        super(username, password, authorities);
+        this.id=id;
+        this.email=email;
+        this.profile = profile;
     }
 
     public User(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {

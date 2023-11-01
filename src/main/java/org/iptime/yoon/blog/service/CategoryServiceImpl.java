@@ -1,8 +1,8 @@
 package org.iptime.yoon.blog.service;
 
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.dto.CategoryDto;
-import org.iptime.yoon.blog.dto.CategoryRootDto;
+import org.iptime.yoon.blog.dto.internal.CategoryDto;
+import org.iptime.yoon.blog.dto.internal.CategoryRootDto;
 import org.iptime.yoon.blog.entity.Category;
 import org.iptime.yoon.blog.exception.CategoryEntityNotFoundException;
 import org.iptime.yoon.blog.exception.CategoryNotEmptyException;

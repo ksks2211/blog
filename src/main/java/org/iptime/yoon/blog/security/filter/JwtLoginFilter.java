@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.dto.res.ErrorResDto;
-import org.iptime.yoon.blog.security.dto.User;
+import org.iptime.yoon.blog.security.dto.internal.User;
 import org.iptime.yoon.blog.security.dto.req.BlogUserLogInReqDto;
 import org.iptime.yoon.blog.security.dto.res.JwtLogInResDto;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
@@ -81,6 +81,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         JwtLogInResDto body = JwtLogInResDto.builder()
             .message("Successfully logged in.")
             .token(token)
+            .username(user.getUsername())
             .statusCode(HttpStatus.OK.value())
             .build();
 

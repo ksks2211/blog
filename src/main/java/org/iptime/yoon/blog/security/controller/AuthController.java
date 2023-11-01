@@ -1,12 +1,17 @@
 package org.iptime.yoon.blog.security.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.security.dto.req.BlogUserRegisterReqDto;
-import org.iptime.yoon.blog.security.dto.res.BlogUserRegisterResDto;
+import org.iptime.yoon.blog.security.dto.res.BlogUserInfoResDto;
+import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.security.service.BlogUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.iptime.yoon.blog.dto.res.ErrorResDto.createErrorResponse;
 
 /**
  * @author rival
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final BlogUserService blogUserService;
@@ -24,9 +30,15 @@ public class AuthController {
     // UsernameAlreadyTakenException
     @PostMapping("/register")
     public ResponseEntity<?> createBlogUser(@RequestBody BlogUserRegisterReqDto registerReqDto){
-        blogUserService.createBlogUser(registerReqDto);
-        BlogUserRegisterResDto body = new BlogUserRegisterResDto("Registered");
+        BlogUserInfoResDto body = blogUserService.createBlogUser(registerReqDto);
         return new ResponseEntity<>(body,HttpStatus.CREATED);
+    }
+
+    @ExceptionHandler(value= UsernameAlreadyTakenException.class)
+    public ResponseEntity<?> usernameAlreadyTakenExceptionHandler(UsernameAlreadyTakenException e){
+        log.info(e.getClass().getName());
+        log.info(e.getMessage());
+        return createErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
 
