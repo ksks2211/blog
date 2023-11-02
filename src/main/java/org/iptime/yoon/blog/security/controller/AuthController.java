@@ -2,8 +2,9 @@ package org.iptime.yoon.blog.security.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.dto.res.ErrorResDto;
+import org.iptime.yoon.blog.annotation.CurrentUsername;
 import org.iptime.yoon.blog.security.dto.req.BlogUserRegisterReqDto;
+import org.iptime.yoon.blog.security.dto.req.BlogUserUpdateReqDto;
 import org.iptime.yoon.blog.security.dto.res.BlogUserInfoResDto;
 import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.security.service.BlogUserService;
@@ -28,7 +29,7 @@ public class AuthController {
 
 
     // UsernameAlreadyTakenException
-    @PostMapping("/register")
+    @PostMapping({"/register","/sign-in"})
     public ResponseEntity<?> createBlogUser(@RequestBody BlogUserRegisterReqDto registerReqDto){
         BlogUserInfoResDto body = blogUserService.createBlogUser(registerReqDto);
         return new ResponseEntity<>(body,HttpStatus.CREATED);
@@ -44,13 +45,11 @@ public class AuthController {
 
     // "/log-in" : JwtLoginFilter
     // "/refresh" : JwtRefreshFilter
-
-
     // "/log-out"
 
 
 
-    // "/is-username-taken?username=xyzxyz"
+    // GET "/is-username-taken?username=xyzxyz"
     @GetMapping("/is-username-taken")
     public ResponseEntity<String> isUsernameTaken(@RequestParam String username) {
         boolean taken = blogUserService.isUsernameTaken(username);
@@ -59,6 +58,29 @@ public class AuthController {
         } else {
             return new ResponseEntity<>("Username is available", HttpStatus.OK);
         }
+    }
+
+    // DELETE "/unregister", "/sign-out"
+    @DeleteMapping({"/unregister","/sign-out"})
+    public ResponseEntity<?> unregisterBlogUser(@CurrentUsername String username){
+        blogUserService.deleteBlogUser(username);
+        return ResponseEntity.noContent().build(); // 204
+    }
+
+
+    // PUT "/update"
+    @PutMapping("/update")
+    public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @RequestBody BlogUserUpdateReqDto dto){
+        BlogUserInfoResDto blogUserInfo = blogUserService.updateBlogUser(username, dto);
+        return ResponseEntity.ok(blogUserInfo);
+    }
+
+
+    // GET "/who-am-i"
+    @GetMapping("/who-am-i")
+    public ResponseEntity<?> whoAmI(@CurrentUsername String username){
+        BlogUserInfoResDto blogUserInfo = blogUserService.getBlogUserInfo(username);
+        return ResponseEntity.ok(blogUserInfo); // 200
     }
 
 }

@@ -57,17 +57,13 @@ public class PostController {
         return postService.findById(id);
     }
 
-
     @GetMapping("")
     public PostPageResDto getPostPage(@RequestParam(value = "page", defaultValue = "1") int page) {
         int zeroBasedPage = page > 0 ? page - 1 : 0;
-
         Sort sort = Sort.by("id").descending();
         PageRequest pageRequest = PageRequest.of(zeroBasedPage, SIZE_PER_PAGE, sort);
-
         return postService.findPostList(pageRequest);
     }
-
 
     // UPDATE
     // EntityNotFoundException handling
@@ -76,7 +72,6 @@ public class PostController {
         return postService.updatePost(id, postReqDto);
     }
 
-
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostById(@PathVariable(name = "id") Long id) {
@@ -84,12 +79,10 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-
     @ExceptionHandler(value = PostEntityNotFoundException.class)
     public ResponseEntity<?> postNotFoundExceptionHandler(PostEntityNotFoundException e) {
         log.info(e.getClass().getName());
         log.info(e.getMessage());
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
 }
