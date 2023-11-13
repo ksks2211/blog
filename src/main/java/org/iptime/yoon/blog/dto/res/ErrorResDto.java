@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 @Builder
 public class ErrorResDto {
-    private int status;
+    private int statusCode;
     private String message;
     private Exception exception;
 
@@ -25,6 +25,6 @@ public class ErrorResDto {
             .status(httpStatus)
             .body(ErrorResDto.builder()
                 .message(message)
-                .status(httpStatus.value()).build());
+                .statusCode(httpStatus.value()).build());
     }
 }

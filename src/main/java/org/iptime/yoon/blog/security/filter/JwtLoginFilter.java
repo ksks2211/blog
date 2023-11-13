@@ -110,12 +110,13 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         ErrorResDto body = ErrorResDto.builder()
             .message("Check your username and password.")
-            .status(HttpStatus.BAD_REQUEST.value())
+            .statusCode(HttpStatus.BAD_REQUEST.value())
             .build();
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
+        response.setHeader("Keep-Alive","timeout=60");
+        response.setHeader("Connection","keep-alive");
         response.getOutputStream().write(objectMapper.writeValueAsBytes(body));
     }
 }

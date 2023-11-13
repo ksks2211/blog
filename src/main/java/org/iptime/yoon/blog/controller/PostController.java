@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,12 +69,14 @@ public class PostController {
     // UPDATE
     // EntityNotFoundException handling
     @PutMapping("/{id}")
+    @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public PostResDto updatePostById(@PathVariable(name = "id") Long id, @RequestBody PostReqDto postReqDto) {
         return postService.updatePost(id, postReqDto);
     }
 
     // DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public ResponseEntity<?> deletePostById(@PathVariable(name = "id") Long id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();

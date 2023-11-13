@@ -90,6 +90,6 @@ public class ImageController {
         log.info(e.getClass().getName());
         log.info(e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResDto.builder().message(e.getMessage()).status(HttpStatus.NOT_FOUND.value()).build());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResDto.builder().message(e.getMessage()).statusCode(HttpStatus.NOT_FOUND.value()).build());
     }
 }

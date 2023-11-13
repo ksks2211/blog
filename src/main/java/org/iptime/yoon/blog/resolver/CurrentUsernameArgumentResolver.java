@@ -27,6 +27,7 @@ public class CurrentUsernameArgumentResolver implements HandlerMethodArgumentRes
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth != null && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
             return ((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername();
         }

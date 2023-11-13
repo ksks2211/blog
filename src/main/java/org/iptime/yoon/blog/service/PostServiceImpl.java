@@ -143,10 +143,21 @@ public class PostServiceImpl implements PostService {
     @CacheEvict(value = "posts", key = "#id")
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
-        postTagRepository.deleteAllByPost(post);
-        post.setCategory(null);
-        postRepository.delete(post);
         Category category = post.getCategory();
+        post.setCategory(null);
+        post.softDelete();
+
+        postTagRepository.deleteAllByPost(post);
+        postRepository.save(post);
+
         categoryService.decreasePostCount(category);
+    }
+
+    @Override
+    public boolean isOwner(Long id, String username) {
+        return postRepository.findById(id)
+            .map(Post::getWriterName)
+            .filter(username::equals)
+            .isPresent();
     }
 }

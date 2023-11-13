@@ -136,7 +136,7 @@ public class SecurityConfig {
             config -> config.authenticationEntryPoint((request, response, authException) -> {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 ErrorResDto error = ErrorResDto.builder()
-                    .status(HttpServletResponse.SC_UNAUTHORIZED)
+                    .statusCode(HttpServletResponse.SC_UNAUTHORIZED)
                     .message("Unauthorized Request")
                     //.exception(authException)
                     .build();
@@ -149,7 +149,7 @@ public class SecurityConfig {
             config-> config.accessDeniedHandler((request, response, accessDeniedException) -> {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 ErrorResDto error = ErrorResDto.builder()
-                    .status(HttpServletResponse.SC_FORBIDDEN)
+                    .statusCode(HttpServletResponse.SC_FORBIDDEN)
                     .message("Forbidden Request")
                     //.exception(accessDeniedException)
                     .build();

@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResDto> handleEntityNotFoundException(EntityNotFoundException e){
         ErrorResDto error = ErrorResDto.builder()
-            .status(HttpStatus.NOT_FOUND.value())
+            .statusCode(HttpStatus.NOT_FOUND.value())
             .message(e.getMessage())
             //.exception(e)
             .build();
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResDto> handleAccessDenied(AccessDeniedException e){
         ErrorResDto error = ErrorResDto.builder()
-            .status(HttpServletResponse.SC_FORBIDDEN)
+            .statusCode(HttpServletResponse.SC_FORBIDDEN)
             .message(e.getMessage())
             //.exception(accessDeniedException)
             .build();
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResDto> handleGenericException(Exception e){
         ErrorResDto error = ErrorResDto.builder()
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
             .message("An unexpected error occurred.")
             //.exception(e)
             .build();

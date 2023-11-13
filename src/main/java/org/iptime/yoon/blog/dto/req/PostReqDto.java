@@ -21,7 +21,7 @@ public class PostReqDto {
     private Set<String> tags = new HashSet<>();
 
 
-    // "dir1/dir2
+    // "dir", "dir1/dir2", "dir1/dir2/dir3"
     private String category = "";
 
     public Post toEntity(Long id,String username){

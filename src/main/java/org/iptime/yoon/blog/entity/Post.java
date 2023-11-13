@@ -21,7 +21,6 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @Where(clause = "deleted = false")
 public class Post extends Base{
 

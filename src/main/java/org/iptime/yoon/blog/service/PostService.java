@@ -36,4 +36,6 @@ public interface PostService {
     void deletePost(Long id);
 
 
+    boolean isOwner(Long id, String username);
+
 }

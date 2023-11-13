@@ -29,7 +29,7 @@ public class AuthController {
 
 
     // UsernameAlreadyTakenException
-    @PostMapping({"/register","/sign-in"})
+    @PostMapping({"/register","/sign-up"})
     public ResponseEntity<?> createBlogUser(@RequestBody BlogUserRegisterReqDto registerReqDto){
         BlogUserInfoResDto body = blogUserService.createBlogUser(registerReqDto);
         return new ResponseEntity<>(body,HttpStatus.CREATED);
@@ -60,8 +60,8 @@ public class AuthController {
         }
     }
 
-    // DELETE "/unregister", "/sign-out"
-    @DeleteMapping({"/unregister","/sign-out"})
+    // DELETE "/unregister"
+    @DeleteMapping({"/unregister"})
     public ResponseEntity<?> unregisterBlogUser(@CurrentUsername String username){
         blogUserService.deleteBlogUser(username);
         return ResponseEntity.noContent().build(); // 204
