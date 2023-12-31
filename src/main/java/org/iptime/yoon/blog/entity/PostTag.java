@@ -2,6 +2,7 @@ package org.iptime.yoon.blog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.iptime.yoon.blog.image.Image;
 
 /**
  * @author rival
@@ -33,6 +34,6 @@ public class PostTag {
     @ToString.Exclude
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn
-    private ImageMetadata profile;
+    private Image profile;
 
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.iptime.yoon.blog.security.entity.BlogUser;
+import org.iptime.yoon.blog.user.entity.BlogUser;
 
 /**
  * @author rival

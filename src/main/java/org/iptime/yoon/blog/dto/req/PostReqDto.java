@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.dto.req;
 
 import lombok.Data;
 import org.iptime.yoon.blog.entity.Post;
-import org.iptime.yoon.blog.security.entity.BlogUser;
+import org.iptime.yoon.blog.user.entity.BlogUser;
 
 import java.util.HashSet;
 import java.util.Set;

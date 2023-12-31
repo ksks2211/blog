@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.dto.res;
 
 import lombok.Builder;
 import lombok.Data;
-import org.iptime.yoon.blog.entity.ImageMetadata;
+import org.iptime.yoon.blog.image.Image;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ public class ImageMetaResDto {
     private String originalName;
     private LocalDateTime createdAt;
 
-    public static ImageMetaResDto createImageMetaDto(ImageMetadata metadata){
+    public static ImageMetaResDto createImageMetaDto(Image metadata){
         return ImageMetaResDto.builder()
             .id(metadata.getId())
             .size(metadata.getSize())

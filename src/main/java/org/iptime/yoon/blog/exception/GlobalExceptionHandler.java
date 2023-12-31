@@ -19,10 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GlobalExceptionHandler {
 
-
-
-
-
     // Entity Not Found
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResDto> handleEntityNotFoundException(EntityNotFoundException e){

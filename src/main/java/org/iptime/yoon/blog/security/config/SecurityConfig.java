@@ -3,14 +3,20 @@ package org.iptime.yoon.blog.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.dto.res.ErrorResDto;
+import lombok.extern.slf4j.Slf4j;
+import org.iptime.yoon.blog.security.dto.ForbiddenAccessResponse;
+import org.iptime.yoon.blog.security.dto.UnauthorizedAccessResponse;
 import org.iptime.yoon.blog.security.filter.JwtAuthenticationFilter;
 import org.iptime.yoon.blog.security.filter.JwtLoginFilter;
 import org.iptime.yoon.blog.security.filter.JwtRefreshFilter;
+import org.iptime.yoon.blog.security.handler.AuthFailureHandler;
+import org.iptime.yoon.blog.security.handler.AuthSuccessHandler;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
-import org.iptime.yoon.blog.security.repository.BlogUserRepository;
-import org.iptime.yoon.blog.security.service.BlogUserServiceImpl;
-import org.iptime.yoon.blog.security.service.RefreshTokenService;
+import org.iptime.yoon.blog.security.service.AuthUserService;
+import org.iptime.yoon.blog.user.repository.BlogUserRepository;
+import org.iptime.yoon.blog.user.service.BlogUserService;
+import org.iptime.yoon.blog.user.service.BlogUserServiceImpl;
+import org.iptime.yoon.blog.user.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +56,7 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
+@Slf4j
 public class SecurityConfig {
     @Value("${spring.security.debug:false}") // :기본값
     boolean securityDebug;
@@ -58,18 +65,35 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authConfig;
     private final JwtManager jwtManager;
     private final ObjectMapper objectMapper;
-
     private final RefreshTokenService refreshTokenService;
 
+
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
-    BlogUserServiceImpl blogUserService() {
+    public BlogUserService blogUserService() {
         return new BlogUserServiceImpl(blogUserRepository, passwordEncoder());
     }
+
+    @Bean
+    public AuthUserService authUserService() {
+        return new AuthUserService(blogUserService());
+    }
+
+    @Bean
+    public AuthSuccessHandler authSuccessHandler() {
+        return new AuthSuccessHandler(jwtManager, objectMapper, refreshTokenService);
+    }
+
+    @Bean
+    public AuthFailureHandler authFailureHandler() {
+        return new AuthFailureHandler(objectMapper);
+    }
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -84,14 +108,17 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(blogUserService());
+        authenticationProvider.setUserDetailsService(authUserService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
 
     @Bean
-    public JwtLoginFilter jwtSignInFilter() throws Exception {
-        return new JwtLoginFilter("/auth/log-in", authenticationManager(), jwtManager, refreshTokenService);
+    public JwtLoginFilter jwtLogInFilter() throws Exception {
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter("/auth/log-in", authenticationManager(), objectMapper);
+        jwtLoginFilter.setAuthenticationFailureHandler(authFailureHandler());
+        jwtLoginFilter.setAuthenticationSuccessHandler(authSuccessHandler());
+        return jwtLoginFilter;
     }
 
     @Bean
@@ -101,14 +128,14 @@ public class SecurityConfig {
 
     @Bean
     public JwtRefreshFilter jwtRefreshFilter() {
-        return new JwtRefreshFilter("/refresh", refreshTokenService, jwtManager);
+        return new JwtRefreshFilter("/refresh", refreshTokenService, jwtManager, objectMapper);
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS","DELETE","PUT"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("*"));
         // configuration.setAllowCredentials(true);
@@ -121,42 +148,40 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()));
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.sessionManagement(man -> man.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.httpBasic(Customizer.withDefaults());
-        http.addFilterBefore(jwtRefreshFilter(), BasicAuthenticationFilter.class);
-        http.addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class);
-        http.addFilterAt(jwtSignInFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.authorizeHttpRequests((auth) ->
-            auth.requestMatchers(new AntPathRequestMatcher("/auth/**"), new AntPathRequestMatcher("/health"),new AntPathRequestMatcher("/health/**")).permitAll()
-                .anyRequest().authenticated());
+        http
+            .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(
+                man -> man.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .httpBasic(Customizer.withDefaults())
+            .addFilterBefore(jwtRefreshFilter(), BasicAuthenticationFilter.class)
+            .addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class)
+            .addFilterAt(jwtLogInFilter(), UsernamePasswordAuthenticationFilter.class)
+            .authorizeHttpRequests((auth) ->
+                auth
+                    .requestMatchers(new AntPathRequestMatcher("/auth/**"), new AntPathRequestMatcher("/health"), new AntPathRequestMatcher("/health/**")).permitAll()
+                    .anyRequest().authenticated())
+            .exceptionHandling(config -> config.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    UnauthorizedAccessResponse body = new UnauthorizedAccessResponse();
+                    log.debug("Unauthorized Exception : {}", authException.getMessage());
 
-        http.exceptionHandling(
-            config -> config.authenticationEntryPoint((request, response, authException) -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                ErrorResDto error = ErrorResDto.builder()
-                    .statusCode(HttpServletResponse.SC_UNAUTHORIZED)
-                    .message("Unauthorized Request")
-                    //.exception(authException)
-                    .build();
-                response.getWriter().write(objectMapper.writeValueAsString(error));
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            })
-        );
+                    response.getWriter().write(objectMapper.writeValueAsString(body));
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                })
+            )
+            .exceptionHandling(
+                config -> config.accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    ForbiddenAccessResponse body = new ForbiddenAccessResponse();
+                    log.debug("Access Denied Exception : {}", accessDeniedException.getMessage());
 
-        http.exceptionHandling(
-            config-> config.accessDeniedHandler((request, response, accessDeniedException) -> {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                ErrorResDto error = ErrorResDto.builder()
-                    .statusCode(HttpServletResponse.SC_FORBIDDEN)
-                    .message("Forbidden Request")
-                    //.exception(accessDeniedException)
-                    .build();
-                response.getWriter().write(objectMapper.writeValueAsString(error));
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            })
-        );
+                    response.getWriter().write(objectMapper.writeValueAsString(body));
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                })
+            );
+
+
         return http.build();
     }
 

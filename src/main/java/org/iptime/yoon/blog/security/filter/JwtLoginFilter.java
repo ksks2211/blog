@@ -1,19 +1,10 @@
 package org.iptime.yoon.blog.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.dto.res.ErrorResDto;
-import org.iptime.yoon.blog.security.dto.internal.User;
-import org.iptime.yoon.blog.security.dto.req.BlogUserLogInReqDto;
-import org.iptime.yoon.blog.security.dto.res.JwtLogInResDto;
-import org.iptime.yoon.blog.security.jwt.JwtManager;
-import org.iptime.yoon.blog.security.service.RefreshTokenService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.iptime.yoon.blog.security.dto.LogInRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,16 +26,13 @@ import java.io.InputStream;
 @Slf4j
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final JwtManager jwtManager;
+    private final ObjectMapper objectMapper;
 
-    private final RefreshTokenService refreshTokenService;
-    public JwtLoginFilter(String filterProcessesUrl, AuthenticationManager authenticationManager, JwtManager jwtManager,RefreshTokenService refreshTokenService){
+    public JwtLoginFilter(String filterProcessesUrl, AuthenticationManager authenticationManager, ObjectMapper objectMapper){
         super(new AntPathRequestMatcher(filterProcessesUrl,"POST"), authenticationManager);
-        this.jwtManager = jwtManager;
-        this.refreshTokenService=refreshTokenService;
+        this.objectMapper = objectMapper;
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
@@ -53,7 +41,7 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
         }
 
         try(InputStream inputStream = request.getInputStream()){
-            BlogUserLogInReqDto credential = objectMapper.readValue(inputStream, BlogUserLogInReqDto.class);
+            LogInRequest credential = objectMapper.readValue(inputStream, LogInRequest.class);
             String username = credential.getUsername();
             String password = credential.getPassword();
             if(!StringUtils.hasText(username) || !StringUtils.hasText(password)){
@@ -61,62 +49,8 @@ public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
             }
 
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-
-
-
             return getAuthenticationManager().authenticate(authRequest);
         }
     }
 
-
-
-
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-
-        User user= (User)authResult.getPrincipal();
-
-        // JWT
-        String token = jwtManager.createToken(user);
-        JwtLogInResDto body = JwtLogInResDto.builder()
-            .message("Successfully logged in.")
-            .token(token)
-            .username(user.getUsername())
-            .statusCode(HttpStatus.OK.value())
-            .build();
-
-        log.info("JWT Issued : {}",token);
-
-
-        // Refresh Token
-        String refreshToken = refreshTokenService.createToken(user.getId());
-
-        log.info("Refresh Token Issued : {}",refreshToken);
-
-        Cookie cookie = new Cookie("refreshToken",refreshToken);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true); // CORS need to be secure
-        cookie.setPath("/refresh");
-
-        response.addCookie(cookie);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_OK);
-
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(body));
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-
-        ErrorResDto body = ErrorResDto.builder()
-            .message("Check your username and password.")
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .build();
-
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.setHeader("Keep-Alive","timeout=60");
-        response.setHeader("Connection","keep-alive");
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(body));
-    }
 }

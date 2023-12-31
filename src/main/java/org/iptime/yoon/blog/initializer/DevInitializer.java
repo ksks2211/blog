@@ -3,11 +3,11 @@ package org.iptime.yoon.blog.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.dto.req.PostReqDto;
-import org.iptime.yoon.blog.security.dto.internal.User;
-import org.iptime.yoon.blog.security.dto.req.BlogUserRegisterReqDto;
-import org.iptime.yoon.blog.security.service.BlogUserService;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.service.CategoryService;
 import org.iptime.yoon.blog.service.PostService;
+import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
+import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -37,15 +37,14 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
     @Override
     public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
         // Create ADMIN USER
-        var req = new BlogUserRegisterReqDto();
+        var req = new BlogUserRegisterRequest();
         req.setUsername("ADMIN");
         req.setPassword("12345");
-        req.setEmail("ADMIN@email.com");
         blogUserService.createBlogUser(req);
         log.info("ADMIN account registered");
 
-        // Load User
-        User admin =(User) blogUserService.loadUserByUsername("ADMIN");
+        // Load BlogUser
+        JwtUser admin = blogUserService.getJwtUserByUsername("ADMIN");
 
         // Create Posts
         IntStream.range(0,20).forEach(i->{

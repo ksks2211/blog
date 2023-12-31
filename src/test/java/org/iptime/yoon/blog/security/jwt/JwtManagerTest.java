@@ -1,14 +1,18 @@
 package org.iptime.yoon.blog.security.jwt;
 
-import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.auth.AuthUser;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +25,7 @@ public class JwtManagerTest {
     private JwtManager jwtManager;
 
     @Mock
-    private User mockUser;
+    private JwtUser mockAuthUser;
 
     @BeforeEach
     public void setUp() {
@@ -38,20 +42,27 @@ public class JwtManagerTest {
 
     @Test
     public void testCreateToken() {
-        when(mockUser.getUsername()).thenReturn("testuser");
-        when(mockUser.getAuthorities()).thenReturn(List.of(() -> "ROLE_USER"));
+        when(mockAuthUser.getUsername()).thenReturn("testuser");
 
-        String token = jwtManager.createToken(mockUser);
+
+        Collection<? extends GrantedAuthority> authorities = mockAuthUser.getAuthorities();
+
+//        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+//        when(mockAuthUser.getAuthorities()).thenReturn(authorities);
+//        when(mockAuthUser.getAuthorities()).thenReturn(List.of(() -> "ROLE_USER"));
+
+
+        String token = jwtManager.createToken(mockAuthUser);
 
         assertNotNull(token, "Token should not be null");
     }
 
     @Test
     public void testVerifyValidToken() {
-        when(mockUser.getUsername()).thenReturn("testuser");
-        when(mockUser.getAuthorities()).thenReturn(List.of(() -> "ROLE_USER"));
+        when(mockAuthUser.getUsername()).thenReturn("testuser");
+//        when(mockAuthUser.getAuthorities()).thenReturn(List.of(() -> {new SimpleGrantedAuthority("ROLE_USER")}));
 
-        String token = jwtManager.createToken(mockUser);
+        String token = jwtManager.createToken(mockAuthUser);
 
         JwtVerifyResult result = jwtManager.verifyToken(token);
 

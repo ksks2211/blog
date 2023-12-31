@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
 import org.jetbrains.annotations.NotNull;
@@ -32,18 +32,24 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtManager jwtManager;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(StringUtils.isNotBlank(authHeader) && authHeader.startsWith("Bearer ")){
+        if (StringUtils.isNotBlank(authHeader) && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             JwtVerifyResult jwtVerifyResult = jwtManager.verifyToken(token);
 
-            if(jwtVerifyResult.isVerified()){
+            if (jwtVerifyResult.isVerified()) {
                 List<SimpleGrantedAuthority> authorities = jwtVerifyResult.getAuthorities().stream().map(SimpleGrantedAuthority::new).toList();
 
-                User user = new User(jwtVerifyResult.getSubject(), jwtVerifyResult.getSubject(),authorities,jwtVerifyResult.getId());
-                user.eraseCredentials();
+//                AuthUser authUser = new AuthUser(jwtVerifyResult.getSubject(), jwtVerifyResult.getSubject(),authorities,jwtVerifyResult.getId());
+
+                JwtUser user = JwtUser.builder()
+                    .id(jwtVerifyResult.getId())
+                    .username(jwtVerifyResult.getSubject())
+                    .authorities(authorities)
+                    .build();
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user,
@@ -60,15 +66,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
 
                 log.info("User(={}) is authenticated",user.getUsername());
-            }else if(jwtVerifyResult.isDecoded()){
+            } else if (jwtVerifyResult.isDecoded()) {
                 log.info("User(={}) fail to authenticate",jwtVerifyResult.getSubject());
-            }else{
+            } else {
                 log.info("Invalid authentication attempt");
             }
-        }else{
+        } else {
             log.info("Request without AUTHORIZATION header");
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

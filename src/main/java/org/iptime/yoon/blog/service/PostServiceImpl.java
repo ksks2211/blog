@@ -11,13 +11,13 @@ import org.iptime.yoon.blog.entity.Category;
 import org.iptime.yoon.blog.entity.Post;
 import org.iptime.yoon.blog.entity.PostTag;
 import org.iptime.yoon.blog.entity.Tag;
-import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
 import org.iptime.yoon.blog.exception.CategoryEntityNotFoundException;
+import org.iptime.yoon.blog.exception.PostEntityNotFoundException;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.PostTagRepository;
 import org.iptime.yoon.blog.repository.TagRepository;
 import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
-import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,15 +48,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostResDto createPost(PostReqDto postReqDto, User user) {
+    public PostResDto createPost(PostReqDto postReqDto, JwtUser authUser) {
 
         // Create category
-        Category category = categoryService.getCategory(user.getUsername(), postReqDto.getCategory());
+        Category category = categoryService.getCategory(authUser.getUsername(), postReqDto.getCategory());
         categoryService.increasePostCount(category);
 
 
         // Create post
-        Post post = postReqDto.toEntity(user.getId(), user.getUsername());
+        Post post = postReqDto.toEntity(authUser.getId(), authUser.getUsername());
         post.setCategory(category);
         postRepository.save(post);
 

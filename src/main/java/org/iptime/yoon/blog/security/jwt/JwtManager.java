@@ -1,12 +1,14 @@
 package org.iptime.yoon.blog.security.jwt;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
-import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.auth.AuthUser;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -30,27 +32,30 @@ public class JwtManager {
     private String JWT_SECRET_KEY;
     @Value("${auth.jwt.issuer}")
     private String JWT_ISSUER;
-    private Algorithm JWT_ALGORITHM;
+
+    private Algorithm algorithm;
+    private JWTVerifier jwtVerifier;
 
     @PostConstruct
     public void init(){
-        JWT_ALGORITHM =  Algorithm.HMAC256(JWT_SECRET_KEY);
+        algorithm = Algorithm.HMAC256(JWT_SECRET_KEY);
+        jwtVerifier = JWT.require(algorithm).build();
     }
 
     private Date getExpiryDate(){
         return Date.from(Instant.now().plus(JWT_AUTH_EXP_MINUTES, ChronoUnit.MINUTES));
     }
 
-    public String createToken(User user){
-        List<String> authorities = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+    public String createToken(JwtUser jwtUser){
+        List<String> authorities = jwtUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return JWT.create()
-            .withSubject(user.getUsername())
+            .withSubject(jwtUser.getUsername())
             .withExpiresAt(getExpiryDate())
             .withIssuer(JWT_ISSUER)
             .withIssuedAt(Instant.now())
             .withClaim("auths",authorities)
-            .withClaim("id",user.getId())
-            .sign(JWT_ALGORITHM);
+            .withClaim("id", jwtUser.getId())
+            .sign(algorithm);
     }
 
     public JwtVerifyResult verifyToken(String token){
@@ -62,10 +67,8 @@ public class JwtManager {
 
 
         try{
-            DecodedJWT result = JWT.require(JWT_ALGORITHM)
-                .build()
+            DecodedJWT result = jwtVerifier
                 .verify(token);
-
 
             List<String> authorities = result.getClaim("auths").asList(String.class);
             Long id = result.getClaim("id").asLong();

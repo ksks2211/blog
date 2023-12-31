@@ -8,7 +8,7 @@ import org.iptime.yoon.blog.dto.req.CategoryCreateReqDto;
 import org.iptime.yoon.blog.dto.res.PostPageResDto;
 import org.iptime.yoon.blog.exception.CategoryEntityNotFoundException;
 import org.iptime.yoon.blog.exception.CategoryNotEmptyException;
-import org.iptime.yoon.blog.security.dto.internal.User;
+import org.iptime.yoon.blog.security.auth.AuthUser;
 import org.iptime.yoon.blog.service.CategoryService;
 import org.iptime.yoon.blog.service.PostService;
 import org.springframework.data.domain.PageRequest;
@@ -46,8 +46,8 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public Map<String, CategoryDto> getCategories(@AuthenticationPrincipal User user) {
-        return categoryService.getCategories(user.getUsername());
+    public Map<String, CategoryDto> getCategories(@AuthenticationPrincipal AuthUser authUser) {
+        return categoryService.getCategories(authUser.getUsername());
     }
 
 

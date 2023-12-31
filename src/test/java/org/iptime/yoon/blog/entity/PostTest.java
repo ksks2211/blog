@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.entity;
 import org.iptime.yoon.blog.config.JpaConfig;
 import org.iptime.yoon.blog.repository.PostRepository;
 import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
-import org.iptime.yoon.blog.security.entity.BlogUser;
+import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,15 +1,13 @@
 package org.iptime.yoon.blog.entity;
 
 import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.security.entity.BlogUser;
-import org.iptime.yoon.blog.security.entity.RefreshToken;
+import org.iptime.yoon.blog.user.entity.BlogUser;
+import org.iptime.yoon.blog.user.entity.RefreshToken;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

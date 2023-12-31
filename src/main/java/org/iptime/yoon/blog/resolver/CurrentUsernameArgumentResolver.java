@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.resolver;
 
 import org.iptime.yoon.blog.annotation.CurrentUsername;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,10 @@ public class CurrentUsernameArgumentResolver implements HandlerMethodArgumentRes
     }
 
     @Override
-    public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer, @NotNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
-            return ((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername();
+        if (auth != null && auth.getPrincipal() instanceof JwtUser) {
+            return ((JwtUser) auth.getPrincipal()).getUsername();
         }
         return null;
     }

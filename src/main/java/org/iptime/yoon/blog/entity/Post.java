@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.iptime.yoon.blog.security.entity.BlogUser;
+import org.iptime.yoon.blog.user.entity.BlogUser;
 
 import java.util.ArrayList;
 import java.util.List;
