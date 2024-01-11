@@ -1,7 +1,11 @@
 package org.iptime.yoon.blog.entity;
 
-import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.repository.PostTagRepository;
+import org.iptime.yoon.blog.category.Category;
+import org.iptime.yoon.blog.common.config.JpaConfig;
+import org.iptime.yoon.blog.post.entity.Post;
+import org.iptime.yoon.blog.post.entity.PostTag;
+import org.iptime.yoon.blog.post.entity.Tag;
+import org.iptime.yoon.blog.post.repository.PostTagRepository;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +48,7 @@ class PostTagTest {
         return category;
     }
 
-    public Post createPost(BlogUser blogUser,String title,String content, Category category){
+    public Post createPost(BlogUser blogUser, String title, String content, Category category){
         Post post = Post.builder()
             .writer(blogUser)
             .title(title)

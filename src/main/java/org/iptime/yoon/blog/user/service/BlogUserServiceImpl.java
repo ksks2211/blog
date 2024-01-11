@@ -1,18 +1,17 @@
 package org.iptime.yoon.blog.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.user.dto.BlogUserInfoResponse;
 import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserUpdateRequest;
 import org.iptime.yoon.blog.user.entity.BlogUser;
+import org.iptime.yoon.blog.user.mapper.UserMapper;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.iptime.yoon.blog.user.mapper.UserMapper.fromBlogUserToJwtUser;
 
 
 /**
@@ -32,16 +31,6 @@ public class BlogUserServiceImpl implements BlogUserService {
         return blogUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found"));
     }
 
-    @Override
-    public JwtUser getJwtUserByUsername(String username) {
-        BlogUser blogUser = getBlogUserByUsername(username);
-        return fromBlogUserToJwtUser(blogUser);
-    }
-
-    private BlogUserInfoResponse getBlogUserInfo(BlogUser blogUser){
-        return BlogUserInfoResponse.builder().email(blogUser.getEmail()).username(blogUser.getUsername()).build();
-    }
-
 
     @Transactional
     public BlogUserInfoResponse createBlogUser(BlogUserRegisterRequest dto){
@@ -53,7 +42,7 @@ public class BlogUserServiceImpl implements BlogUserService {
         blogUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         blogUserRepository.save(blogUser);
 
-        return getBlogUserInfo(blogUser);
+        return UserMapper.fromBlogUserToBlogUserInfoResponse(blogUser);
     }
 
     @Override
@@ -65,7 +54,7 @@ public class BlogUserServiceImpl implements BlogUserService {
             blogUser.setProfile(profile);
         }
         blogUserRepository.save(blogUser);
-        return getBlogUserInfo(blogUser);
+        return UserMapper.fromBlogUserToBlogUserInfoResponse(blogUser);
     }
 
     @Override
@@ -85,13 +74,14 @@ public class BlogUserServiceImpl implements BlogUserService {
     @Override
     public BlogUserInfoResponse getBlogUserInfo(String username) {
         BlogUser blogUser = getBlogUserByUsername(username);
-        return getBlogUserInfo(blogUser);
+        return UserMapper.fromBlogUserToBlogUserInfoResponse(blogUser);
     }
 
 
     public static BlogUser toEntity(String username){
         return BlogUser.builder()
             .username(username)
+            .displayName(username)
             .build();
     }
 

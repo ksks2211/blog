@@ -2,10 +2,8 @@ package org.iptime.yoon.blog.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.dto.internal.ImageDto;
-import org.iptime.yoon.blog.dto.res.ErrorResDto;
 import org.iptime.yoon.blog.image.exception.ImageEntityNotFoundException;
-import org.iptime.yoon.blog.security.auth.AuthUser;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +15,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
 import java.util.UUID;
+
+import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -47,12 +47,12 @@ public class ImageController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImage(@AuthenticationPrincipal AuthUser authUser, MultipartFile uploadFile) throws Exception {
+    public ResponseEntity<?> uploadImage(@AuthenticationPrincipal JwtUser jwtUser, MultipartFile uploadFile) throws Exception {
         if(!isImageFile(uploadFile)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        String filename = generateRandomFilename(authUser.getUsername());
-        imageService.uploadImage(uploadFile,filename, authUser.getId());
+        String filename = generateRandomFilename(jwtUser.getUsername());
+        imageService.uploadImage(uploadFile,filename, jwtUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -94,7 +94,6 @@ public class ImageController {
     public ResponseEntity<?> imageNotFoundExceptionHandler(ImageEntityNotFoundException e){
         log.info(e.getClass().getName());
         log.info(e.getMessage());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResDto.builder().message(e.getMessage()).statusCode(HttpStatus.NOT_FOUND.value()).build());
+        return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 }

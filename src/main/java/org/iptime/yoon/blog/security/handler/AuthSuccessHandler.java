@@ -42,8 +42,10 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         String token = jwtManager.createToken(jwtUser);
         String username = jwtUser.getUsername();
+
         LogInSuccessResponse body = LogInSuccessResponse.builder()
             .token(token)
+            .displayName(jwtUser.getDisplayName())
             .username(username).build();
 
         log.info("JWT Issued for {} : {}",username, token);

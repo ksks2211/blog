@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.annotation.CurrentUsername;
+import org.iptime.yoon.blog.security.CurrentUsername;
 import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserUpdateRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserInfoResponse;
@@ -10,12 +10,16 @@ import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.iptime.yoon.blog.dto.res.ErrorResDto.createErrorResponse;
+import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -43,11 +47,6 @@ public class BlogUserController {
         log.info(e.getMessage());
         return createErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
-
-
-    // "/log-in" : JwtLoginFilter
-    // "/refresh" : JwtRefreshFilter
-    // "/log-out"
 
 
 
@@ -82,11 +81,27 @@ public class BlogUserController {
 
 
     // GET "/who-am-i" + Authenticated User
-
     @GetMapping("/who-am-i")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> whoAmI(@CurrentUsername String username){
         BlogUserInfoResponse responseBody = blogUserService.getBlogUserInfo(username);
         return ResponseEntity.ok(responseBody); // 200
+    }
+
+
+
+    @GetMapping("/check-auth")
+    public Map<String, ?> checkAuthentication(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null
+            && authentication.isAuthenticated()
+            && !(authentication instanceof AnonymousAuthenticationToken);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("authenticated", isAuthenticated);
+        response.put("principal",authentication);
+        return response;
+
     }
 
 }

@@ -15,4 +15,5 @@ public class LogInSuccessResponse {
     private String message = "Successfully logged in.";
     private String token;
     private String username;
+    private String displayName;
 }

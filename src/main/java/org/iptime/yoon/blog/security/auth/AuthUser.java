@@ -15,16 +15,14 @@ public class AuthUser extends User {
 
     private final Long id;
     private String profile;
+    private String displayName;
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id) {
-        super(username, password, authorities);
-        this.id=id;
-    }
 
-    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id, String profile) {
+    public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id, String profile, String displayName) {
         super(username, password, authorities);
         this.id=id;
         this.profile = profile;
+        this.displayName = displayName;
     }
 
 

@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.iptime.yoon.blog.entity.Base;
+import org.iptime.yoon.blog.common.BaseEntity;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -20,7 +20,7 @@ import java.time.Period;
 @Getter
 @Where(clause = "deleted = false")
 @Table
-public class BlogUser extends Base {
+public class BlogUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,15 @@ public class BlogUser extends Base {
 
     @Setter
     private LocalDate dateOfBirth;
+
+    @Setter
+    private String displayName;
+
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private AuthProvider provider = AuthProvider.LOCAL;
+
 
     public int getAge(){
         if(dateOfBirth != null && LocalDate.now().isAfter(dateOfBirth)){

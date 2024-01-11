@@ -1,6 +1,5 @@
 package org.iptime.yoon.blog.image;
 
-import org.iptime.yoon.blog.dto.internal.ImageDto;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-import org.iptime.yoon.blog.entity.Base;
+import org.iptime.yoon.blog.common.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @ToString(callSuper = true)
-public class RefreshToken extends Base {
+public class RefreshToken extends BaseEntity {
     @Id
     @UuidGenerator
     private String id;

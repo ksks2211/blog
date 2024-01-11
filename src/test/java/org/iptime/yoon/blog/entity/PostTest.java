@@ -1,8 +1,10 @@
 package org.iptime.yoon.blog.entity;
 
-import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.repository.PostRepository;
-import org.iptime.yoon.blog.repository.projection.PostPreviewProjection;
+import org.iptime.yoon.blog.category.Category;
+import org.iptime.yoon.blog.common.config.JpaConfig;
+import org.iptime.yoon.blog.post.entity.Post;
+import org.iptime.yoon.blog.post.repository.PostRepository;
+import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -59,7 +61,7 @@ class PostTest {
     }
 
 
-    public Post createPostWithCategory(BlogUser writer, String title, String content,Category category){
+    public Post createPostWithCategory(BlogUser writer, String title, String content, Category category){
         Post post = Post.builder()
             .writer(writer)
             .title(title)

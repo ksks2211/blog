@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.image;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.iptime.yoon.blog.entity.Base;
+import org.iptime.yoon.blog.common.BaseEntity;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 /**
@@ -19,7 +19,7 @@ import org.iptime.yoon.blog.user.entity.BlogUser;
 @Setter
 @ToString(callSuper = true)
 @Where(clause = "deleted = false")
-public class Image extends Base {
+public class Image extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

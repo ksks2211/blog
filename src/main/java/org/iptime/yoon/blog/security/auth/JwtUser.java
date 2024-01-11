@@ -18,16 +18,10 @@ public class JwtUser {
 
     private final Long id;
     private final String username;
-    private final String email;
+    private final String displayName;
 
     @Builder.Default
     private final Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
-
-
-
-
-
-
 
 
 }

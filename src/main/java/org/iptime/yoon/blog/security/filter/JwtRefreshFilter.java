@@ -6,13 +6,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.security.auth.AuthUser;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.dto.LogInSuccessResponse;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.user.service.RefreshTokenService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -59,6 +57,7 @@ public class JwtRefreshFilter implements Filter {
             LogInSuccessResponse body = LogInSuccessResponse.builder()
                 .token(token)
                 .username(jwtUser.getUsername())
+                .displayName(jwtUser.getDisplayName())
                 .build();
 
             HttpServletResponse httpResponse = (HttpServletResponse) response;

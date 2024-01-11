@@ -16,8 +16,8 @@ public class JwtVerifyResult {
     private boolean verified;
     private boolean decoded;
     private String subject;
+    private String displayName;
     private Long id;
     private List<String> authorities;
     private Date expiryDate;
-
 }

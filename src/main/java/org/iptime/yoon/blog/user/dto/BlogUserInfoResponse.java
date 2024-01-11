@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BlogUserInfoResponse {
     private String username;
+    private String displayName;
     private String email;
 //    private String profile;
 }

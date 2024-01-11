@@ -11,16 +11,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
+import org.iptime.yoon.blog.user.mapper.UserMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author rival
@@ -41,15 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             JwtVerifyResult jwtVerifyResult = jwtManager.verifyToken(token);
 
             if (jwtVerifyResult.isVerified()) {
-                List<SimpleGrantedAuthority> authorities = jwtVerifyResult.getAuthorities().stream().map(SimpleGrantedAuthority::new).toList();
 
-//                AuthUser authUser = new AuthUser(jwtVerifyResult.getSubject(), jwtVerifyResult.getSubject(),authorities,jwtVerifyResult.getId());
-
-                JwtUser user = JwtUser.builder()
-                    .id(jwtVerifyResult.getId())
-                    .username(jwtVerifyResult.getSubject())
-                    .authorities(authorities)
-                    .build();
+                JwtUser user = UserMapper.fromJwtResultToJwtUser(jwtVerifyResult);
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user,
@@ -77,4 +69,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }

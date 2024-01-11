@@ -1,12 +1,13 @@
 package org.iptime.yoon.blog.service;
 
-import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.dto.req.PostReqDto;
-import org.iptime.yoon.blog.dto.res.PostPageResDto;
+import org.iptime.yoon.blog.common.config.JpaConfig;
+import org.iptime.yoon.blog.post.dto.PostCreateRequest;
+import org.iptime.yoon.blog.post.dto.PostPageResponse;
+import org.iptime.yoon.blog.post.service.PostService;
 import org.iptime.yoon.blog.user.entity.BlogUser;
-import org.iptime.yoon.blog.entity.Post;
+import org.iptime.yoon.blog.post.entity.Post;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
-import org.iptime.yoon.blog.repository.PostRepository;
+import org.iptime.yoon.blog.post.repository.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,14 +69,14 @@ class PostServiceImplTest {
         IntStream.range(0,30).forEach(i-> createPost(writer, "Content " + i,"Title " + i));
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        PostPageResDto postPageResDto = postService.findPostList(pageRequest);
+        PostPageResponse postPageResponse = postService.findPostList(pageRequest);
 
 
-        assertThat(postPageResDto.getTotalPages()).isEqualTo(3);
-        assertThat(postPageResDto.getPostList().size()).isEqualTo(10);
+        assertThat(postPageResponse.getTotalPages()).isEqualTo(3);
+        assertThat(postPageResponse.getPostList().size()).isEqualTo(10);
 
 
-        postPageResDto.getPostList().forEach(post-> logger.info("Post : {}",post));
+        postPageResponse.getPostList().forEach(post-> logger.info("Post : {}",post));
     }
 
 
@@ -108,7 +109,7 @@ class PostServiceImplTest {
         Post post = createPost(writer, "Content", "Title");
         LocalDateTime before = post.getUpdatedAt();
 
-        PostReqDto updateReq = new PostReqDto();
+        PostCreateRequest updateReq = new PostCreateRequest();
 
         String title = "Updated Title";
         String content = "Updated Content";

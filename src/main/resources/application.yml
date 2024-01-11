@@ -1,8 +1,5 @@
 server:
   port: 8080
-  servlet:
-    session:
-      persistent: false
 spring:
   h2:
     console:
@@ -32,11 +29,12 @@ spring:
     redis:
       host: 192.168.0.16
       port: 6379
-      entry-ttl-minutes: 60
+      entry-ttl-minutes: 20
+      cache-prefix: "spring-boot::"
 minio:
-  endpoint: http://192.168.0.16:9000
-  accessKey: hxl7s3cZznGul93CThXW
-  secretKey: usYxxR7oYuxAQr8hKEefC4Kb0wpg20zh2pO8f6zK
+  endpoint: http://192.168.0.7:9000
+  accessKey: LfFiljALDFjfAC0vLn6q
+  secretKey: XoIJz2dd8uL7GFGU1JUBxsMCEflL4yXWMAIhZwsw
   bucketName: minio-bucket
 auth:
   refresh-token:

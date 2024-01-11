@@ -14,7 +14,6 @@ public interface BlogUserService {
 
 
     BlogUser getBlogUserByUsername(String username);
-    JwtUser getJwtUserByUsername(String username);
 
     boolean isUsernameTaken(String username);
 

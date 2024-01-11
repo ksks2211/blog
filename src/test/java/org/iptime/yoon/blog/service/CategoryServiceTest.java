@@ -1,10 +1,11 @@
 package org.iptime.yoon.blog.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.iptime.yoon.blog.config.JpaConfig;
-import org.iptime.yoon.blog.dto.internal.CategoryDto;
-import org.iptime.yoon.blog.entity.Category;
-import org.iptime.yoon.blog.exception.CategoryNotEmptyException;
+import org.iptime.yoon.blog.category.CategoryService;
+import org.iptime.yoon.blog.common.config.JpaConfig;
+import org.iptime.yoon.blog.category.dto.CategoryDto;
+import org.iptime.yoon.blog.category.Category;
+import org.iptime.yoon.blog.category.exception.CategoryNotEmptyException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

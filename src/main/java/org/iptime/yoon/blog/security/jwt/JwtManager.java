@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.annotation.PostConstruct;
-import org.iptime.yoon.blog.security.auth.AuthUser;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,6 +54,7 @@ public class JwtManager {
             .withIssuedAt(Instant.now())
             .withClaim("auths",authorities)
             .withClaim("id", jwtUser.getId())
+            .withClaim("displayName",jwtUser.getDisplayName())
             .sign(algorithm);
     }
 
@@ -71,13 +71,16 @@ public class JwtManager {
                 .verify(token);
 
             List<String> authorities = result.getClaim("auths").asList(String.class);
+            String username = result.getSubject();
             Long id = result.getClaim("id").asLong();
+            String displayName = result.getClaim("displayName").asString();
 
-            jwtVerifyResult.setSubject(result.getSubject());
+            jwtVerifyResult.setSubject(username);
             jwtVerifyResult.setAuthorities(authorities);
             jwtVerifyResult.setId(id);
             jwtVerifyResult.setVerified(true);
             jwtVerifyResult.setDecoded(true);
+            jwtVerifyResult.setDisplayName(displayName);
             jwtVerifyResult.setExpiryDate(result.getExpiresAt());
 
             return jwtVerifyResult;

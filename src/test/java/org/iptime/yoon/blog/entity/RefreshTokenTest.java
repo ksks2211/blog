@@ -1,6 +1,6 @@
 package org.iptime.yoon.blog.entity;
 
-import org.iptime.yoon.blog.config.JpaConfig;
+import org.iptime.yoon.blog.common.config.JpaConfig;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.iptime.yoon.blog.user.entity.RefreshToken;
 import org.junit.jupiter.api.Test;
