@@ -54,6 +54,10 @@ public class BlogUser extends BaseEntity {
         return -1;
     }
 
+    public boolean isLocalUser(){
+        return AuthProvider.LOCAL.equals(this.provider);
+    }
+
     public String getEmail(){
         return this.username;
     }

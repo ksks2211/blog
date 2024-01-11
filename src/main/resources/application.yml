@@ -25,6 +25,7 @@ spring:
       max-request-size: 100MB
   security:
     debug: true
+
   data:
     redis:
       host: 192.168.0.16
