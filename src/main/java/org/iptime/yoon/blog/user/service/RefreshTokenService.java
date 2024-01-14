@@ -9,7 +9,7 @@ import org.iptime.yoon.blog.security.auth.JwtUser;
  */
 public interface RefreshTokenService {
     String createToken(Long id);
-    JwtUser validateTokenAndGetJwtUser(String token);
+    JwtUser validateTokenAndGetJwtUser(String id);
 
     void removeExpiredTokens();
 

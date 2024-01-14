@@ -11,7 +11,9 @@ import org.iptime.yoon.blog.security.dto.LogInSuccessResponse;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.user.service.RefreshTokenService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
@@ -20,7 +22,7 @@ import java.io.IOException;
  * @since 2023-08-17
  */
 @Slf4j
-public class JwtRefreshFilter implements Filter {
+public class JwtRefreshFilter extends OncePerRequestFilter {
 
 
     private final JwtManager jwtManager;
@@ -35,21 +37,22 @@ public class JwtRefreshFilter implements Filter {
         this.objectMapper = objectMapper;
     }
 
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        if (refreshURI.equals(httpRequest.getRequestURI())) {
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
+
+        if (refreshURI.equals(request.getRequestURI())&&request.getMethod().equalsIgnoreCase("POST")) {
             String refreshToken = null;
-            Cookie[] cookies = httpRequest.getCookies();
+            Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if ("refreshToken".equals(cookie.getName())) {
+                    if ("refresh-token".equals(cookie.getName())) {
                         refreshToken = cookie.getValue();
                     }
                 }
             }
 
-            if (refreshToken == null) throw new InvalidRefreshTokenException(null);
+            if (refreshToken == null) throw new InvalidRefreshTokenException("Empty Refresh Token");
 
             JwtUser jwtUser = refreshTokenService.validateTokenAndGetJwtUser(refreshToken);
 
@@ -60,15 +63,14 @@ public class JwtRefreshFilter implements Filter {
                 .displayName(jwtUser.getDisplayName())
                 .build();
 
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            httpResponse.setStatus(HttpServletResponse.SC_OK);
-            httpResponse.getOutputStream().write(objectMapper.writeValueAsBytes(body));
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getOutputStream().write(objectMapper.writeValueAsBytes(body));
 
             log.info("Jwt refreshed {}", token);
 
         } else {
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         }
     }
 }

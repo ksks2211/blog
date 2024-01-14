@@ -35,8 +35,5 @@ public class RefreshToken extends BaseEntity {
         return LocalDateTime.now().isAfter(expiryDate);
     }
 
-    @Transient
-    public String getValue(){
-        return id;
-    }
+
 }

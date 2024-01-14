@@ -24,7 +24,7 @@ import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
  */
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/api/images")
 @RequiredArgsConstructor
 @Slf4j
 public class ImageController {

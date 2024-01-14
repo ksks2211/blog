@@ -39,13 +39,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     @Override
     @Transactional
-    public String createToken(Long id){
+    public String createToken(Long userId){
 
-        if(!blogUserRepository.existsById(id)){
-            throw new InvalidBlogUserDataException("ID : "+id + " AuthUser Not Found");
+        if(!blogUserRepository.existsById(userId)){
+            throw new InvalidBlogUserDataException("ID : "+userId + " AuthUser Not Found");
         }
 
-        BlogUser user = BlogUser.builder().id(id).build();
+        BlogUser user = BlogUser.builder().id(userId).build();
         RefreshToken token;
         Optional<RefreshToken> optional = refreshTokenRepository.findByUser(user);
 
@@ -55,22 +55,23 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
             optional.ifPresent(refreshToken -> refreshTokenRepository.deleteById(refreshToken.getId()));
             token = RefreshToken.builder()
                 .expiryDate(getExpiryDate())
-                .user(BlogUser.builder().id(id).build())
+                .user(BlogUser.builder().id(userId).build())
                 .build();
         }
 
         refreshTokenRepository.save(token);
-        return token.getValue();
+
+        return token.getId();
     }
 
     @Override
     @Transactional
-    public JwtUser validateTokenAndGetJwtUser(String token) throws InvalidRefreshTokenException, ExpiredRefreshTokenException {
+    public JwtUser validateTokenAndGetJwtUser(String id) throws InvalidRefreshTokenException, ExpiredRefreshTokenException {
 
-        RefreshToken refreshToken = refreshTokenRepository.findById(token).orElseThrow(() -> new InvalidRefreshTokenException(token));
+        RefreshToken refreshToken = refreshTokenRepository.findById(id).orElseThrow(() -> new InvalidRefreshTokenException("Invalid Refresh Token"));
         if(refreshToken.isExpired()){
             refreshTokenRepository.delete(refreshToken);
-            throw new ExpiredRefreshTokenException(token);
+            throw new ExpiredRefreshTokenException("Token Expired");
         }
         BlogUser blogUser = refreshToken.getUser();
         return fromBlogUserToJwtUser(blogUser);

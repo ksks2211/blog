@@ -1,6 +1,5 @@
 package org.iptime.yoon.blog.category;
 
-import org.iptime.yoon.blog.category.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

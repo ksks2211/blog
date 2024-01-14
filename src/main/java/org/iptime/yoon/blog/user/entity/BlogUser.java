@@ -19,7 +19,7 @@ import java.time.Period;
 @Builder
 @Getter
 @Where(clause = "deleted = false")
-@Table
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"provider","subject"})})
 public class BlogUser extends BaseEntity {
 
     @Id
@@ -41,10 +41,16 @@ public class BlogUser extends BaseEntity {
     @Setter
     private String displayName;
 
+    @Setter
+    private String email;
+
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private AuthProvider provider = AuthProvider.LOCAL;
+
+    // OAuth2
+    private String subject;
 
 
     public int getAge(){

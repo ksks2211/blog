@@ -10,5 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UnauthorizedAccessResponse {
+
+    private String reason;
+
     private final String message = "Unauthorized Request!";
+    public UnauthorizedAccessResponse(String reason){
+        this.reason=reason;
+    }
 }

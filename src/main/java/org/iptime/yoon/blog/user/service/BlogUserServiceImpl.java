@@ -1,10 +1,12 @@
 package org.iptime.yoon.blog.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.user.dto.BlogUserInfoResponse;
 import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserUpdateRequest;
+import org.iptime.yoon.blog.user.entity.AuthProvider;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.iptime.yoon.blog.user.mapper.UserMapper;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
@@ -12,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
 
 
 /**
@@ -65,6 +68,14 @@ public class BlogUserServiceImpl implements BlogUserService {
         blogUserRepository.save(blogUser);
     }
 
+    @Override
+    public JwtUser createOAuth2BlogUserIfNotExists(AuthProvider provider, String sub, String displayName, String email) {
+
+        BlogUser blogUser = blogUserRepository.findByProviderAndSubject(provider, sub).orElseGet(() -> toEntity(provider, sub, displayName, email));
+        blogUserRepository.save(blogUser);
+
+        return UserMapper.fromBlogUserToJwtUser(blogUser);
+    }
 
 
     public boolean isUsernameTaken(String username){
@@ -83,6 +94,19 @@ public class BlogUserServiceImpl implements BlogUserService {
             .username(username)
             .displayName(username)
             .build();
+    }
+
+    public static BlogUser toEntity(AuthProvider provider, String subject, String displayName, String email){
+
+        UUID uuid = UUID.randomUUID();
+        String username = uuid.toString().replace("-","");
+        return BlogUser.builder()
+            .provider(provider)
+            .username(username)   // UUID
+            .displayName(displayName)
+            .subject(subject)
+            .email(email).build();
+
     }
 
 }

@@ -18,6 +18,7 @@ import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.iptime.yoon.blog.user.service.BlogUserServiceImpl;
 import org.iptime.yoon.blog.user.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -86,7 +87,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthSuccessHandler authSuccessHandler() {
-        return new AuthSuccessHandler(jwtManager, objectMapper, refreshTokenService);
+        return new AuthSuccessHandler(jwtManager, objectMapper, blogUserService());
     }
 
     @Bean
@@ -97,7 +98,10 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.debug(securityDebug);
+        return (web) ->
+            web.debug(securityDebug).ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+            ;
     }
 
     @Bean
@@ -115,7 +119,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtLoginFilter jwtLogInFilter() throws Exception {
-        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter("/auth/log-in", authenticationManager(), objectMapper);
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter("/api/auth/login", authenticationManager(), objectMapper);
         jwtLoginFilter.setAuthenticationFailureHandler(authFailureHandler());
         jwtLoginFilter.setAuthenticationSuccessHandler(authSuccessHandler());
         return jwtLoginFilter;
@@ -128,17 +132,17 @@ public class SecurityConfig {
 
     @Bean
     public JwtRefreshFilter jwtRefreshFilter() {
-        return new JwtRefreshFilter("/refresh", refreshTokenService, jwtManager, objectMapper);
+        return new JwtRefreshFilter("/api/token/renew", refreshTokenService, jwtManager, objectMapper);
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3306", "http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("*"));
-        // configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
 
         final var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -149,6 +153,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .authorizeHttpRequests((auth) ->
+                auth
+                    .requestMatchers(
+                        new AntPathRequestMatcher("/api/categories/**"),
+                        new AntPathRequestMatcher("/api/images/**"),
+                        new AntPathRequestMatcher("/api/posts/**")
+                    ).authenticated()
+                    .anyRequest().permitAll())
+
             .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(
@@ -157,13 +170,10 @@ public class SecurityConfig {
             .addFilterBefore(jwtRefreshFilter(), BasicAuthenticationFilter.class)
             .addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class)
             .addFilterAt(jwtLogInFilter(), UsernamePasswordAuthenticationFilter.class)
-            .authorizeHttpRequests((auth) ->
-                auth
-                    .requestMatchers(new AntPathRequestMatcher("/auth/**"), new AntPathRequestMatcher("/health"), new AntPathRequestMatcher("/health/**")).permitAll()
-                    .anyRequest().authenticated())
+
             .exceptionHandling(config -> config.authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    UnauthorizedAccessResponse body = new UnauthorizedAccessResponse();
+                    UnauthorizedAccessResponse body = new UnauthorizedAccessResponse(authException.getMessage());
                     log.debug("Unauthorized Exception : {}", authException.getMessage());
 
                     response.getWriter().write(objectMapper.writeValueAsString(body));
@@ -179,6 +189,10 @@ public class SecurityConfig {
                     response.getWriter().write(objectMapper.writeValueAsString(body));
                     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 })
+            )
+            .oauth2Login(oauth2Login -> oauth2Login
+                .successHandler(authSuccessHandler())
+                .failureHandler(authFailureHandler())
             );
 
 

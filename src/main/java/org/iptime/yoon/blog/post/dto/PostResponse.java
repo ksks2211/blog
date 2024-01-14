@@ -3,11 +3,10 @@ package org.iptime.yoon.blog.post.dto;
 import lombok.Data;
 import org.iptime.yoon.blog.post.entity.Post;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author rival
@@ -15,11 +14,16 @@ import java.util.Set;
  */
 @Data
 public class PostResponse implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+
     private Long id;
     private String title;
     private String content;
     private String writer;
-    private Set<String> tags;
+    private ArrayList<String> tags;
     private String createdAt;
     private String updatedAt;
     private String category;
@@ -30,7 +34,7 @@ public class PostResponse implements Serializable {
         postResponse.setTitle(post.getTitle());
         postResponse.setContent(post.getContent());
         postResponse.setWriter(post.getWriterName());
-        postResponse.setTags(new HashSet<>(tags));
+        postResponse.setTags(new ArrayList<>(tags));
         postResponse.setCreatedAt(post.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
         postResponse.setUpdatedAt(post.getUpdatedAt().format(DateTimeFormatter.ISO_DATE_TIME));
         postResponse.setCategory(category);

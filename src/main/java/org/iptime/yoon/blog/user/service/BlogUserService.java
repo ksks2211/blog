@@ -4,6 +4,7 @@ import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserUpdateRequest;
 import org.iptime.yoon.blog.user.dto.BlogUserInfoResponse;
+import org.iptime.yoon.blog.user.entity.AuthProvider;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 /**
@@ -29,9 +30,5 @@ public interface BlogUserService {
     void deleteBlogUser(String username);
 
 
-
-
-
-
-
+    JwtUser createOAuth2BlogUserIfNotExists(AuthProvider provider, String sub, String displayName, String email);
 }

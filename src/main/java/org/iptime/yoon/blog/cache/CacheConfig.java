@@ -26,14 +26,15 @@ public class CacheConfig {
     @Value("${spring.data.redis.cache-prefix}")
     private String CACHE_PREFIX;
 
-
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
-
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
         return RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(ENTRY_TTL_MINUTES))
             .disableCachingNullValues()
             .prefixCacheNameWith(CACHE_PREFIX)
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+            );
     }
 }

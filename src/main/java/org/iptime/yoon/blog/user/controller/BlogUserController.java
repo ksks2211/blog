@@ -27,7 +27,7 @@ import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
  */
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class BlogUserController {
@@ -65,6 +65,7 @@ public class BlogUserController {
     }
 
     // DELETE "/unregister"
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping({"/unregister"})
     public ResponseEntity<?> unregisterBlogUser(@CurrentUsername String username){
         blogUserService.deleteBlogUser(username);
@@ -73,6 +74,7 @@ public class BlogUserController {
 
 
     // PUT "/update"
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/update")
     public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @RequestBody BlogUserUpdateRequest requestBody){
         BlogUserInfoResponse responseBody = blogUserService.updateBlogUser(username, requestBody);
@@ -81,6 +83,7 @@ public class BlogUserController {
 
 
     // GET "/who-am-i" + Authenticated User
+
     @GetMapping("/who-am-i")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> whoAmI(@CurrentUsername String username){

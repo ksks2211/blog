@@ -22,7 +22,7 @@ import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
  */
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryController {

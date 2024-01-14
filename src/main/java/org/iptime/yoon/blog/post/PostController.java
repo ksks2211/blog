@@ -28,7 +28,7 @@ import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
 
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 @Slf4j
 @RequiredArgsConstructor
 public class PostController {

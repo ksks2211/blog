@@ -32,6 +32,8 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
+
+
     // Internal Server Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception e){
