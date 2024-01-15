@@ -31,7 +31,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final BlogUserRepository blogUserRepository;
 
     @Value("${auth.refresh-token.refresh-exp-hours}")
-    private long REFRESH_EXP_HOURS;
+    private int REFRESH_EXP_HOURS;
 
     private LocalDateTime getExpiryDate(){
         return LocalDateTime.now().plusHours(REFRESH_EXP_HOURS);
@@ -81,6 +81,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     @Transactional
     public void removeExpiredTokens() {
         refreshTokenRepository.deleteAllExpiredTokens();
+    }
+
+    @Override
+    public void removeTokenByUserId(Long id) {
+        BlogUser user = BlogUser.builder().id(id).build();
+        refreshTokenRepository.deleteByUser(user);
     }
 
 

@@ -63,7 +63,6 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String displayName = oidcUser.getAttribute("name");
         String email = oidcUser.getAttribute("email");
 
-
         return blogUserService.createOAuth2BlogUserIfNotExists(provider, sub, displayName, email);
 
 

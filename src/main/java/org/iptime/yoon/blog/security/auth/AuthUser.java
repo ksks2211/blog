@@ -14,9 +14,8 @@ import java.util.Collection;
 public class AuthUser extends User {
 
     private final Long id;
-    private String profile;
-    private String displayName;
-
+    private final String profile;
+    private final String displayName;
 
     public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities, Long id, String profile, String displayName) {
         super(username, password, authorities);
@@ -24,9 +23,5 @@ public class AuthUser extends User {
         this.profile = profile;
         this.displayName = displayName;
     }
-
-
-
-
 
 }

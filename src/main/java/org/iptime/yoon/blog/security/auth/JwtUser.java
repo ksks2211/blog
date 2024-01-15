@@ -23,5 +23,4 @@ public class JwtUser {
     @Builder.Default
     private final Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
 
-
 }

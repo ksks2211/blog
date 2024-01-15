@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.category.CategoryService;
 import org.iptime.yoon.blog.post.PostEntityNotFoundException;
+import org.iptime.yoon.blog.post.PostMapper;
 import org.iptime.yoon.blog.post.dto.*;
 import org.iptime.yoon.blog.post.entity.Post;
 import org.iptime.yoon.blog.post.entity.PostTag;
@@ -37,8 +38,8 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
     private final TagRepository tagRepository;
-//    private final CategoryRepository categoryRepository;
 
+    private final PostMapper postMapper;
     private final CategoryService categoryService;
 
 
@@ -59,10 +60,10 @@ public class PostServiceImpl implements PostService {
         // Create tags
         List<Tag> tags = new ArrayList<>();
         List<PostTag> postTags = new ArrayList<>();
-        postCreateRequest.getTags().forEach(tag -> {
-            if (!tagRepository.existsByTag(tag)) {
+        postCreateRequest.getTags().forEach(tagValue -> {
+            if (!tagRepository.existsByValue(tagValue)) {
                 Tag newTag = new Tag();
-                newTag.setTag(tag);
+                newTag.setValue(tagValue);
                 tags.add(newTag);
 
                 PostTag postTag = PostTag.builder()
@@ -81,33 +82,25 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse findById(Long id) throws EntityNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
+        String category = post.getCategory().getFullName();
         List<String> tags = postTagRepository.findAllTagsByPostId(id);
-        return PostResponse.fromEntity(post, tags, post.getCategory().getFullName());
+
+
+        return postMapper.postToPostResponse(post,tags,category);
     }
 
     @Override
     public PostPageResponse findPostList(Pageable pageable) {
-        PostPageResponse postListRes = new PostPageResponse();
         Page<PostPreviewProjection> postPreviewPage = postRepository.findPostList(pageable);
-        List<PostPreviewResponse> postList = postPreviewPage.getContent().stream().map(PostPreviewResponse::fromPostPreview).toList();
-        postListRes.setPostList(postList);
-        postListRes.setTotalPages(postPreviewPage.getTotalPages());
-        return postListRes;
+        return postMapper.postPreviewPageToPostPageResponse(postPreviewPage);
     }
 
     @Override
     @Transactional
     public PostPageResponse findPostListByCategory(Pageable pageable, String root, String sub) {
         Long id = categoryService.createCategoryIfNotExists(root, sub);
-
         Page<PostPreviewProjection> postPreviewPage = postRepository.findPostListByCategory(pageable, Category.builder().id(id).build());
-        List<PostPreviewResponse> postList = postPreviewPage.getContent().stream().map(PostPreviewResponse::fromPostPreview).toList();
-
-
-        PostPageResponse postListRes = new PostPageResponse();
-        postListRes.setPostList(postList);
-        postListRes.setTotalPages(postPreviewPage.getTotalPages());
-        return postListRes;
+        return postMapper.postPreviewPageToPostPageResponse(postPreviewPage);
     }
 
 
@@ -115,8 +108,10 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostPrevAndNextResponse findPrevAndNextPosts(Long id) {
         PostPrevAndNextResponse prevAndNext = new PostPrevAndNextResponse();
-        postRepository.findNextPost(id).ifPresent(next -> prevAndNext.setNext(PostPreviewResponse.fromPostPreview(next)));
-        postRepository.findPrevPost(id).ifPresent(prev -> prevAndNext.setPrev(PostPreviewResponse.fromPostPreview(prev)));
+        postRepository.findNextPost(id).ifPresent(
+            next -> prevAndNext.setNext(postMapper.postProjToPostRes(next)));
+        postRepository.findPrevPost(id).ifPresent(
+            prev -> prevAndNext.setPrev(postMapper.postProjToPostRes(prev)));
         return prevAndNext;
     }
 
@@ -126,11 +121,9 @@ public class PostServiceImpl implements PostService {
     @CachePut(value = "posts", key = "#id")
     public PostResponse updatePost(Long id, PostCreateRequest postCreateRequest) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
-        post.setTitle(postCreateRequest.getTitle());
-        post.setContent(postCreateRequest.getContent());
-        post.setDescription(postCreateRequest.getDescription());
+        String category = post.getCategory().getFullName();
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
-        return PostResponse.fromEntity(postRepository.save(post), tags, post.getCategory().getFullName());
+        return postMapper.postToPostResponse(post,tags,category);
     }
     // changeTags
 
@@ -142,11 +135,11 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         Category category = post.getCategory();
         post.setCategory(null);
-        post.softDelete();
+        categoryService.decreasePostCount(category);
 
+        post.softDelete();
         postTagRepository.deleteAllByPost(post);
         postRepository.save(post);
-        categoryService.decreasePostCount(category);
     }
 
     @Override

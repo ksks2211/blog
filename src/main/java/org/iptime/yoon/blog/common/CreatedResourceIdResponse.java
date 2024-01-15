@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class CreatedResponse {
+public class CreatedResourceIdResponse {
     private Long id;
 }

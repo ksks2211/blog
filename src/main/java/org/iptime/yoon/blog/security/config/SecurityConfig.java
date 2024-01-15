@@ -1,16 +1,15 @@
 package org.iptime.yoon.blog.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.security.dto.ForbiddenAccessResponse;
-import org.iptime.yoon.blog.security.dto.UnauthorizedAccessResponse;
 import org.iptime.yoon.blog.security.filter.JwtAuthenticationFilter;
 import org.iptime.yoon.blog.security.filter.JwtLoginFilter;
 import org.iptime.yoon.blog.security.filter.JwtRefreshFilter;
 import org.iptime.yoon.blog.security.handler.AuthFailureHandler;
 import org.iptime.yoon.blog.security.handler.AuthSuccessHandler;
+import org.iptime.yoon.blog.security.handler.CustomAccessDeniedHandler;
+import org.iptime.yoon.blog.security.handler.CustomAuthenticationEntryPoint;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.service.AuthUserService;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +35,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -151,6 +151,16 @@ public class SecurityConfig {
     }
 
     @Bean
+    AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler(objectMapper);
+    }
+
+    @Bean
+    AuthenticationEntryPoint authenticationEntryPoint(){
+        return  new CustomAuthenticationEntryPoint(objectMapper);
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((auth) ->
@@ -158,8 +168,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         new AntPathRequestMatcher("/api/categories/**"),
                         new AntPathRequestMatcher("/api/images/**"),
-                        new AntPathRequestMatcher("/api/posts/**")
-                    ).authenticated()
+                        new AntPathRequestMatcher("/api/posts/**")).authenticated()
                     .anyRequest().permitAll())
 
             .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
@@ -171,24 +180,10 @@ public class SecurityConfig {
             .addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class)
             .addFilterAt(jwtLogInFilter(), UsernamePasswordAuthenticationFilter.class)
 
-            .exceptionHandling(config -> config.authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    UnauthorizedAccessResponse body = new UnauthorizedAccessResponse(authException.getMessage());
-                    log.debug("Unauthorized Exception : {}", authException.getMessage());
-
-                    response.getWriter().write(objectMapper.writeValueAsString(body));
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                })
-            )
             .exceptionHandling(
-                config -> config.accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    ForbiddenAccessResponse body = new ForbiddenAccessResponse();
-                    log.debug("Access Denied Exception : {}", accessDeniedException.getMessage());
-
-                    response.getWriter().write(objectMapper.writeValueAsString(body));
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                })
+                config -> config
+                        .accessDeniedHandler(accessDeniedHandler())
+                        .authenticationEntryPoint(authenticationEntryPoint())
             )
             .oauth2Login(oauth2Login -> oauth2Login
                 .successHandler(authSuccessHandler())

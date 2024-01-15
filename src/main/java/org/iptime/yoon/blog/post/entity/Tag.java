@@ -23,5 +23,5 @@ public class Tag {
 
     @Column(unique = true)
     @Setter
-    private String tag;
+    private String value;
 }

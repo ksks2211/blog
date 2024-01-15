@@ -13,4 +13,5 @@ public interface RefreshTokenService {
 
     void removeExpiredTokens();
 
+    void removeTokenByUserId(Long id);
 }

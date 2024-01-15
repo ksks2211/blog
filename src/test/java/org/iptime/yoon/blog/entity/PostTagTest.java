@@ -62,7 +62,7 @@ class PostTagTest {
 
     public Tag createTag(String keyword){
         Tag tag = new Tag();
-        tag.setTag(keyword);
+        tag.setValue(keyword);
         em.persist(tag);
         return tag;
     }

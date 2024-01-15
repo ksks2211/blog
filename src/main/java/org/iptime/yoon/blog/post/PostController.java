@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.post;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.common.CreatedResponse;
+import org.iptime.yoon.blog.common.CreatedResourceIdResponse;
 import org.iptime.yoon.blog.post.dto.PostCreateRequest;
 import org.iptime.yoon.blog.post.dto.PostPageResponse;
 import org.iptime.yoon.blog.post.dto.PostPrevAndNextResponse;
@@ -49,7 +49,7 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<?> createPost(@AuthenticationPrincipal JwtUser jwtUser, @RequestBody PostCreateRequest postCreateRequest) {
         Long id = postService.createPost(postCreateRequest, jwtUser);
-        CreatedResponse body = new CreatedResponse(id);
+        CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
         return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 

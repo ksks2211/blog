@@ -14,11 +14,11 @@ import java.util.List;
  */
 public interface PostTagRepository extends JpaRepository<PostTag, Long> {
 
-    @Query("select pt from PostTag pt where pt.tag.tag = :tag")
+    @Query("select pt from PostTag pt where pt.tag.value = :tag")
     List<PostTag> findAllByTag(String tag);
 
 
-    @Query("select pt.tag.tag from PostTag pt where pt.post.id = :id")
+    @Query("select pt.tag.value from PostTag pt where pt.post.id = :id")
     List<String> findAllTagsByPostId(Long id);
 
 

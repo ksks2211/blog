@@ -2,7 +2,6 @@ package org.iptime.yoon.blog.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import org.iptime.yoon.blog.post.dto.PostPreviewResponse;
 
 /**
  * @author rival
