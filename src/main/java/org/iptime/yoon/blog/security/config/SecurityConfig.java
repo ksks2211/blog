@@ -17,7 +17,6 @@ import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.iptime.yoon.blog.user.service.BlogUserServiceImpl;
 import org.iptime.yoon.blog.user.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -99,9 +98,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) ->
-            web.debug(securityDebug).ignoring()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-            ;
+            web.debug(securityDebug);
     }
 
     @Bean

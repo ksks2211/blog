@@ -6,39 +6,42 @@ import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.category.CategoryService;
 import org.iptime.yoon.blog.post.PostEntityNotFoundException;
 import org.iptime.yoon.blog.post.PostMapper;
+import org.iptime.yoon.blog.post.PostSpecification;
 import org.iptime.yoon.blog.post.dto.*;
 import org.iptime.yoon.blog.post.entity.Post;
-import org.iptime.yoon.blog.post.entity.PostTag;
 import org.iptime.yoon.blog.post.entity.Tag;
 import org.iptime.yoon.blog.post.repository.PostRepository;
 import org.iptime.yoon.blog.post.repository.PostTagRepository;
 import org.iptime.yoon.blog.post.repository.TagRepository;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
 import org.iptime.yoon.blog.security.auth.JwtUser;
+import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author rival
  * @since 2023-08-11
  */
 
-@Service(value="postServiceBean")
+@Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
     private final TagRepository tagRepository;
-
     private final PostMapper postMapper;
     private final CategoryService categoryService;
 
@@ -47,32 +50,27 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Long createPost(PostCreateRequest postCreateRequest, JwtUser authUser) {
 
-        // Create category
+        // Create Category
         Category category = categoryService.getCategory(authUser.getUsername(), postCreateRequest.getCategory());
         categoryService.increasePostCount(category);
 
-
-        // Create post
-        Post post = postCreateRequest.toEntity(authUser.getId(), authUser.getUsername());
-        post.setCategory(category);
-        postRepository.save(post);
-
-        // Create tags
+        // Create|Fetch Tags
         List<Tag> tags = new ArrayList<>();
-        List<PostTag> postTags = new ArrayList<>();
-        postCreateRequest.getTags().forEach(tagValue -> {
-            if (!tagRepository.existsByValue(tagValue)) {
-                Tag newTag = new Tag();
-                newTag.setValue(tagValue);
-                tags.add(newTag);
-
-                PostTag postTag = PostTag.builder()
-                    .post(post).tag(newTag).build();
-                postTags.add(postTag);
-            }
-        });
+        for (String tagValue : postCreateRequest.getTags()) {
+            Tag tag = tagRepository.findByValue(tagValue).orElseGet(() -> new Tag(tagValue));
+            tags.add(tag);
+        }
         tagRepository.saveAll(tags);
-        postTagRepository.saveAll(postTags);
+
+        // Create Post
+        Post post = postMapper.postCreateRequestToPost(postCreateRequest);
+
+        tags.forEach(post::addTag);
+        post.setWriterName(authUser.getUsername());
+        post.setWriter(BlogUser.builder().id(authUser.getId()).build());
+        post.setCategory(category);
+
+        postRepository.save(post);
 
         return post.getId();
     }
@@ -86,12 +84,12 @@ public class PostServiceImpl implements PostService {
         List<String> tags = postTagRepository.findAllTagsByPostId(id);
 
 
-        return postMapper.postToPostResponse(post,tags,category);
+        return postMapper.postToPostResponse(post, tags, category);
     }
 
     @Override
     public PostPageResponse findPostList(Pageable pageable) {
-        Page<PostPreviewProjection> postPreviewPage = postRepository.findPostList(pageable);
+        Page<PostPreviewProjection> postPreviewPage = postRepository.findProjectedBy(pageable);
         return postMapper.postPreviewPageToPostPageResponse(postPreviewPage);
     }
 
@@ -123,7 +121,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         String category = post.getCategory().getFullName();
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
-        return postMapper.postToPostResponse(post,tags,category);
+        return postMapper.postToPostResponse(post, tags, category);
     }
     // changeTags
 
@@ -134,19 +132,45 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         Category category = post.getCategory();
-        post.setCategory(null);
         categoryService.decreasePostCount(category);
 
+        post.setCategory(null);
+        post.removeAllPostTags();
         post.softDelete();
-        postTagRepository.deleteAllByPost(post);
         postRepository.save(post);
     }
 
     @Override
+    @Transactional
     public boolean isOwner(Long id, String username) {
-        return postRepository.findById(id)
-            .map(Post::getWriterName)
-            .filter(username::equals)
-            .isPresent();
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if(optionalPost.isEmpty())return false;
+        Post post = optionalPost.get();
+        String writerName = post.getWriterName();
+        return writerName.equals(username);
+    }
+
+    @Override
+    @Transactional
+    public PostPageResponse searchPostList(PostSearchQuery postSearchQuery, PageRequest pageable) {
+        Specification<Post> spec = Specification.where(null);
+        if (postSearchQuery != null) {
+            if (postSearchQuery.getWriter() != null) {
+                spec = spec.and(PostSpecification.wroteBy(postSearchQuery.getWriter()));
+            }
+            List<String> tags = postSearchQuery.getTags();
+            if (tags != null && !tags.isEmpty()) {
+                spec = spec.and(PostSpecification.haveAtLeastOneTag(tags.toArray(new String[0])));
+            }
+        }
+
+        Page<PostPreviewProjection> result = postRepository.findBy(
+            spec,
+            q -> q
+                .project("id", "title", "writerName", "description", "createdAt", "updatedAt")
+                .as(PostPreviewProjection.class)
+                .page(pageable));
+
+        return postMapper.postPreviewPageToPostPageResponse(result);
     }
 }

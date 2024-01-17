@@ -2,7 +2,6 @@ package org.iptime.yoon.blog.post.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.iptime.yoon.blog.image.Image;
 
 /**
  * @author rival
@@ -29,10 +28,5 @@ public class PostTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Post post;
-
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    private Image profile;
 
 }

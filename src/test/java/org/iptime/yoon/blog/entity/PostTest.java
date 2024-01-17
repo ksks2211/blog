@@ -210,7 +210,7 @@ class PostTest {
 
 
         PageRequest pageRequest = PageRequest.of(numOfPage, numOfPageSize);
-        Page<PostPreviewProjection> page = postRepository.findPostList(pageRequest);
+        Page<PostPreviewProjection> page = postRepository.findProjectedBy(pageRequest);
 
         assertThat(page.getTotalElements()).isEqualTo(numOfPosts);
         assertThat(page.getTotalPages()).isEqualTo(numOfPosts/numOfPageSize);

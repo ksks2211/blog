@@ -22,8 +22,12 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@ToString(callSuper = true)
 @Where(clause = "deleted = false")
+@Table(
+    indexes = {
+        @Index(name="post_writer_index",columnList ="writerName")
+    }
+)
 public class Post extends BaseEntity {
 
     @Id
@@ -43,6 +47,8 @@ public class Post extends BaseEntity {
     @JoinColumn // nullable = false
     @ToString.Exclude
     private BlogUser writer;
+
+    @Column(nullable = false)
     private String writerName;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,10 +56,21 @@ public class Post extends BaseEntity {
     @ToString.Exclude
     private Category category;
 
-    // Read-Only
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
-    @ToString.Exclude
     private List<PostTag> postTags = new ArrayList<>();
+
+
+
+    public void addTag(Tag tag){
+        PostTag postTag = PostTag.builder().post(this).tag(tag).build();
+        this.postTags.add(postTag);
+    }
+
+    public void removeAllPostTags(){
+        if(postTags !=null && !postTags.isEmpty()){
+            postTags.clear();
+        }
+    }
 
 }

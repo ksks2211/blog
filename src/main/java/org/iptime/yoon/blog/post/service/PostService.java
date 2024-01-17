@@ -1,10 +1,8 @@
 package org.iptime.yoon.blog.post.service;
 
-import org.iptime.yoon.blog.post.dto.PostCreateRequest;
-import org.iptime.yoon.blog.post.dto.PostPageResponse;
-import org.iptime.yoon.blog.post.dto.PostPrevAndNextResponse;
-import org.iptime.yoon.blog.post.dto.PostResponse;
+import org.iptime.yoon.blog.post.dto.*;
 import org.iptime.yoon.blog.security.auth.JwtUser;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -38,4 +36,5 @@ public interface PostService {
 
     boolean isOwner(Long id, String username);
 
+    PostPageResponse searchPostList(PostSearchQuery postSearchQuery, PageRequest pageRequest);
 }

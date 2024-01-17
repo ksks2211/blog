@@ -29,6 +29,8 @@ public class CacheConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
+
+
         return RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(ENTRY_TTL_MINUTES))
             .disableCachingNullValues()

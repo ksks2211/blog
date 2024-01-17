@@ -1,12 +1,10 @@
 package org.iptime.yoon.blog.post.dto;
 
 import lombok.Data;
-import org.iptime.yoon.blog.post.entity.Post;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
 
 /**
  * @author rival

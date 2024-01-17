@@ -24,4 +24,9 @@ public class Tag {
     @Column(unique = true)
     @Setter
     private String value;
+
+
+    public Tag(String value){
+        this.value=value;
+    }
 }

@@ -58,6 +58,7 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
             post.setContent("Content Of Post"+i);
             post.setCategory("/dir1/dir2");
             post.setDescription("Describe My Post ...... "+i);
+
             postService.createPost(post,admin);
         });
         PostCreateRequest taggedPost = getPostReqDto();

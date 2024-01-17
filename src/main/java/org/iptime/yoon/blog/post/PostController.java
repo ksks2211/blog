@@ -3,10 +3,7 @@ package org.iptime.yoon.blog.post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.common.CreatedResourceIdResponse;
-import org.iptime.yoon.blog.post.dto.PostCreateRequest;
-import org.iptime.yoon.blog.post.dto.PostPageResponse;
-import org.iptime.yoon.blog.post.dto.PostPrevAndNextResponse;
-import org.iptime.yoon.blog.post.dto.PostResponse;
+import org.iptime.yoon.blog.post.dto.*;
 import org.iptime.yoon.blog.post.service.PostService;
 import org.iptime.yoon.blog.security.CurrentUsername;
 import org.iptime.yoon.blog.security.auth.JwtUser;
@@ -48,6 +45,8 @@ public class PostController {
     // CREATE
     @PostMapping("")
     public ResponseEntity<?> createPost(@AuthenticationPrincipal JwtUser jwtUser, @RequestBody PostCreateRequest postCreateRequest) {
+
+
         Long id = postService.createPost(postCreateRequest, jwtUser);
         CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
         return new ResponseEntity<>(body, HttpStatus.CREATED);
@@ -64,20 +63,32 @@ public class PostController {
 
     @GetMapping("/categories/{categoryString}")
     public PostPageResponse getPostPageByCategory(@RequestParam(value = "page", defaultValue = "1") int page, @PathVariable String categoryString, @CurrentUsername String root) {
-        int zeroBasedPage = page > 0 ? page - 1 : 0;
+        PageRequest pageRequest = generatePageRequest(page);
         String sub = parseCategoryString(categoryString);
         log.info("Username : {}, Category : {}", root, sub);
-        Sort sort = Sort.by("id").descending();
-        PageRequest pageRequest = PageRequest.of(zeroBasedPage, SIZE_PER_PAGE, sort);
         return postService.findPostListByCategory(pageRequest, root, sub);
     }
 
     @GetMapping("")
     public PostPageResponse getPostPage(@RequestParam(value = "page", defaultValue = "1") int page) {
-        int zeroBasedPage = page > 0 ? page - 1 : 0;
-        Sort sort = Sort.by("id").descending();
-        PageRequest pageRequest = PageRequest.of(zeroBasedPage, SIZE_PER_PAGE, sort);
+        PageRequest pageRequest = generatePageRequest(page);
         return postService.findPostList(pageRequest);
+    }
+
+
+    private PageRequest generatePageRequest(int clientPageNum){
+        int zeroBasedPage = clientPageNum > 0 ? clientPageNum -1 : 0;
+        Sort sort = Sort.by("id").descending();
+        return PageRequest.of(zeroBasedPage, SIZE_PER_PAGE,sort);
+    }
+
+    @GetMapping("/search")
+    public PostPageResponse searchPostPage(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @ModelAttribute PostSearchQuery postSearchQuery){
+
+        PageRequest pageRequest = generatePageRequest(page);
+        return postService.searchPostList(postSearchQuery,pageRequest);
     }
 
 
@@ -86,15 +97,17 @@ public class PostController {
     // UPDATE
     // EntityNotFoundException handling
     @PutMapping("/{id}")
-    @PreAuthorize("@postServiceBean.isOwner(#id, authentication.name)")
+    @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public PostResponse updatePostById(@PathVariable(name = "id") Long id, @RequestBody PostCreateRequest postCreateRequest) {
         return postService.updatePost(id, postCreateRequest);
     }
 
     // DELETE
     @DeleteMapping("/{id}")
-    @PreAuthorize("@postServiceBean.isOwner(#id, authentication.name)")
+    @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public ResponseEntity<?> deletePostById(@PathVariable(name = "id") Long id) {
+
+
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
