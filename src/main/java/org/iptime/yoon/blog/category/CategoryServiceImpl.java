@@ -20,6 +20,7 @@ import java.util.Map;
 @Transactional
 public class CategoryServiceImpl implements CategoryService{
 
+
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -74,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public Map<String, CategoryDto> getCategories(String root) {
         List<Category> categories = categoryRepository.findAllByRoot(root);
+
         CategoryRootDto categoryRoot = new CategoryRootDto(root);
         categories.forEach(el-> categoryRoot.insert(el.getFullName(),el.getPostCount()));
         return categoryRoot.getRoot();

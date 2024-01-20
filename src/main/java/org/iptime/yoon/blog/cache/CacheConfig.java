@@ -20,6 +20,8 @@ import java.time.Duration;
 @EnableCaching
 public class CacheConfig {
 
+
+
     @Value("${spring.data.redis.entry-ttl-minutes}")
     private int ENTRY_TTL_MINUTES;
 

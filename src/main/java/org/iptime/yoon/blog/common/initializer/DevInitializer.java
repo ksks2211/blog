@@ -6,9 +6,9 @@ import org.iptime.yoon.blog.post.dto.PostCreateRequest;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.category.CategoryService;
 import org.iptime.yoon.blog.post.service.PostService;
+import org.iptime.yoon.blog.user.BlogUserMapper;
 import org.iptime.yoon.blog.user.dto.BlogUserRegisterRequest;
 import org.iptime.yoon.blog.user.entity.BlogUser;
-import org.iptime.yoon.blog.user.mapper.UserMapper;
 import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -35,6 +35,8 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
     private final PostService postService;
     private final CategoryService categoryService;
 
+    private final BlogUserMapper blogUserMapper;
+
 
     @Override
     public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
@@ -49,7 +51,7 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
 //        JwtUser admin = blogUserService.getJwtUserByUsername("ADMIN");
 
         BlogUser blogUser = blogUserService.getBlogUserByUsername("ADMIN");
-        JwtUser admin = UserMapper.fromBlogUserToJwtUser(blogUser);
+        JwtUser admin = blogUserMapper.blogUserToJwtUser(blogUser);
 
         // Create Posts
         IntStream.range(0,20).forEach(i->{

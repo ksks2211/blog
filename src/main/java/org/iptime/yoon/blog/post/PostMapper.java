@@ -5,6 +5,7 @@ import org.iptime.yoon.blog.post.dto.PostPageResponse;
 import org.iptime.yoon.blog.post.dto.PostPreviewResponse;
 import org.iptime.yoon.blog.post.dto.PostResponse;
 import org.iptime.yoon.blog.post.entity.Post;
+import org.iptime.yoon.blog.post.repository.projection.PostPreviewDto;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -40,6 +41,14 @@ public interface PostMapper {
     PostPreviewResponse postProjToPostRes(PostPreviewProjection projection);
 
 
+    @Mappings({
+        @Mapping(source = "writerName", target = "writer"),
+        @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "localDateTimeConverter"),
+        @Mapping(source = "updatedAt", target = "updatedAt", qualifiedByName = "localDateTimeConverter")
+    })
+    PostPreviewResponse postDtoToPostRes(PostPreviewDto projection);
+
+
 
     @Mappings({
         @Mapping(target = "category", ignore = true),
@@ -53,6 +62,9 @@ public interface PostMapper {
 
     @Mapping(source = "content", target = "postList")
     PostPageResponse postPreviewPageToPostPageResponse(Page<PostPreviewProjection> postPreviewPage);
+
+    @Mapping(source = "content", target = "postList")
+    PostPageResponse postPreviewDtoPageToPostPageResponse(Page<PostPreviewDto> postPreviewPage);
 
 
     default PostResponse postToPostResponse(Post post, List<String> tags, String category) {

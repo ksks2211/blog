@@ -15,7 +15,7 @@ import java.util.Optional;
  * @author rival
  * @since 2023-08-10
  */
-public interface PostRepository extends JpaRepository<Post,Long>, JpaSpecificationExecutor<Post> {
+public interface PostRepository extends JpaRepository<Post,Long>, JpaSpecificationExecutor<Post>, PostSearchRepository {
 
     Page<PostPreviewProjection> findProjectedBy(Pageable pageable);
 

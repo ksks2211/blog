@@ -5,6 +5,7 @@ import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.exception.ExpiredRefreshTokenException;
 import org.iptime.yoon.blog.security.exception.InvalidBlogUserDataException;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;
+import org.iptime.yoon.blog.user.BlogUserMapper;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.iptime.yoon.blog.user.entity.RefreshToken;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.iptime.yoon.blog.user.mapper.UserMapper.fromBlogUserToJwtUser;
 
 
 /**
@@ -29,6 +29,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlogUserRepository blogUserRepository;
+    private final BlogUserMapper blogUserMapper;
 
     @Value("${auth.refresh-token.refresh-exp-hours}")
     private int REFRESH_EXP_HOURS;
@@ -74,7 +75,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
             throw new ExpiredRefreshTokenException("Token Expired");
         }
         BlogUser blogUser = refreshToken.getUser();
-        return fromBlogUserToJwtUser(blogUser);
+        return blogUserMapper.blogUserToJwtUser(blogUser);
     }
 
     @Override

@@ -34,10 +34,12 @@ public abstract class BaseEntity {
 
 
     @Column
-    private boolean deleted;
+    private boolean deleted = false;
 
     public void softDelete(){
-        deleted = true;
-        deletedAt = LocalDateTime.now();
+        if(!deleted) {
+            deleted = true;
+            deletedAt = LocalDateTime.now();
+        }
     }
 }

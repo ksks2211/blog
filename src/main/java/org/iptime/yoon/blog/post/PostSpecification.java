@@ -56,6 +56,10 @@ public class PostSpecification {
     }
 
 
+    public static Specification<Post> notDeleted(){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"),false);
+    }
+
 
 
 }

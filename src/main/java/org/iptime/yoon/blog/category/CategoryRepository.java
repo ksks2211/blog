@@ -11,6 +11,5 @@ import java.util.Optional;
  */
 public interface CategoryRepository extends JpaRepository<Category,Long> {
     Optional<Category> findByFullName(String fullName);
-
     List<Category> findAllByRoot(String root);
 }

@@ -2,6 +2,7 @@ package org.iptime.yoon.blog.post.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,5 +13,5 @@ import java.util.List;
 @Data
 public class PostPageResponse {
     private Integer totalPages;
-    private List<PostPreviewResponse> postList;
+    private List<PostPreviewResponse> postList = new ArrayList<>();
 }

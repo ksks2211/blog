@@ -13,6 +13,7 @@ import org.iptime.yoon.blog.post.entity.Tag;
 import org.iptime.yoon.blog.post.repository.PostRepository;
 import org.iptime.yoon.blog.post.repository.PostTagRepository;
 import org.iptime.yoon.blog.post.repository.TagRepository;
+import org.iptime.yoon.blog.post.repository.projection.PostPreviewDto;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.user.entity.BlogUser;
@@ -164,13 +165,14 @@ public class PostServiceImpl implements PostService {
             }
         }
 
-        Page<PostPreviewProjection> result = postRepository.findBy(
-            spec,
-            q -> q
-                .project("id", "title", "writerName", "description", "createdAt", "updatedAt")
-                .as(PostPreviewProjection.class)
-                .page(pageable));
+//        Page<PostPreviewProjection> result = postRepository.findBy(
+//            spec,
+//            q -> q
+//                .project("id", "title", "writerName", "description", "createdAt", "updatedAt")
+//                .as(PostPreviewProjection.class)
+//                .page(pageable));
 
-        return postMapper.postPreviewPageToPostPageResponse(result);
+        Page<PostPreviewDto> result = postRepository.searchAllPosts(spec, pageable);
+        return postMapper.postPreviewDtoPageToPostPageResponse(result);
     }
 }

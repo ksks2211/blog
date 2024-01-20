@@ -22,13 +22,14 @@ public class GlobalExceptionHandler {
     // Entity Not Found
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException e){
-        log.warn(e.getMessage());
+
+        log.warn("Entity not found",e);
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException e){
-        log.info(e.getMessage());
+        log.error("Access Denied", e);
         return createErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
@@ -37,10 +38,7 @@ public class GlobalExceptionHandler {
     // Internal Server Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception e){
-
-        e.printStackTrace();
-
-        log.error(e.getMessage());
+        log.error("An unexpected error occurred", e);
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"An unexpected error occurred." );
     }
 }

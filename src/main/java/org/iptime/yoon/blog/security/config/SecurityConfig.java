@@ -12,6 +12,7 @@ import org.iptime.yoon.blog.security.handler.CustomAccessDeniedHandler;
 import org.iptime.yoon.blog.security.handler.CustomAuthenticationEntryPoint;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.service.AuthUserService;
+import org.iptime.yoon.blog.user.BlogUserMapper;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
 import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.iptime.yoon.blog.user.service.BlogUserServiceImpl;
@@ -66,7 +67,7 @@ public class SecurityConfig {
     private final JwtManager jwtManager;
     private final ObjectMapper objectMapper;
     private final RefreshTokenService refreshTokenService;
-
+    private final BlogUserMapper blogUserMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -76,17 +77,17 @@ public class SecurityConfig {
 
     @Bean
     public BlogUserService blogUserService() {
-        return new BlogUserServiceImpl(blogUserRepository, passwordEncoder());
+        return new BlogUserServiceImpl(blogUserRepository, passwordEncoder(),blogUserMapper);
     }
 
     @Bean
     public AuthUserService authUserService() {
-        return new AuthUserService(blogUserService());
+        return new AuthUserService(blogUserService(),blogUserMapper);
     }
 
     @Bean
     public AuthSuccessHandler authSuccessHandler() {
-        return new AuthSuccessHandler(jwtManager, objectMapper, blogUserService());
+        return new AuthSuccessHandler(jwtManager, objectMapper, blogUserService(),blogUserMapper);
     }
 
     @Bean
@@ -124,7 +125,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtManager);
+        return new JwtAuthenticationFilter(jwtManager,blogUserMapper);
     }
 
     @Bean

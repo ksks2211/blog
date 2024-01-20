@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
-import org.iptime.yoon.blog.user.mapper.UserMapper;
+import org.iptime.yoon.blog.user.BlogUserMapper;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -31,6 +31,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtManager jwtManager;
+    private final BlogUserMapper blogUserMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
@@ -41,7 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtVerifyResult.isVerified()) {
 
-                JwtUser user = UserMapper.fromJwtResultToJwtUser(jwtVerifyResult);
+
+                JwtUser user = blogUserMapper.jwtVerifyResultToJwtUser(jwtVerifyResult);
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user,
