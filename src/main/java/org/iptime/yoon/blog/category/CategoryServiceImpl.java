@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.category;
 
 import lombok.RequiredArgsConstructor;
+import org.iptime.yoon.blog.cache.CacheService;
 import org.iptime.yoon.blog.category.dto.CategoryDto;
 import org.iptime.yoon.blog.category.dto.CategoryRootDto;
 import org.iptime.yoon.blog.category.exception.CategoryEntityNotFoundException;
@@ -22,6 +23,8 @@ public class CategoryServiceImpl implements CategoryService{
 
 
     private final CategoryRepository categoryRepository;
+
+    private final CacheService cacheService;
 
     @Override
     public void increasePostCount(Category category){
@@ -84,12 +87,17 @@ public class CategoryServiceImpl implements CategoryService{
 
     // Update
     @Override
+    @Transactional
     public void changeCategory(String root, String beforeSub, String afterSub) {
         String fullName = root+beforeSub;
+
+        List<Long> relatedPostsIdList = categoryRepository.findRelatedPostIds(fullName);
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
+
         String newFullName = root+afterSub;
         category.setFullName(newFullName);
         categoryRepository.save(category);
+        cacheService.deleteCaches("posts",relatedPostsIdList);
     }
 
 

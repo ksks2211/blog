@@ -1,4 +1,4 @@
-package org.iptime.yoon.blog.common;
+package org.iptime.yoon.blog.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

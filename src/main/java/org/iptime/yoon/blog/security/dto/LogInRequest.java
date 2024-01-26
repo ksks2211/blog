@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.security.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -10,6 +11,9 @@ import lombok.Data;
 @Data
 public class LogInRequest {
 
+
+    @NotBlank(message = "Username is mandatory")
     private String username;
+    @NotBlank(message = "Password is required")
     private String password;
 }

@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.security.CurrentUsername;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
+import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -36,7 +37,7 @@ public class BlogUserController {
 
     // UsernameAlreadyTakenException
     @PostMapping({"/register","/sign-up"})
-    public ResponseEntity<?> createBlogUser(@RequestBody BlogUserRegisterRequest requestBody){
+    public ResponseEntity<?> createBlogUser(@Valid @RequestBody BlogUserRegisterRequest requestBody){
         BlogUserInfoResponse responseBody = blogUserService.createBlogUser(requestBody);
         return new ResponseEntity<>(responseBody,HttpStatus.CREATED);
     }
@@ -50,9 +51,10 @@ public class BlogUserController {
 
 
 
-    // GET "/is-username-taken?username=xyzxyz"
+    // GET "/is-username-taken?username=username"
     @GetMapping("/is-username-taken")
     public ResponseEntity<?> isUsernameTaken(@RequestParam String username) {
+        username = username.trim();
         boolean taken = blogUserService.isUsernameTaken(username);
         Map<String,String> body = new HashMap<>();
         body.put("message","Username is available");
@@ -76,7 +78,7 @@ public class BlogUserController {
     // PUT "/update"
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/update")
-    public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @RequestBody BlogUserUpdateRequest requestBody){
+    public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @Valid @RequestBody BlogUserUpdateRequest requestBody){
         BlogUserInfoResponse responseBody = blogUserService.updateBlogUser(username, requestBody);
         return ResponseEntity.ok(responseBody);
     }

@@ -134,11 +134,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         Category category = post.getCategory();
         categoryService.decreasePostCount(category);
-
-        post.setCategory(null);
-        post.removeAllPostTags();
-        post.softDelete();
-        postRepository.save(post);
+        postRepository.delete(post);
     }
 
     @Override
@@ -164,13 +160,6 @@ public class PostServiceImpl implements PostService {
                 spec = spec.and(PostSpecification.haveAtLeastOneTag(tags.toArray(new String[0])));
             }
         }
-
-//        Page<PostPreviewProjection> result = postRepository.findBy(
-//            spec,
-//            q -> q
-//                .project("id", "title", "writerName", "description", "createdAt", "updatedAt")
-//                .as(PostPreviewProjection.class)
-//                .page(pageable));
 
         Page<PostPreviewDto> result = postRepository.searchAllPosts(spec, pageable);
         return postMapper.postPreviewDtoPageToPostPageResponse(result);

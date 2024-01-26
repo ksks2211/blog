@@ -16,7 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
+import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -42,7 +42,6 @@ public class ImageController {
         String month = String.format("%02d", currentDate.getMonthValue());
         String day = String.format("%02d", currentDate.getDayOfMonth());
         String uuid = UUID.randomUUID().toString();
-
         return String.format("%s/%s/%s/%s/%s",username, year, month, day, uuid);
     }
 

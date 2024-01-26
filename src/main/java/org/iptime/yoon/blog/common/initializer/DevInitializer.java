@@ -25,7 +25,6 @@ import java.util.stream.IntStream;
  */
 
 @Component
-@Profile("dev")
 @RequiredArgsConstructor
 @Slf4j
 public class DevInitializer implements ApplicationListener<ApplicationReadyEvent> {

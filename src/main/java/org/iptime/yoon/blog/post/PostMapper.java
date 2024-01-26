@@ -4,6 +4,7 @@ import org.iptime.yoon.blog.post.dto.PostCreateRequest;
 import org.iptime.yoon.blog.post.dto.PostPageResponse;
 import org.iptime.yoon.blog.post.dto.PostPreviewResponse;
 import org.iptime.yoon.blog.post.dto.PostResponse;
+import org.iptime.yoon.blog.post.entity.DeletedPost;
 import org.iptime.yoon.blog.post.entity.Post;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewDto;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
@@ -58,6 +59,18 @@ public interface PostMapper {
         @Mapping(target = "writerName",ignore = true)
     })
     Post postCreateRequestToPost(PostCreateRequest request);
+
+
+    @Mappings({
+        @Mapping(target="writerId",ignore = true),
+        @Mapping(target="deletedAt",ignore = true),
+        @Mapping(target="category",ignore = true),
+        @Mapping(target="tags", ignore = true),
+        @Mapping(target="id", ignore = true),
+        @Mapping(target = "postId", source = "id"),
+    })
+    DeletedPost postToDeletedPost(Post post);
+
 
 
     @Mapping(source = "content", target = "postList")

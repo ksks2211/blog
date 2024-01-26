@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.iptime.yoon.blog.common.BaseEntity;
+import org.iptime.yoon.blog.common.entity.BaseEntity;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -19,7 +19,9 @@ import java.time.Period;
 @Builder
 @Getter
 @Where(clause = "deleted = false")
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"provider","subject"})})
+@Table(
+    name = "blog_user",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"provider","subject"})})
 public class BlogUser extends BaseEntity {
 
     @Id
@@ -47,11 +49,12 @@ public class BlogUser extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @Column(name="provider")
     private AuthProvider provider = AuthProvider.LOCAL;
 
     // OAuth2
+    @Column(name="subject")
     private String subject;
-
 
     public int getAge(){
         if(dateOfBirth != null && LocalDate.now().isAfter(dateOfBirth)){
@@ -62,10 +65,6 @@ public class BlogUser extends BaseEntity {
 
     public boolean isLocalUser(){
         return AuthProvider.LOCAL.equals(this.provider);
-    }
-
-    public String getEmail(){
-        return this.username;
     }
 
     @Enumerated(EnumType.STRING)

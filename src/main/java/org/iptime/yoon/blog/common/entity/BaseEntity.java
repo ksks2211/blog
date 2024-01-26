@@ -1,4 +1,4 @@
-package org.iptime.yoon.blog.common;
+package org.iptime.yoon.blog.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

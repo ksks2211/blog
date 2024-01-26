@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
-import org.iptime.yoon.blog.common.BaseEntity;
+import org.iptime.yoon.blog.common.entity.BaseEntity;
 
 import java.time.LocalDateTime;
 

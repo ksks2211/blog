@@ -1,14 +1,18 @@
 package org.iptime.yoon.blog.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
+import java.util.stream.Collectors;
+
+import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -26,6 +30,27 @@ public class GlobalExceptionHandler {
         log.warn("Entity not found",e);
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
+        String message = e.getBindingResult().getFieldErrors().stream()
+            .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+        return createErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e){
+        String message = e.getConstraintViolations().stream()
+            .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+            .collect(Collectors.joining(", "));
+        return createErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+
+
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException e){

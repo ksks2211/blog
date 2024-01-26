@@ -3,6 +3,7 @@ package org.iptime.yoon.blog.security.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.security.auth.AuthUser;
@@ -39,6 +40,8 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         Object principal = authentication.getPrincipal();
 
+        boolean isLocal = (principal instanceof AuthUser );
+
         // Create JwtUser from AuthUser(Local login User) or OidcUser(OAuth2 login User)
         JwtUser jwtUser = (principal instanceof AuthUser authUser) ? blogUserMapper.authUserToJwtUser(authUser) : handleOidcUser((OidcUser)principal);
         String token = jwtManager.createToken(jwtUser);
@@ -50,6 +53,15 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             .username(username).build();
         log.info("JWT Issued for {} : {}",username, token);
 
+
+
+        if(!isLocal) {
+            // Invalidate session used for oAuth2 login
+            HttpSession session = request.getSession();
+            String sessionId = session.getId();
+            session.invalidate();
+            log.info("Session {} invalidated", sessionId);
+        }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_OK);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(body));

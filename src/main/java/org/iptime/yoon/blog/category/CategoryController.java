@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.category;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.category.dto.CategoryCreateRequest;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 import static org.iptime.yoon.blog.category.CategoryUtils.parseCategoryString;
-import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
+import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -34,14 +35,14 @@ public class CategoryController {
 
 
     @PostMapping("")
-    public ResponseEntity<?> createCategory(@CurrentUsername String username, @RequestBody CategoryCreateRequest reqBody){
+    public ResponseEntity<?> createCategory(@CurrentUsername String username, @Valid @RequestBody CategoryCreateRequest reqBody){
         String category = reqBody.getCategory();
         categoryService.createCategoryIfNotExists(username,category);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{categoryString}")
-    public void updateCategory(@PathVariable String categoryString,@CurrentUsername String username, @RequestBody CategoryCreateRequest reqBody){
+    public void updateCategory(@PathVariable String categoryString,@CurrentUsername String username,@Valid @RequestBody CategoryCreateRequest reqBody){
         String before = parseCategoryString(categoryString);
         String after = reqBody.getCategory();
         categoryService.changeCategory(username,before,after);

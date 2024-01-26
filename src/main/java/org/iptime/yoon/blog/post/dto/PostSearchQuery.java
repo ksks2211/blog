@@ -1,5 +1,7 @@
 package org.iptime.yoon.blog.post.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +12,9 @@ import java.util.List;
  */
 @Data
 public class PostSearchQuery {
+
     private String writer;
-    private List<String> tags;
+    private List<
+        @NotBlank(message="Keyword cannot be blank")
+        @Pattern(regexp = "^[a-zA-z0-9]*$", message = "Must be alphanumeric") String> tags;
 }

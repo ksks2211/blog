@@ -1,12 +1,13 @@
 package org.iptime.yoon.blog.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.common.ErrorResponse;
+import org.iptime.yoon.blog.common.dto.ErrorResponse;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.iptime.yoon.blog.security.dto.LogInSuccessResponse;
 import org.iptime.yoon.blog.security.exception.InvalidRefreshTokenException;

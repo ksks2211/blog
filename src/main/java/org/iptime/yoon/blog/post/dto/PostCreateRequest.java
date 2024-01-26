@@ -1,8 +1,8 @@
 package org.iptime.yoon.blog.post.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import org.iptime.yoon.blog.post.entity.Post;
-import org.iptime.yoon.blog.user.entity.BlogUser;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,22 +14,18 @@ import java.util.Set;
 
 @Data
 public class PostCreateRequest {
+
+    @NotBlank(message = "Title cannot be empty")
     private String title;
     private String content;
     private String description;
+    private Set<
+        @NotBlank(message="Keyword cannot be blank")
+        @Pattern(regexp = "^[a-zA-z0-9]*$", message = "Must be alphanumeric") String> tags = new HashSet<>();
 
-    private Set<String> tags = new HashSet<>();
 
-
-    // "/dir", "/dir1/dir2", "/dir1/dir2/dir3"
+    // "^/(\w+(/\w+){0,7})?$"
+    @Pattern(regexp = "^/(\\w+(/\\w+){0,7})?$", message = "Category depth cannot be deeper than 8")
     private String category = "/";
 
-    public Post toEntity(Long id,String username){
-        return Post.builder()
-            .title(title)
-            .content(content)
-            .description(description)
-            .writer(BlogUser.builder().id(id).build())
-            .writerName(username).build();
-    }
 }

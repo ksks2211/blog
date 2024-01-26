@@ -2,9 +2,10 @@ package org.iptime.yoon.blog.post.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 import org.iptime.yoon.blog.category.Category;
-import org.iptime.yoon.blog.common.BaseEntity;
+import org.iptime.yoon.blog.common.entity.BaseEntity;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 import java.util.ArrayList;
@@ -28,11 +29,12 @@ import java.util.List;
         @Index(name="post_writer_index",columnList ="writerName")
     }
 )
+@EntityListeners(PostEntityListener.class)
+@DynamicUpdate
 public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false)
@@ -59,8 +61,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<PostTag> postTags = new ArrayList<>();
-
-
 
     public void addTag(Tag tag){
         PostTag postTag = PostTag.builder().post(this).tag(tag).build();

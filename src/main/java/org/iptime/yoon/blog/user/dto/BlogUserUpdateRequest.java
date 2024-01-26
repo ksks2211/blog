@@ -1,5 +1,7 @@
 package org.iptime.yoon.blog.user.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -9,6 +11,10 @@ import lombok.Data;
 @Data
 public class BlogUserUpdateRequest
 {
+
+    @NotBlank
     private String profile;
+
+    @Email
     private String email;
 }

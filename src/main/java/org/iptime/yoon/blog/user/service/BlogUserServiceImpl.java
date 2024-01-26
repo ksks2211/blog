@@ -12,6 +12,7 @@ import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.iptime.yoon.blog.user.repository.BlogUserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ import java.util.UUID;
  */
 
 @RequiredArgsConstructor
+@Service
 public class BlogUserServiceImpl implements BlogUserService {
 
     private final BlogUserRepository blogUserRepository;
@@ -43,8 +45,11 @@ public class BlogUserServiceImpl implements BlogUserService {
         if(blogUserRepository.existsByUsername(username)){
             throw new UsernameAlreadyTakenException("Username : "+username+" is already taken");
         }
+
+
         BlogUser blogUser = toEntity(username);
         blogUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        blogUser.setEmail(dto.getEmail());
         blogUserRepository.save(blogUser);
 
         return blogUserMapper.blogUserToBlogUserInfo(blogUser);

@@ -2,6 +2,10 @@ package org.iptime.yoon.blog.category;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.iptime.yoon.blog.post.entity.Post;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author rival
@@ -14,7 +18,6 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @Table(indexes = @Index(name = "index_category_root", columnList = "root"))
-@ToString
 public class Category {
 
     @Id
@@ -31,6 +34,13 @@ public class Category {
 
     @Builder.Default
     private Integer postCount = 0;
+
+
+
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Post> posts = new ArrayList<>();
 
     public void increasePostCount(){
         this.postCount++;

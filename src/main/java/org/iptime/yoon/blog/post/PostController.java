@@ -1,8 +1,9 @@
 package org.iptime.yoon.blog.post;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.iptime.yoon.blog.common.CreatedResourceIdResponse;
+import org.iptime.yoon.blog.common.dto.CreatedResourceIdResponse;
 import org.iptime.yoon.blog.post.dto.*;
 import org.iptime.yoon.blog.post.service.PostService;
 import org.iptime.yoon.blog.security.CurrentUsername;
@@ -16,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static org.iptime.yoon.blog.category.CategoryUtils.parseCategoryString;
-import static org.iptime.yoon.blog.common.ErrorResponse.createErrorResponse;
+import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 
 /**
  * @author rival
@@ -44,9 +45,7 @@ public class PostController {
 
     // CREATE
     @PostMapping("")
-    public ResponseEntity<?> createPost(@AuthenticationPrincipal JwtUser jwtUser, @RequestBody PostCreateRequest postCreateRequest) {
-
-
+    public ResponseEntity<?> createPost(@AuthenticationPrincipal JwtUser jwtUser, @Valid @RequestBody PostCreateRequest postCreateRequest) {
         Long id = postService.createPost(postCreateRequest, jwtUser);
         CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
         return new ResponseEntity<>(body, HttpStatus.CREATED);
@@ -107,15 +106,13 @@ public class PostController {
     @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public ResponseEntity<?> deletePostById(@PathVariable(name = "id") Long id) {
 
-
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(value = PostEntityNotFoundException.class)
     public ResponseEntity<?> postNotFoundExceptionHandler(PostEntityNotFoundException e) {
-        log.info(e.getClass().getName());
-        log.info(e.getMessage());
+        log.info("Post Not Found",e);
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 }

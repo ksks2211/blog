@@ -38,6 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
@@ -49,11 +50,8 @@ public class WebConfig implements WebMvcConfigurer {
                 protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location) throws IOException {
                     Resource requestedResource = location.createRelative(resourcePath);
                     return requestedResource.exists() && requestedResource.isReadable() ? requestedResource
-                        : new ClassPathResource("/static/index.html");                }
+                        : new ClassPathResource("/static/index.html");}
             });
-
-
-
     }
 
 

@@ -59,9 +59,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
                 .user(BlogUser.builder().id(userId).build())
                 .build();
         }
-
         refreshTokenRepository.save(token);
-
         return token.getId();
     }
 

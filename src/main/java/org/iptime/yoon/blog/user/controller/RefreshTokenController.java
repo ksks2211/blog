@@ -48,10 +48,10 @@ public class RefreshTokenController {
 
     }
 
-    @DeleteMapping("/refresh")
-    @PreAuthorize("isAuthenticated()")
-    public void deleteRefreshToken(@AuthenticationPrincipal JwtUser jwtUser,HttpServletResponse response){
 
+
+    @DeleteMapping("/refresh")
+    public void deleteRefreshToken(@AuthenticationPrincipal JwtUser jwtUser,HttpServletResponse response){
         refreshTokenService.removeTokenByUserId(jwtUser.getId());
 
         Cookie cookie = new Cookie(refreshTokenName,null);
@@ -60,7 +60,6 @@ public class RefreshTokenController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-
     }
 
 }

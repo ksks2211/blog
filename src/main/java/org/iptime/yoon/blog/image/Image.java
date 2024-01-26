@@ -3,7 +3,7 @@ package org.iptime.yoon.blog.image;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
-import org.iptime.yoon.blog.common.BaseEntity;
+import org.iptime.yoon.blog.common.entity.BaseEntity;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 /**
