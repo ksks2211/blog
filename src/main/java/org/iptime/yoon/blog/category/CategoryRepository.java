@@ -14,8 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     Optional<Category> findByFullName(String fullName);
     List<Category> findAllByRoot(String root);
 
-
-
     @Query(value = "select p.id from Category c JOIN c.posts p where c.fullName = :fullName")
     List<Long> findRelatedPostIds(String fullName);
 }

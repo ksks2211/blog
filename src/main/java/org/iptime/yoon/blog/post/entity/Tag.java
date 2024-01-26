@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.post.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,15 +17,14 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "tag_value",unique = true)
     @Setter
     private String value;
 
 
     public Tag(String value){
-        this.value=value;
+        this.value = value;
     }
 }

@@ -3,7 +3,6 @@ package org.iptime.yoon.blog.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.iptime.yoon.blog.common.entity.StringListConverter;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,7 +1,10 @@
 package org.iptime.yoon.blog.post.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 /**

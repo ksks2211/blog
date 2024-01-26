@@ -16,7 +16,6 @@ public class PostTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
     @ToString.Exclude

@@ -23,7 +23,7 @@ public class RefreshToken extends BaseEntity {
     @UuidGenerator
     private String id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     @ToString.Exclude
     private BlogUser user;

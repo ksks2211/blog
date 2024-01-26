@@ -32,8 +32,6 @@ public interface PostRepository extends JpaRepository<Post,Long>, JpaSpecificati
         "order by p.id desc limit 1")
     Optional<PostPreviewProjection> findPrevPost(Long id);
 
-
-
     @Query("select p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
         "from Post p "+
         "where p.deleted = false and p.category = :category")

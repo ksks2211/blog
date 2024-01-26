@@ -121,6 +121,8 @@ public class PostServiceImpl implements PostService {
     public PostResponse updatePost(Long id, PostCreateRequest postCreateRequest) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         String category = post.getCategory().getFullName();
+
+//        List<String> tags = post.getPostTags().stream().map(pt -> pt.getTag().getValue()).toList();
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
         return postMapper.postToPostResponse(post, tags, category);
     }

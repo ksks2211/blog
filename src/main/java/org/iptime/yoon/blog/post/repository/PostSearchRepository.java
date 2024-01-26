@@ -12,6 +12,5 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public interface PostSearchRepository {
 
-
     Page<PostPreviewDto> searchAllPosts(Specification<Post> spec, Pageable pageable);
 }
