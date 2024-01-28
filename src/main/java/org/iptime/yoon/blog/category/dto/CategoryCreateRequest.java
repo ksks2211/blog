@@ -13,6 +13,6 @@ import lombok.Data;
 public class CategoryCreateRequest {
 
     @NotBlank(message = "Category cannot be empty value")
-    @Pattern(regexp = "^/(\\w+(/\\w+){0,7})?$", message = "Category depth cannot be deeper than 8")
-    private String category="/";
+    @Pattern(regexp = "^(/\\w+){1,7}$", message = "Category depth cannot be deeper than 7")
+    private String category;
 }
