@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.iptime.yoon.blog.category.CategoryUtils.parseCategoryString;
@@ -29,8 +30,13 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 public class CategoryController {
     private final CategoryService categoryService;
     @GetMapping("")
-    public Map<String, CategoryDto> getCategories(@CurrentUsername String username) {
+    public Map<String, CategoryDto> getStructuredCategory(@CurrentUsername String username) {
         return categoryService.getCategories(username);
+    }
+
+    @GetMapping("/list")
+    public Map<String, List<String>> getCategory(@CurrentUsername String username){
+        return categoryService.getCategoryList(username);
     }
 
 

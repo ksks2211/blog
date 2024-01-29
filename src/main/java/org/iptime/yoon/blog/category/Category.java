@@ -35,9 +35,6 @@ public class Category {
     @Builder.Default
     private Integer postCount = 0;
 
-
-
-
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Post> posts = new ArrayList<>();

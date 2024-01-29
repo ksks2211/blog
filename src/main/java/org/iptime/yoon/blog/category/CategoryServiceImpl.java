@@ -84,6 +84,19 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryRoot.getRoot();
     }
 
+    @Override
+    public Map<String, List<String>> getCategoryList(String username) {
+        List<Category> categories = categoryRepository.findAllByRoot(username);
+
+        List<String> result = categories.stream().map(category -> {
+            String fullName = category.getFullName();
+            int i = fullName.indexOf("/");
+            return fullName.substring(i);
+        }).toList();
+
+        return Map.of("categories", result);
+    }
+
 
     // Update
     @Override
