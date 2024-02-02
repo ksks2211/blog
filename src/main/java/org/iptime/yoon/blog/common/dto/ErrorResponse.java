@@ -18,6 +18,10 @@ public class ErrorResponse {
     private int statusCode;
     private String message;
 
+    public String getError(){
+        return message;
+    }
+
     public static ResponseEntity<?> createErrorResponse(HttpStatus httpStatus, String message){
         return ResponseEntity
             .status(httpStatus)

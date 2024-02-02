@@ -42,7 +42,7 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
-    public void uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
+    public Long uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
             byte[] thumbData = createThumbnail(imageData);
@@ -60,7 +60,7 @@ public class ImageServiceImpl implements ImageService{
             .contentType(multipartFile.getContentType())
             .size(multipartFile.getSize())
             .build();
-        imageRepository.save(image);
+        return imageRepository.save(image).getId();
     }
 
 
@@ -75,7 +75,6 @@ public class ImageServiceImpl implements ImageService{
         return storageService.download(filename);
     }
     @Transactional
-    @Cacheable(value="images", key="#id")
     public ImageDto downloadImage(Long id) throws Exception {
         Image image = getImageById(id);
         byte[] bytes = getImageBytes(image.getFilename());
@@ -84,7 +83,6 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
-    @Cacheable(value="thumbnails", key="#id")
     public ImageDto downloadImageThumbnail(Long id) throws Exception {
         Image image = getImageById(id);
         byte[] bytes = getImageBytes(image.getFilename()+".thumb");
@@ -92,7 +90,7 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Transactional
-    @CacheEvict(value={"images", "thumbnails"}, key="#id")
+    @CacheEvict(value="images", key="#id")
     public void deleteImage(Long id) {
         Image image = getImageById(id);
         // storageService.deleteFile(image.getFilename());
@@ -101,10 +99,12 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Override
+    @Cacheable(value="images",key="#id")
     public String getImageUrl(Long id) {
         Image image = getImageById(id);
         String filename = image.getFilename();
         return storageService.getUrl(filename);
     }
+
 
 }

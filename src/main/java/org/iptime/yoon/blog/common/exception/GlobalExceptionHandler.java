@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -54,10 +55,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException e){
-        log.error("Access Denied", e);
+        log.info("Access Denied", e);
         return createErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
+
+    @ExceptionHandler(value= HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<?> HttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
+        log.info("Un Supported MediaType",e);
+        return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
 
 
     // Internal Server Error

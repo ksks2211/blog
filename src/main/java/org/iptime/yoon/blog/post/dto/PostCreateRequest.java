@@ -21,7 +21,7 @@ public class PostCreateRequest {
     private String description;
     private Set<
         @NotBlank(message="Keyword cannot be blank")
-        @Pattern(regexp = "^[a-zA-z0-9]*$", message = "Must be alphanumeric") String> tags = new HashSet<>();
+        @Pattern(regexp = "^\\w+( \\w+)*?$", message = "Must be alphanumeric") String> tags = new HashSet<>();
 
 
     // "^/(\w+(/\w+){0,7})?$"

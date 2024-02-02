@@ -1,6 +1,9 @@
 package org.iptime.yoon.blog.user.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.security.CurrentUsername;
@@ -15,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,33 +35,38 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BlogUserController {
 
     private final BlogUserService blogUserService;
 
     // UsernameAlreadyTakenException
-    @PostMapping({"/register","/sign-up"})
-    public ResponseEntity<?> createBlogUser(@Valid @RequestBody BlogUserRegisterRequest requestBody){
+    @PostMapping({"/register", "/sign-up"})
+    public ResponseEntity<?> createBlogUser(@Valid @RequestBody BlogUserRegisterRequest requestBody) {
         BlogUserInfoResponse responseBody = blogUserService.createBlogUser(requestBody);
-        return new ResponseEntity<>(responseBody,HttpStatus.CREATED);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
-    @ExceptionHandler(value= UsernameAlreadyTakenException.class)
-    public ResponseEntity<?> usernameAlreadyTakenExceptionHandler(UsernameAlreadyTakenException e){
+    @ExceptionHandler(value = UsernameAlreadyTakenException.class)
+    public ResponseEntity<?> usernameAlreadyTakenExceptionHandler(UsernameAlreadyTakenException e) {
         log.info(e.getClass().getName());
         log.info(e.getMessage());
         return createErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
 
-
     // GET "/is-username-taken?username=username"
     @GetMapping("/is-username-taken")
-    public ResponseEntity<?> isUsernameTaken(@RequestParam String username) {
+    public ResponseEntity<?> isUsernameTaken(
+        @RequestParam
+        @NotBlank(message = "Username is mandatory")
+        @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
+        @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Username must be alphanumeric")
+        String username) {
         username = username.trim();
         boolean taken = blogUserService.isUsernameTaken(username);
-        Map<String,String> body = new HashMap<>();
-        body.put("message","Username is available");
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "Username is available");
         if (taken) {
             body.put("message", "Username is already taken");
             return new ResponseEntity<>(body, HttpStatus.CONFLICT);
@@ -69,7 +78,7 @@ public class BlogUserController {
     // DELETE "/unregister"
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping({"/unregister"})
-    public ResponseEntity<?> unregisterBlogUser(@CurrentUsername String username){
+    public ResponseEntity<?> unregisterBlogUser(@CurrentUsername String username) {
         blogUserService.deleteBlogUser(username);
         return ResponseEntity.noContent().build(); // 204
     }
@@ -78,7 +87,7 @@ public class BlogUserController {
     // PUT "/update"
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/update")
-    public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @Valid @RequestBody BlogUserUpdateRequest requestBody){
+    public ResponseEntity<?> updateBlogUserInformation(@CurrentUsername String username, @Valid @RequestBody BlogUserUpdateRequest requestBody) {
         BlogUserInfoResponse responseBody = blogUserService.updateBlogUser(username, requestBody);
         return ResponseEntity.ok(responseBody);
     }
@@ -88,15 +97,14 @@ public class BlogUserController {
 
     @GetMapping("/who-am-i")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> whoAmI(@CurrentUsername String username){
+    public ResponseEntity<?> whoAmI(@CurrentUsername String username) {
         BlogUserInfoResponse responseBody = blogUserService.getBlogUserInfo(username);
         return ResponseEntity.ok(responseBody); // 200
     }
 
 
-
     @GetMapping("/check-auth")
-    public Map<String, ?> checkAuthentication(){
+    public Map<String, ?> checkAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = authentication != null
             && authentication.isAuthenticated()
@@ -104,7 +112,7 @@ public class BlogUserController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("authenticated", isAuthenticated);
-        response.put("principal",authentication);
+        response.put("principal", authentication);
         return response;
 
     }

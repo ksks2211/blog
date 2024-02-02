@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UnauthorizedAccessResponse {
 
     private String reason;
-
+    private final Integer statusCode =401;
     private final String message = "Unauthorized Request!";
     public UnauthorizedAccessResponse(String reason){
         this.reason=reason;

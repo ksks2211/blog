@@ -1,0 +1,65 @@
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: never
+    include-exception: false
+  servlet:
+    session:
+      timeout: 30m
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  security:
+    debug: false
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${OAUTH2_REDIRECT_URI}
+            scope:
+              - profile
+              - email
+              - openid
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      entry-ttl-minutes: 20
+      cache-prefix: "spring:cache"
+  session:
+    redis:
+      namespace: spring:session
+    timeout: 30m
+minio:
+  endpoint: ${MINIO_ENDPOINT}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}
+  bucketName: ${MINIO_BUCKET_NAME}
+auth:
+  refresh-token:
+    refresh-exp-hours: 12
+    name: "refresh-token"
+  jwt:
+    auth-exp-minutes: 150
+    secret-key: "JwtSecretKey"
+    issuer: "JwtIssuer"
+cors:
+  allowed-origins:
+    - ${ALLOWED_ORIGIN}

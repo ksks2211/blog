@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.post;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.common.dto.CreatedResourceIdResponse;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static org.iptime.yoon.blog.category.CategoryUtils.parseCategoryString;
@@ -29,6 +31,7 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 @RequestMapping("/api/posts")
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 public class PostController {
 
 
@@ -61,7 +64,10 @@ public class PostController {
 
 
     @GetMapping("/categories/{categoryString}")
-    public PostPageResponse getPostPageByCategory(@RequestParam(value = "page", defaultValue = "1") int page, @PathVariable String categoryString, @CurrentUsername String root) {
+    public PostPageResponse getPostPageByCategory(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @Pattern(regexp = "^(/\\w+){1,7}$", message = "Category depth cannot be deeper than 7") @PathVariable String categoryString,
+        @CurrentUsername String root) {
         PageRequest pageRequest = generatePageRequest(page);
         String sub = parseCategoryString(categoryString);
         log.info("Username : {}, Category : {}", root, sub);
@@ -75,22 +81,20 @@ public class PostController {
     }
 
 
-    private PageRequest generatePageRequest(int clientPageNum){
-        int zeroBasedPage = clientPageNum > 0 ? clientPageNum -1 : 0;
+    private PageRequest generatePageRequest(int clientPageNum) {
+        int zeroBasedPage = clientPageNum > 0 ? clientPageNum - 1 : 0;
         Sort sort = Sort.by("id").descending();
-        return PageRequest.of(zeroBasedPage, SIZE_PER_PAGE,sort);
+        return PageRequest.of(zeroBasedPage, SIZE_PER_PAGE, sort);
     }
 
     @GetMapping("/search")
     public PostPageResponse searchPostPage(
         @RequestParam(value = "page", defaultValue = "1") int page,
-        @ModelAttribute PostSearchQuery postSearchQuery){
+        @ModelAttribute PostSearchQuery postSearchQuery) {
 
         PageRequest pageRequest = generatePageRequest(page);
-        return postService.searchPostList(postSearchQuery,pageRequest);
+        return postService.searchPostList(postSearchQuery, pageRequest);
     }
-
-
 
 
     // UPDATE
@@ -112,7 +116,7 @@ public class PostController {
 
     @ExceptionHandler(value = PostEntityNotFoundException.class)
     public ResponseEntity<?> postNotFoundExceptionHandler(PostEntityNotFoundException e) {
-        log.info("Post Not Found",e);
+        log.info("Post Not Found", e);
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 }

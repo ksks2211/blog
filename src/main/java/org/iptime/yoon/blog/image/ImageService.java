@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2023-08-17
  */
 public interface ImageService {
-    void uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception;
+    Long uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception;
 
     ImageDto downloadImage(Long id) throws Exception;
 

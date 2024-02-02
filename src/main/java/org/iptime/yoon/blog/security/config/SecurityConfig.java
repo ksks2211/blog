@@ -62,6 +62,8 @@ public class SecurityConfig {
     @Value("${spring.security.debug:false}") // :기본값
     boolean securityDebug;
 
+    private final CorsProperties corsProperties;
+
     private final BlogUserRepository blogUserRepository;
     private final AuthenticationConfiguration authConfig;
     private final JwtManager jwtManager;
@@ -136,7 +138,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final var configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3306", "http://localhost:8080"));
+        configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("*"));

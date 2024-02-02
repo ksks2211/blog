@@ -9,11 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
@@ -47,12 +49,15 @@ public class ImageController {
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal JwtUser jwtUser, MultipartFile uploadFile) throws Exception {
+
         if(!isImageFile(uploadFile)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return createErrorResponse(HttpStatus.BAD_REQUEST, "Only support image file");
         }
         String filename = generateRandomFilename(jwtUser.getUsername());
-        imageService.uploadImage(uploadFile,filename, jwtUser.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Long id = imageService.uploadImage(uploadFile, filename, jwtUser.getId());
+
+        Map<String, Long> body = Map.of("id", id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping("/{id}")
@@ -70,8 +75,6 @@ public class ImageController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, imageDto.getContentType());
-
-
         return new ResponseEntity<>(imageDto.getBytes(), headers, HttpStatus.OK);
     }
 
@@ -94,5 +97,13 @@ public class ImageController {
         log.info(e.getClass().getName());
         log.info(e.getMessage());
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+
+    @ExceptionHandler(value= HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<?> HttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
+        log.info(e.getClass().getName());
+        log.info(e.getMessage());
+        return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 }
