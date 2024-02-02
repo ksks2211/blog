@@ -13,6 +13,7 @@ import org.iptime.yoon.blog.user.service.BlogUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -23,6 +24,8 @@ import java.util.stream.IntStream;
  * @since 2023-08-31
  */
 
+
+@Profile("dev")
 @Component
 @RequiredArgsConstructor
 @Slf4j
