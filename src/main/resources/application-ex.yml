@@ -62,4 +62,5 @@ auth:
     issuer: "JwtIssuer"
 cors:
   allowed-origins:
-    - ${ALLOWED_ORIGIN}
+    - http://localhost:3306
+    - http://localhost:8080
