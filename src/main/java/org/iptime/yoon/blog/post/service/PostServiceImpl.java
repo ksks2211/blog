@@ -97,8 +97,13 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostPageResponse findPostListByCategory(Pageable pageable, String root, String sub) {
-        Long id = categoryService.createCategoryIfNotExists(root, sub);
-        Page<PostPreviewProjection> postPreviewPage = postRepository.findPostListByCategory(pageable, Category.builder().id(id).build());
+        Category category = categoryService.getCategory(root, sub);
+        if(category.getId()==null){
+            PostPageResponse emptyResponse = new PostPageResponse();
+            emptyResponse.setTotalPages(0);
+            return emptyResponse;
+        }
+        Page<PostPreviewProjection> postPreviewPage = postRepository.findPostListByCategory(pageable,category);
         return postMapper.postPreviewPageToPostPageResponse(postPreviewPage);
     }
 

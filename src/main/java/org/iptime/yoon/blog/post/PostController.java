@@ -66,7 +66,7 @@ public class PostController {
     @GetMapping("/categories/{categoryString}")
     public PostPageResponse getPostPageByCategory(
         @RequestParam(value = "page", defaultValue = "1") int page,
-        @Pattern(regexp = "^(/\\w+){1,7}$", message = "Category depth cannot be deeper than 7") @PathVariable String categoryString,
+        @PathVariable String categoryString,
         @CurrentUsername String root) {
         PageRequest pageRequest = generatePageRequest(page);
         String sub = parseCategoryString(categoryString);
