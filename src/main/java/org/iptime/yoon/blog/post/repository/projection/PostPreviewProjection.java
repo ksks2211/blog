@@ -10,6 +10,7 @@ public interface PostPreviewProjection {
     Long getId();
     String getTitle();
     String getWriterName();
+    String getWriterDisplayName();
 
     String getDescription();
 

@@ -6,7 +6,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.iptime.yoon.blog.post.PostSpecification;
 import org.iptime.yoon.blog.post.entity.Post;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewDto;
 import org.springframework.data.domain.Page;
@@ -28,22 +27,26 @@ public class PostSearchRepositoryImpl implements PostSearchRepository{
     @Override
     public Page<PostPreviewDto> searchAllPosts(Specification<Post> spec, Pageable pageable) {
 
-        spec = spec.and(PostSpecification.notDeleted());
-
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<PostPreviewDto> query = cb.createQuery(PostPreviewDto.class);
 
-
+        // From post
         Root<Post> root = query.from(Post.class);
 
-        query.select(cb.construct(PostPreviewDto.class,root.get("id"), root.get("title"), root.get("writerName"),root.get("description"), root.get("createdAt"), root.get("updatedAt")));
 
+        // Select id, title, writerName,   ...
+        query.select(cb.construct(PostPreviewDto.class,root.get("id"), root.get("title"), root.get("writerName"), root.get("writerDisplayName"),root.get("description"), root.get("createdAt"), root.get("updatedAt")));
+
+
+        // Where ...
         query.where(spec.toPredicate(root,query,cb));
+
 
         TypedQuery<PostPreviewDto> typedQuery = entityManager.createQuery(query);
 
 
+        // limit + offset (paging)
         typedQuery.setFirstResult((int)pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
 
@@ -55,8 +58,6 @@ public class PostSearchRepositoryImpl implements PostSearchRepository{
 
 
         return new PageImpl<>(content, pageable, total);
-
-
     }
 
 

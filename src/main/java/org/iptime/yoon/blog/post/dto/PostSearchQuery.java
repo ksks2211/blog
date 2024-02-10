@@ -16,5 +16,5 @@ public class PostSearchQuery {
     private String writer;
     private List<
         @NotBlank(message="Keyword cannot be blank")
-        @Pattern(regexp = "^[a-zA-z0-9]*$", message = "Must be alphanumeric") String> tags;
+        @Pattern(regexp =PostValidationConstants.TAG_RULE_REGEX, message = PostValidationConstants.TAG_RULE_MESSAGE) String> tags;
 }

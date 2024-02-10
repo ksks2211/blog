@@ -1,4 +1,4 @@
-package org.iptime.yoon.blog.user.controller;
+package org.iptime.yoon.blog.security.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

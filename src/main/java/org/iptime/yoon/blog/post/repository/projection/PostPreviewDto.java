@@ -17,6 +17,7 @@ public class PostPreviewDto implements PostPreviewProjection{
     String title;
 
     String writerName;
+    String writerDisplayName;
 
     String description;
     LocalDateTime createdAt;

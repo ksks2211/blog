@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.user.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,6 @@ public class BlogUserRegisterRequest {
     @Pattern(regexp = "^\\S*$", message = "Password must not contain whitespace")
     private String password;
 
-
+    @Email
     private String email;
 }

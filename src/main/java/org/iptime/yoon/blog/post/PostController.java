@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.post;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.common.dto.CreatedResourceIdResponse;
@@ -36,7 +35,7 @@ public class PostController {
 
 
     private final PostService postService;
-    public static int SIZE_PER_PAGE = 10;
+    public static final int SIZE_PER_PAGE = 10;
 
 
     // prev and next post

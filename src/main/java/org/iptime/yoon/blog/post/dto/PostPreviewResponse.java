@@ -14,6 +14,7 @@ public class PostPreviewResponse {
     private String createdAt;
     private String updatedAt;
     private String writer;
+    private String writerDisplayName;
     private String description;
 
 }

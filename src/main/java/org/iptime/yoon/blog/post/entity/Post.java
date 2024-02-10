@@ -52,6 +52,7 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false)
     private String writerName;
+    private String writerDisplayName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

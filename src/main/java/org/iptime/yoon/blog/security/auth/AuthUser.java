@@ -11,7 +11,9 @@ import java.util.Collection;
  * @since 2023-08-31
  */
 @Getter
-public class AuthUser extends User {
+public class AuthUser extends User  {
+
+
 
     private final Long id;
     private final String profile;

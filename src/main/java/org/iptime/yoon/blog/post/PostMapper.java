@@ -41,7 +41,6 @@ public interface PostMapper {
     })
     PostPreviewResponse postProjToPostRes(PostPreviewProjection projection);
 
-
     @Mappings({
         @Mapping(source = "writerName", target = "writer"),
         @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "localDateTimeConverter"),
@@ -49,17 +48,15 @@ public interface PostMapper {
     })
     PostPreviewResponse postDtoToPostRes(PostPreviewDto projection);
 
-
-
     @Mappings({
         @Mapping(target = "category", ignore = true),
         @Mapping(target = "postTags", ignore = true),
         @Mapping(target = "id", ignore = true),
         @Mapping(target="writer", ignore = true),
-        @Mapping(target = "writerName",ignore = true)
+        @Mapping(target = "writerName",ignore = true),
+        @Mapping(target = "writerDisplayName",ignore = true)
     })
     Post postCreateRequestToPost(PostCreateRequest request);
-
 
     @Mappings({
         @Mapping(target="writerId",ignore = true),
@@ -71,14 +68,11 @@ public interface PostMapper {
     })
     DeletedPost postToDeletedPost(Post post);
 
-
-
     @Mapping(source = "content", target = "postList")
     PostPageResponse postPreviewPageToPostPageResponse(Page<PostPreviewProjection> postPreviewPage);
 
     @Mapping(source = "content", target = "postList")
     PostPageResponse postPreviewDtoPageToPostPageResponse(Page<PostPreviewDto> postPreviewPage);
-
 
     default PostResponse postToPostResponse(Post post, List<String> tags, String category) {
         PostResponse postResponse = postToPostResponse(post);
@@ -87,14 +81,9 @@ public interface PostMapper {
         return postResponse;
     }
 
-
-
-
-
     @Named("localDateTimeConverter")
     default String localDateTimeConverter(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
     }
-
 
 }

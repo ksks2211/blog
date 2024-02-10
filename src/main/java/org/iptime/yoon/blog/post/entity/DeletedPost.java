@@ -32,10 +32,6 @@ public class DeletedPost {
 
 
     private LocalDateTime createdAt;
-
-
-
-
     private LocalDateTime deletedAt;
 
 

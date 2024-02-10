@@ -21,12 +21,11 @@ public class PostCreateRequest {
     private String description;
     private Set<
         @NotBlank(message="Keyword cannot be blank")
-        @Pattern(regexp = "^\\w+( \\w+)*?$", message = "Must be alphanumeric") String> tags = new HashSet<>();
+        @Pattern(regexp = PostValidationConstants.TAG_RULE_REGEX, message = PostValidationConstants.TAG_RULE_MESSAGE) String> tags = new HashSet<>();
 
 
-    // "^/(\w+(/\w+){0,7})?$"
     @NotBlank(message = "Category cannot be empty value")
-    @Pattern(regexp = "^(/\\w+){1,7}$", message = "Category depth cannot be deeper than 7")
+    @Pattern(regexp = PostValidationConstants.CATEGORY_DEPTH_REGEX, message = PostValidationConstants.CATEGORY_DEPTH_MESSAGE)
     private String category;
 
 }

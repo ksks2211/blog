@@ -3,6 +3,7 @@ package org.iptime.yoon.blog.category.dto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.iptime.yoon.blog.helper.ValidationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,22 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author rival
  * @since 2024-01-28
  */
-class CategoryCreateRequestTest {
-
-    private Validator validator;
-
-
-
-    @BeforeEach
-    public void setUp(){
-        try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()){
-            validator = factory.getValidator();
-        }
-    }
+class CategoryCreateRequestTest extends ValidationTest {
 
 
     @Test
     public void testValidation(){
+
+        Validator validator = getValidator();
         var req = new CategoryCreateRequest();
         String category = "/dir/dir";
         req.setCategory(category);
@@ -37,17 +29,18 @@ class CategoryCreateRequestTest {
         String fCategory = "/";
         falseReq.setCategory(fCategory);
 
+        var tooDeepReq = new CategoryCreateRequest();
+        String fCategory2 = "/dir1/dir2/dir3/dir4/dir5/dir6";
+        tooDeepReq.setCategory(fCategory2);
+
 
         var violations = validator.validate(req);
         var violations2= validator.validate(falseReq);
+        var violations3 = validator.validate(tooDeepReq);
 
         assertTrue(violations.isEmpty());
         assertFalse(violations2.isEmpty());
-
-
+        assertFalse(violations3.isEmpty());
     }
-
-
-
 
 }

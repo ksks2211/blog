@@ -63,16 +63,22 @@ public class PostServiceImpl implements PostService {
         }
         tagRepository.saveAll(tags);
 
-        // Create Post
+        // Mapping to PostRequest to Post
         Post post = postMapper.postCreateRequestToPost(postCreateRequest);
 
+
+        // Fill Related Fields
         tags.forEach(post::addTag);
         post.setWriterName(authUser.getUsername());
+        post.setWriterDisplayName(authUser.getDisplayName());
         post.setWriter(BlogUser.builder().id(authUser.getId()).build());
         post.setCategory(category);
 
+
+        // Save Entity
         postRepository.save(post);
 
+        // Return Created Post id
         return post.getId();
     }
 
@@ -127,7 +133,6 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         String category = post.getCategory().getFullName();
 
-//        List<String> tags = post.getPostTags().stream().map(pt -> pt.getTag().getValue()).toList();
         List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
         return postMapper.postToPostResponse(post, tags, category);
     }
@@ -140,6 +145,7 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         Category category = post.getCategory();
+        post.setCategory(null);
         categoryService.decreasePostCount(category);
         postRepository.delete(post);
     }
