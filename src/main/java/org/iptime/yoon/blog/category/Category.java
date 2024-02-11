@@ -25,7 +25,6 @@ public class Category {
     @EqualsAndHashCode.Include
     private Long id;
 
-
     private String root;
 
     @Column(unique = true)

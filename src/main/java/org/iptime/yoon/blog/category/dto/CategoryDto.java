@@ -1,8 +1,9 @@
 package org.iptime.yoon.blog.category.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,8 @@ import java.util.Map;
 
 @Data
 @Builder
-@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoryDto {
 
     @Builder.Default

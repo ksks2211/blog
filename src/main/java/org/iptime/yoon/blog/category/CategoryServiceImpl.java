@@ -6,11 +6,15 @@ import org.iptime.yoon.blog.category.dto.CategoryDto;
 import org.iptime.yoon.blog.category.dto.CategoryRootDto;
 import org.iptime.yoon.blog.category.exception.CategoryEntityNotFoundException;
 import org.iptime.yoon.blog.category.exception.CategoryNotEmptyException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author rival
@@ -20,7 +24,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 public class CategoryServiceImpl implements CategoryService{
-
 
     private final CategoryRepository categoryRepository;
 
@@ -33,12 +36,10 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void decreasePostCount(Category category) {
+    public void decreasePostCount(Category category){
         category.decreasePostCount();
         categoryRepository.save(category);
     }
-
-
 
     // Read
     @Override
@@ -63,11 +64,15 @@ public class CategoryServiceImpl implements CategoryService{
 
     // Delete
     @Override
+    @Transactional
     public void deleteCategoryIfEmpty(String root, String sub) throws CategoryNotEmptyException{
         String fullName = root+sub;
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
         if(category.getPostCount() == 0){
             categoryRepository.delete(category);
+
+            cacheService.deleteCaches("categories:list", List.of(root));
+            cacheService.deleteCaches("categories",List.of(root));
         }else{
             throw new CategoryNotEmptyException(fullName);
         }
@@ -75,42 +80,51 @@ public class CategoryServiceImpl implements CategoryService{
 
 
     // Read
+    @Cacheable(value="categories",key="#username")
     @Override
-    public Map<String, CategoryDto> getCategories(String root) {
-        List<Category> categories = categoryRepository.findAllByRoot(root);
-
-        CategoryRootDto categoryRoot = new CategoryRootDto(root);
+    @Transactional
+    public Map<String, CategoryDto> getCategories(String username) {
+        List<Category> categories = categoryRepository.findAllByRoot(username);
+        CategoryRootDto categoryRoot = new CategoryRootDto(username);
         categories.forEach(el-> categoryRoot.insert(el.getFullName(),el.getPostCount()));
         return categoryRoot.getRoot();
     }
 
-    @Override
-    public Map<String, List<String>> getCategoryList(String username) {
-        List<Category> categories = categoryRepository.findAllByRoot(username);
 
-        List<String> result = categories.stream().map(category -> {
+    @Cacheable(value="categories:list",key = "#username")
+    @Override
+    @Transactional
+    public Map<String, List<String>> getCategoryList(String username) {
+        var categories = categoryRepository.findAllByRoot(username);
+        var categoryList = categories.stream().map(category -> {
             String fullName = category.getFullName();
             int i = fullName.indexOf("/");
             return fullName.substring(i);
-        }).toList();
+        }).collect(Collectors.toCollection(ArrayList::new));
 
-        return Map.of("categories", result);
+        var map = new HashMap<String, List<String>>();
+        map.put("categories",categoryList);
+        return map;
     }
 
 
     // Update
     @Override
     @Transactional
-    public void changeCategory(String root, String beforeSub, String afterSub) {
-        String fullName = root+beforeSub;
+    public void changeCategory(String username, String beforeSub, String afterSub) {
+        String fullName = username+beforeSub;
 
         List<Long> relatedPostsIdList = categoryRepository.findRelatedPostIds(fullName);
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
 
-        String newFullName = root+afterSub;
+        String newFullName = username+afterSub;
         category.setFullName(newFullName);
         categoryRepository.save(category);
+
+        // Cache Clear
         cacheService.deleteCaches("posts",relatedPostsIdList);
+        cacheService.deleteCaches("categories:list", List.of(username));
+        cacheService.deleteCaches("categories",List.of(username));
     }
 
 
