@@ -23,15 +23,13 @@ public class CacheService {
     private final StringRedisTemplate redisTemplate;
     @NotNull
     @Contract(pure = true)
-    private String getCacheKey(String cacheName, Long id){
+    private String getCacheKey(String cacheName, Object id){
         return CACHE_PREFIX+cacheName+"::"+id.toString();
     }
 
-
-    public void deleteCaches(String cacheName, List<Long> ids){
+    public void deleteCaches(String cacheName, List<?> ids){
         Collection<String> keys = ids.stream().map(id -> getCacheKey(cacheName, id)).toList();
         redisTemplate.delete(keys);
     }
-
 
 }

@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.category.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 
 @Data
-@ToString
+@NoArgsConstructor
 public class CategoryRootDto {
 
     private Map<String,CategoryDto> root;

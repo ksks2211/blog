@@ -46,7 +46,6 @@ public class BlogUserServiceImpl implements BlogUserService {
             throw new UsernameAlreadyTakenException("Username : "+username+" is already taken");
         }
 
-
         BlogUser blogUser = toEntity(username);
         blogUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         blogUser.setEmail(dto.getEmail());
