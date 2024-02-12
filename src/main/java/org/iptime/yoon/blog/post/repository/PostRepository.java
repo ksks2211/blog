@@ -22,19 +22,24 @@ public interface PostRepository extends JpaRepository<Post,Long>, JpaSpecificati
 
     @Query("select p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
         "from Post p " +
-        "where p.deleted = false and p.id > :id " +
+        "where p.id > :id " +
         "order by p.id asc limit 1")
     Optional<PostPreviewProjection> findNextPost(Long id);
 
     @Query("select p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
         "from Post p " +
-        "where p.deleted = false and p.id < :id " +
+        "where p.id < :id " +
         "order by p.id desc limit 1")
     Optional<PostPreviewProjection> findPrevPost(Long id);
 
     @Query("select p.id as id, p.title as title, p.writerName as writerName, p.createdAt as createdAt, p.updatedAt as updatedAt, p.description as description " +
         "from Post p "+
-        "where p.deleted = false and p.category = :category")
+        "where p.category = :category")
     Page<PostPreviewProjection> findPostListByCategory(Pageable pageable, Category category);
+
+
+
+    @Query("select p.category.fullName from Post p where p.id = :id")
+    Optional<String> findCategoryFullNameById(Long id);
 
 }

@@ -59,7 +59,6 @@ public interface PostMapper {
     Post postCreateRequestToPost(PostCreateRequest request);
 
     @Mappings({
-        @Mapping(target="writerId",ignore = true),
         @Mapping(target="deletedAt",ignore = true),
         @Mapping(target="category",ignore = true),
         @Mapping(target="tags", ignore = true),

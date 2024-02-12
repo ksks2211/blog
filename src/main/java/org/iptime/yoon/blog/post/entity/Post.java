@@ -59,7 +59,7 @@ public class Post extends BaseEntity {
     @ToString.Exclude
     private Category category;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<PostTag> postTags = new ArrayList<>();
 

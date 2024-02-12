@@ -37,4 +37,8 @@ public interface PostService {
     boolean isOwner(Long id, String username);
 
     PostPageResponse searchPostList(PostSearchQuery postSearchQuery, PageRequest pageRequest);
+
+
+
+    String findCategoryFullName(Long id);
 }

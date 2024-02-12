@@ -1,10 +1,7 @@
 package org.iptime.yoon.blog.category.dto;
 
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.iptime.yoon.blog.helper.ValidationTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
