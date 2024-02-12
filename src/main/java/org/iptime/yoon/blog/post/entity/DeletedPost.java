@@ -27,8 +27,10 @@ public class DeletedPost {
     private Long postId;
     private String title;
     private String description;
+
+
+    @Column(columnDefinition = "TEXT")
     private String content;
-    private String writerName;
 
 
     private LocalDateTime createdAt;
@@ -36,7 +38,8 @@ public class DeletedPost {
 
 
     // Related Fields
-    private Long writerId;
+    private String writerName;
+    private String writerDisplayName;
     private String category;
 
     @Convert(converter = StringListConverter.class)

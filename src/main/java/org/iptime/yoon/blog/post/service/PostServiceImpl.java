@@ -144,9 +144,21 @@ public class PostServiceImpl implements PostService {
     @CacheEvict(value = "posts", key = "#id")
     public void deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
+
+
+
+        // Category  Relation 정리
         Category category = post.getCategory();
         post.setCategory(null);
         categoryService.decreasePostCount(category);
+
+        //  User Relation 정리
+        post.setWriter(null);
+
+        // PostTag Relation 정리
+        postTagRepository.deleteAll(post.getPostTags());
+        post.removeAllPostTags();
+
         postRepository.delete(post);
     }
 
@@ -176,5 +188,11 @@ public class PostServiceImpl implements PostService {
 
         Page<PostPreviewDto> result = postRepository.searchAllPosts(spec, pageable);
         return postMapper.postPreviewDtoPageToPostPageResponse(result);
+    }
+
+    @Override
+    @Transactional
+    public String findCategoryFullName(Long id) {
+        return postRepository.findCategoryFullNameById(id).orElse("No Category");
     }
 }
