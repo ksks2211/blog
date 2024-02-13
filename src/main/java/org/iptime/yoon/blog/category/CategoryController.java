@@ -29,6 +29,9 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 @Slf4j
 public class CategoryController {
     private final CategoryService categoryService;
+
+
+
     @GetMapping("")
     public Map<String, CategoryDto> getStructuredCategory(@CurrentUsername String username) {
         return categoryService.getCategories(username);

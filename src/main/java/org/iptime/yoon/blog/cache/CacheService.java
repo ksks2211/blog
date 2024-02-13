@@ -11,8 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author rival
- * @since 2024-01-20
+* Service layer for caching response data to the clients
  */
 @Service
 @RequiredArgsConstructor
@@ -21,12 +20,28 @@ public class CacheService {
     @Value("${spring.data.redis.cache-prefix}")
     private String CACHE_PREFIX;
     private final StringRedisTemplate redisTemplate;
+
+
+    /**
+     * Generate cache-key with the key-generating rule
+     *
+     * @param cacheName cache name used for @Cacheable
+     * @param id String or Integer id of @Cacheable
+     * @return actual cache-key used for redis
+     */
     @NotNull
     @Contract(pure = true)
     private String getCacheKey(String cacheName, Object id){
         return CACHE_PREFIX+cacheName+"::"+id.toString();
     }
 
+
+    /**
+     * Delete cached data in batch
+     *
+     * @param cacheName cache name used for @Cacheable
+     * @param ids ids used for @Cacheable
+     */
     public void deleteCaches(String cacheName, List<?> ids){
         Collection<String> keys = ids.stream().map(id -> getCacheKey(cacheName, id)).toList();
         redisTemplate.delete(keys);

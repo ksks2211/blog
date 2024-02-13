@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,8 +62,15 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(value= HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<?> HttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
+    public ResponseEntity<?> httpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
         log.info("Un Supported MediaType",e);
+        return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<?> httpMessageNotReadableException(HttpMessageNotReadableException e){
+        log.info("Http Message Not Readable",e);
         return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
