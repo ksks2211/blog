@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @Builder
 public class ErrorResponse {
-    private int statusCode;
+    private Integer statusCode;
     private String message;
     private String timestamp;
 
