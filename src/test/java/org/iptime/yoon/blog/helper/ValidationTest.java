@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class ValidationTest {
 
-    private Validator validator;
+    public Validator validator;
 
 
     @BeforeEach
@@ -21,8 +21,5 @@ public class ValidationTest {
         }
     }
 
-    public Validator getValidator(){
-        return this.validator;
-    }
 
 }
