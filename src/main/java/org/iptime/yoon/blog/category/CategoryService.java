@@ -1,6 +1,6 @@
 package org.iptime.yoon.blog.category;
 
-import org.iptime.yoon.blog.category.dto.CategoryDto;
+import org.iptime.yoon.blog.category.dto.CategoryInfoDto;
 import org.iptime.yoon.blog.category.exception.CategoryNotEmptyException;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface CategoryService {
     void changeCategory(String root, String beforeSub, String afterSub);
     void deleteCategoryIfEmpty(String root, String sub) throws CategoryNotEmptyException;
 
-    Map<String, CategoryDto> getCategories(String root);
+    Map<String, CategoryInfoDto> getCategories(String root);
 
     Map<String, List<String>> getCategoryList(String username);
 }

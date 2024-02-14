@@ -26,7 +26,7 @@ class CategoryServiceTest {
 //        categoryService.createCategoryIfNotExists(root,sub2);
 //        categoryService.createCategoryIfNotExists(root,sub3);
 //        categoryService.createCategoryIfNotExists(root,sub4);
-//        Map<String, CategoryDto> categories = categoryService.getCategories(root);
+//        Map<String, CategoryInfoDto> categories = categoryService.getCategories(root);
 //
 //        String join = StringUtils.join(categories);
 //        System.out.println(join);

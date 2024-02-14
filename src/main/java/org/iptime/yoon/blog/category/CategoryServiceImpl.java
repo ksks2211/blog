@@ -2,7 +2,7 @@ package org.iptime.yoon.blog.category;
 
 import lombok.RequiredArgsConstructor;
 import org.iptime.yoon.blog.cache.CacheService;
-import org.iptime.yoon.blog.category.dto.CategoryDto;
+import org.iptime.yoon.blog.category.dto.CategoryInfoDto;
 import org.iptime.yoon.blog.category.dto.CategoryRootDto;
 import org.iptime.yoon.blog.category.exception.CategoryEntityNotFoundException;
 import org.iptime.yoon.blog.category.exception.CategoryNotEmptyException;
@@ -70,7 +70,6 @@ public class CategoryServiceImpl implements CategoryService{
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
         if(category.getPostCount() == 0){
             categoryRepository.delete(category);
-
             cacheService.deleteCaches("categories:list", List.of(root));
             cacheService.deleteCaches("categories",List.of(root));
         }else{
@@ -83,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Cacheable(value="categories",key="#username")
     @Override
     @Transactional
-    public Map<String, CategoryDto> getCategories(String username) {
+    public Map<String, CategoryInfoDto> getCategories(String username) {
         List<Category> categories = categoryRepository.findAllByRoot(username);
         CategoryRootDto categoryRoot = new CategoryRootDto(username);
         categories.forEach(el-> categoryRoot.insert(el.getFullName(),el.getPostCount()));

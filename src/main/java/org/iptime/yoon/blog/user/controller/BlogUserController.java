@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -39,6 +40,9 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
  * @since 2023-08-14
  */
 
+
+
+@Tag(name = "User Management", description = "APIs for managing user account")
 @RestController
 @RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
@@ -98,12 +102,10 @@ public class BlogUserController {
         @RequestParam
         @NotBlank(message = "Username is mandatory")
         @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
-        @Pattern(regexp = BlogUserConstants.USERNAME_REGEX, message = BlogUserConstants.USERNAME_MESSAGE)
+        @Pattern(regexp = BlogUserConstants.USERNAME_PATTERN_REGEX, message = BlogUserConstants.USERNAME_PATTERN_MESSAGE)
         String username) {
-        username = username.trim();
-        boolean taken = blogUserService.isUsernameTaken(username);
+        boolean taken = blogUserService.isUsernameTaken(username.trim());
         MsgResponse body = new MsgResponse();
-
         if (taken) {
             body.setMessage("Username is already taken");
             return new ResponseEntity<>(body, HttpStatus.CONFLICT);

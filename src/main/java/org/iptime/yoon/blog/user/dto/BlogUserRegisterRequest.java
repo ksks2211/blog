@@ -19,7 +19,7 @@ public class BlogUserRegisterRequest {
     @Schema(description = "Username", example = BlogUserConstants.EXAMPLE_USERNAME)
     @NotBlank(message = "Username is mandatory")
     @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
-    @Pattern(regexp = BlogUserConstants.USERNAME_REGEX, message = BlogUserConstants.USERNAME_MESSAGE)
+    @Pattern(regexp = BlogUserConstants.USERNAME_PATTERN_REGEX, message = BlogUserConstants.USERNAME_PATTERN_MESSAGE)
     private String username;
 
 

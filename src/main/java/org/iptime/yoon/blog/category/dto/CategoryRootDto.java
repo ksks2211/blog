@@ -15,21 +15,21 @@ import java.util.Map;
 @NoArgsConstructor
 public class CategoryRootDto {
 
-    private Map<String,CategoryDto> root;
+    private Map<String, CategoryInfoDto> root;
     private String key;
     public CategoryRootDto(String key){
         this.key=key;
         this.root = new HashMap<>();
-        this.root.put(key,CategoryDto.builder().build());
+        this.root.put(key, CategoryInfoDto.builder().build());
     }
 
     public void insert(String path, int numOfPosts){
 
         String[] parts = path.split("/");
-        Map<String, CategoryDto> current = this.root;
+        Map<String, CategoryInfoDto> current = this.root;
 
         for(int i = 0; i< parts.length ; i++){
-            CategoryDto newCategory = current.computeIfAbsent(parts[i], (k) -> CategoryDto.builder().build());
+            CategoryInfoDto newCategory = current.computeIfAbsent(parts[i], (k) -> CategoryInfoDto.builder().build());
             if(i==parts.length -1){
                 newCategory.numOfPosts=numOfPosts;
             }
