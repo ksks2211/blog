@@ -58,7 +58,7 @@ auth:
     name: "refresh-token"
   jwt:
     auth-exp-minutes: 150
-    secret-key: "JwtSecretKey"
+    secret-key: ${JWT_SECRET_KEY}
     issuer: "JwtIssuer"
 cors:
   allowed-origins:
