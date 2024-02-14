@@ -17,7 +17,6 @@ class CategoryCreateRequestTest extends ValidationTest {
     @Test
     public void testValidation(){
 
-        Validator validator = getValidator();
         var req = new CategoryCreateRequest();
         String category = "/dir/dir";
         req.setCategory(category);

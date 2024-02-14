@@ -14,7 +14,7 @@ public interface CategoryService {
     void increasePostCount(Category category);
     void decreasePostCount(Category category);
     Category getCategory(String root, String sub);
-    Long createCategoryIfNotExists(String root, String sub);
+    void createCategoryIfNotExists(String root, String sub);
 
 
     void changeCategory(String root, String beforeSub, String afterSub);

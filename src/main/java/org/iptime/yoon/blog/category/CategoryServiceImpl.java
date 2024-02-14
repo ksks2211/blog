@@ -54,10 +54,10 @@ public class CategoryServiceImpl implements CategoryService{
 
     // Create + Read
     @Override
-    public Long createCategoryIfNotExists(String root, String sub){
+    @Transactional
+    public void createCategoryIfNotExists(String root, String sub){
         Category category = getCategory(root,sub);
         if(category.getId()==null)categoryRepository.save(category);
-        return category.getId();
     }
 
 
