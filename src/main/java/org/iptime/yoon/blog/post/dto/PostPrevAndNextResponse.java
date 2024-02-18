@@ -1,7 +1,10 @@
 package org.iptime.yoon.blog.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author rival
@@ -9,7 +12,10 @@ import lombok.Data;
  */
 
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostPrevAndNextResponse {
 
     private PostPreviewResponse prev;

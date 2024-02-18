@@ -1,9 +1,6 @@
 package org.iptime.yoon.blog.image;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -14,11 +11,12 @@ import java.time.format.DateTimeFormatter;
  * @since 2023-08-13
  */
 
-@Data
-@Builder
-@Slf4j
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Slf4j
 public class ImageDto implements Serializable {
 
     private byte[] bytes;

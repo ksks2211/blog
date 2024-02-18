@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @Operation(
+        security = {@SecurityRequirement(name = "bearerAuth")},
         summary = "Get structured Categories of user",
         description = "Get structured Categories of user",
         responses = {
@@ -59,7 +61,13 @@ public class CategoryController {
         return categoryService.getCategories(username);
     }
 
+
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponse(
+        responseCode = "200",
+        content = @Content(schema = @Schema(ref = "CategoryListSchema"))
+    )
     @ApiResponse(
         responseCode = "401",
         content = @Content(schema = @Schema(implementation = ErrorResponse.class))
@@ -106,15 +114,13 @@ public class CategoryController {
 
     @ExceptionHandler(value = CategoryNotEmptyException.class)
     public ResponseEntity<?> categoryNotEmptyExceptionHandler(CategoryNotEmptyException e) {
-        log.info(e.getClass().getName());
-        log.info(e.getMessage());
+        log.info("Category already exists", e);
         return createErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(value = CategoryEntityNotFoundException.class)
     public ResponseEntity<?> categoryEntityNotFoundException(CategoryEntityNotFoundException e) {
-        log.info(e.getClass().getName());
-        log.info(e.getMessage());
+        log.info("Category not found",e);
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 

@@ -1,8 +1,6 @@
 package org.iptime.yoon.blog.common.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -14,7 +12,9 @@ import java.time.format.DateTimeFormatter;
  * @since 2023-08-12
  */
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ErrorResponse {

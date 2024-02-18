@@ -1,14 +1,16 @@
 package org.iptime.yoon.blog.security.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @author rival
  * @since 2023-08-14
  */
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class LogInSuccessResponse {
     @Builder.Default

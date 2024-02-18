@@ -3,7 +3,10 @@ package org.iptime.yoon.blog.category.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.iptime.yoon.blog.post.dto.PostValidationConstants;
 
 /**
@@ -11,7 +14,10 @@ import org.iptime.yoon.blog.post.dto.PostValidationConstants;
  * @since 2023-10-03
  */
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoryCreateRequest {
 
     @Schema(description = "Category", example = "/backend/spring_boot/mvc")

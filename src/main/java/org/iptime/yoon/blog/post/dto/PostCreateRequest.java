@@ -2,7 +2,10 @@ package org.iptime.yoon.blog.post.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +15,10 @@ import java.util.Set;
  * @since 2023-08-11
  */
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostCreateRequest {
 
     @NotBlank(message = "Title cannot be empty")

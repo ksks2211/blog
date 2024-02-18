@@ -156,7 +156,7 @@ public class PostServiceImpl implements PostService {
         post.setWriter(null);
 
         // PostTag Relation 정리
-        postTagRepository.deleteAll(post.getPostTags());
+//        postTagRepository.deleteAll(post.getPostTags());
         post.removeAllPostTags();
 
         postRepository.delete(post);

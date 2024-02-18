@@ -23,6 +23,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
+    @Setter
     private Long id;
 
     private String root;

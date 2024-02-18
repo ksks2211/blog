@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.iptime.yoon.blog.common.dto.ErrorResponse;
 import org.iptime.yoon.blog.common.dto.MsgResponse;
 import org.iptime.yoon.blog.security.CurrentUsername;
+import org.iptime.yoon.blog.security.dto.LogInRequest;
+import org.iptime.yoon.blog.security.dto.LogInSuccessResponse;
 import org.iptime.yoon.blog.security.exception.UsernameAlreadyTakenException;
 import org.iptime.yoon.blog.user.dto.BlogUserConstants;
 import org.iptime.yoon.blog.user.dto.BlogUserInfoResponse;
@@ -51,6 +53,29 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 public class BlogUserController {
 
     private final BlogUserService blogUserService;
+
+
+
+    @Operation(
+        summary = "Login",
+        description = "Take username and password for login",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Successfully Log in",
+                content = @Content(schema = @Schema(implementation = LogInSuccessResponse.class))
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Log in Failed",
+                content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+        }
+    )
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<LogInSuccessResponse> loginMock(@RequestBody LogInRequest ignoredReq){
+        return null;
+    }
 
 
     @Operation(

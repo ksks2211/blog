@@ -3,11 +3,12 @@ package org.iptime.yoon.blog.common.config;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.iptime.yoon.blog.category.dto.CategoryInfoDto;
 import org.jetbrains.annotations.NotNull;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -45,21 +46,18 @@ public class SpringDocConfig {
     }
 
 
+
+
+
+
+
     @Bean
     public OpenAPI openAPI(){
-
         var root = getStringCategoryInfoDtoHashMap();
-
 
         ResolvedSchema resolvedSchema = ModelConverters.getInstance().resolveAsResolvedSchema(new AnnotatedType(CategoryInfoDto.class));
 
-
-
-
         var categoriesSchema = new Schema<Map<String, CategoryInfoDto>>();
-
-//            .addProperty("< * >",resolvedSchema.schema).example(root);
-
         categoriesSchema.setType("object");
         categoriesSchema.setAdditionalProperties(resolvedSchema.schema);
         categoriesSchema.setDescription("Root Category");
@@ -72,18 +70,28 @@ public class SpringDocConfig {
         categories.add("/javascript/react");
 
 
-        var categoryListSchema = new Schema<Map<String,List<String>>>()
-            .addProperty("categories", new Schema<List<String>>().example(categories));
+        var categoryItemSchema = new StringSchema();
+        var categoryArraySchema = new Schema<List<String>>().items(categoryItemSchema).example(categories);
+        categoryArraySchema.setType("array");
 
+
+        var categoryListSchema = new Schema<Map<String,List<String>>>()
+            .addProperty("categories",categoryArraySchema);
+
+        final String securitySchemeName = "bearerAuth";
+        SecurityScheme securityScheme = new SecurityScheme().name(securitySchemeName)
+            .type(SecurityScheme.Type.HTTP)
+            .scheme("bearer")
+            .bearerFormat("JWT");
 
         return new OpenAPI()
             .components(
                 new Components()
                     .addSchemas("CategoryInfoDto", resolvedSchema.schema)
-
                     .addSchemas("CategoriesSchema", categoriesSchema)
                     .addSchemas("CategoryListSchema",categoryListSchema)
-            );
+                    .addSecuritySchemes(securitySchemeName,securityScheme)
+            ).addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
     }
 
     @NotNull

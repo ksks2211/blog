@@ -1,10 +1,7 @@
 package org.iptime.yoon.blog.post.dto;
 
-import jakarta.validation.ConstraintViolation;
 import org.iptime.yoon.blog.helper.ValidationTest;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 

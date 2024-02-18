@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.1.2'
+    id 'jacoco'
+
 }
 
 group = 'org.iptime.yoon'
@@ -24,7 +26,9 @@ repositories {
 jar {
     enabled=false
 }
-
+ext {
+    set('springBootAdminVersion', "3.2.1")
+}
 dependencies {
 
 
@@ -38,19 +42,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-
-
-
-
     implementation 'com.auth0:java-jwt:4.4.0'
-
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     implementation 'com.squareup.okio:okio:3.4.0'
     implementation 'io.minio:minio:8.5.7'
 
     implementation 'net.coobird:thumbnailator:0.4.17'
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'de.codecentric:spring-boot-admin-starter-client'
 
 
     compileOnly 'org.projectlombok:lombok'
@@ -68,7 +68,34 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
 }
+dependencyManagement {
+    imports {
+        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+    }
+}
 
+
+
+jacocoTestReport {
+    dependsOn test // makes sure tests are run before generating reports
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: [
+                    // Exclude classes that end with 'Config'
+                    '**/*Config.class',
+                    '**/*Properties.class',
+                    '**/*Initializer.class',
+                    '**/*Constants.class'
+
+            ])
+        }))
+    }
+    reports {
+        xml
+        csv
+        html
+    }
+}
 
 
 tasks.named('test') {

@@ -1,6 +1,5 @@
 package org.iptime.yoon.blog.category.dto;
 
-import jakarta.validation.Validator;
 import org.iptime.yoon.blog.helper.ValidationTest;
 import org.junit.jupiter.api.Test;
 
