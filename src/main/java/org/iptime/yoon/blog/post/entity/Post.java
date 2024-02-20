@@ -47,16 +47,13 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn // nullable = false
-    @ToString.Exclude
     private BlogUser writer;
 
-    @Column(nullable = false)
     private String writerName;
     private String writerDisplayName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    @ToString.Exclude
     private Category category;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)

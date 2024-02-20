@@ -17,7 +17,6 @@ import org.iptime.yoon.blog.user.entity.BlogUser;
 @Builder
 @Getter
 @Setter
-@ToString(callSuper = true)
 @Where(clause = "deleted = false")
 public class Image extends BaseEntity {
 
@@ -36,7 +35,6 @@ public class Image extends BaseEntity {
 
     @ManyToOne
     @JoinColumn
-    @ToString.Exclude
     private BlogUser owner;
 
 }
