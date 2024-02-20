@@ -86,7 +86,6 @@ jacocoTestReport {
                     '**/*Properties.class',
                     '**/*Initializer.class',
                     '**/*Constants.class'
-
             ])
         }))
     }

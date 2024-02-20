@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.post.repository.projection;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +8,11 @@ import java.time.LocalDateTime;
  * @author rival
  * @since 2024-01-20
  */
-@Data
+
+
+@Setter
+@Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostPreviewDto implements PostPreviewProjection{
 
