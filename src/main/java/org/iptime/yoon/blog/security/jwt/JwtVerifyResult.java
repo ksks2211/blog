@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.security.jwt;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +9,10 @@ import java.util.List;
  * @author rival
  * @since 2023-08-14
  */
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class JwtVerifyResult {
     private boolean verified;

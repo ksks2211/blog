@@ -32,6 +32,9 @@ public class Category {
     @Setter
     private String fullName;
 
+    @Setter
+    private String name;
+
     @Builder.Default
     private Integer postCount = 0;
 

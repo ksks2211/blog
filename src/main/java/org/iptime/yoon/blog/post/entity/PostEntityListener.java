@@ -7,7 +7,6 @@ import org.iptime.yoon.blog.post.dto.PostResponse;
 import org.iptime.yoon.blog.post.repository.DeletedPostRepository;
 import org.iptime.yoon.blog.post.service.PostService;
 
-import java.time.LocalDateTime;
 
 /**
  * @author rival
@@ -21,11 +20,7 @@ public class PostEntityListener {
         PostService postService = BeanUtil.getBean(PostService.class);
         PostResponse postResponse = postService.findById(post.getId());
 
-        DeletedPost deletedPost = postMapper.postToDeletedPost(post);
-        deletedPost.setDeletedAt(LocalDateTime.now());
-        deletedPost.setCategory(postResponse.getCategory());
-        deletedPost.setTags(postResponse.getTags());
-
+        DeletedPost deletedPost = postMapper.postToDeletedPost(post, postResponse.getCategory(), postResponse.getTags());
         DeletedPostRepository deletedPostRepository = BeanUtil.getBean(DeletedPostRepository.class);
         deletedPostRepository.save(deletedPost);
     }

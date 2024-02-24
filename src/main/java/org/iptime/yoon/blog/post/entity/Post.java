@@ -23,7 +23,6 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@Where(clause = "deleted = false")
 @Table(
     indexes = {
         @Index(name="post_writer_index",columnList ="writerName")

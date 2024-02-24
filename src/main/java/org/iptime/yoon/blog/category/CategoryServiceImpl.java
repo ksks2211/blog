@@ -47,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryRepository.findByFullName(fullName)
             .orElseGet(() -> Category.builder()
                 .fullName(fullName)
+                .name(sub)
                 .root(root)
                 .build());
     }
@@ -54,9 +55,16 @@ public class CategoryServiceImpl implements CategoryService{
     // Create + Read
     @Override
     @Transactional
-    public void createCategoryIfNotExists(String root, String sub){
+    public Category createCategoryIfNotExists(String root, String sub){
         Category category = getCategory(root,sub);
         if(category.getId()==null)categoryRepository.save(category);
+
+
+        // remove cache on update
+        cacheService.deleteCaches("categories:list", List.of(root));
+        cacheService.deleteCaches("categories",List.of(root));
+
+        return category;
     }
 
 
@@ -109,13 +117,13 @@ public class CategoryServiceImpl implements CategoryService{
     // Update
     @Override
     @Transactional
-    public void changeCategory(String username, String beforeSub, String afterSub) {
-        String fullName = username+beforeSub;
+    public void changeCategory(String username, String beforeCategory, String afterCategory) {
+        String fullName = username+beforeCategory;
 
         List<Long> relatedPostsIdList = categoryRepository.findRelatedPostIds(fullName);
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
 
-        String newFullName = username+afterSub;
+        String newFullName = username+afterCategory;
         category.setFullName(newFullName);
         categoryRepository.save(category);
 

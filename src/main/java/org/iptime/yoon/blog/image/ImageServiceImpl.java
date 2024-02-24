@@ -1,9 +1,11 @@
 package org.iptime.yoon.blog.image;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.iptime.yoon.blog.image.exception.ImageEntityNotFoundException;
+import org.iptime.yoon.blog.image.exception.ImageMapper;
 import org.iptime.yoon.blog.image.exception.ImageUploadException;
 import org.iptime.yoon.blog.storage.StorageService;
 import org.iptime.yoon.blog.user.entity.BlogUser;
@@ -29,6 +31,7 @@ public class ImageServiceImpl implements ImageService{
 
     private final StorageService storageService;
     private final ImageRepository imageRepository;
+    private final ImageMapper imageMapper;
     private static final int THUMBNAIL_WIDTH = 100;
     private static final int THUMBNAIL_HEIGHT = 100;
 
@@ -42,6 +45,7 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
+    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
     public Long uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
@@ -64,6 +68,10 @@ public class ImageServiceImpl implements ImageService{
     }
 
 
+    public Long fallbackResponse(Exception e) {
+        return -1L;
+    }
+
 
     public Image getImageById(Long id){
         return imageRepository.findById(id).orElseThrow(() -> new ImageEntityNotFoundException(id));
@@ -78,7 +86,9 @@ public class ImageServiceImpl implements ImageService{
     public ImageDto downloadImage(Long id) throws Exception {
         Image image = getImageById(id);
         byte[] bytes = getImageBytes(image.getFilename());
-        return ImageDto.fromEntity(image, bytes);
+
+        return imageMapper.imageToImageDto(image, bytes);
+
     }
 
 
@@ -86,7 +96,7 @@ public class ImageServiceImpl implements ImageService{
     public ImageDto downloadImageThumbnail(Long id) throws Exception {
         Image image = getImageById(id);
         byte[] bytes = getImageBytes(image.getFilename()+".thumb");
-        return ImageDto.fromEntity(image, bytes);
+        return imageMapper.imageToImageDto(image, bytes);
     }
 
     @Transactional

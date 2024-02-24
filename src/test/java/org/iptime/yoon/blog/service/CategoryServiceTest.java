@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -132,27 +132,52 @@ class CategoryServiceTest {
         assertThrows( CategoryNotEmptyException.class, ()-> categoryService.deleteCategoryIfEmpty(username,sub));
     }
 
-//
-//    @Test
-//    public void updateCategoryTest(){
-//
-//        // Given
-//        String root = "userC";
-//        String sub = "/java/spring-boot";
-//        String sub2 = "/JAVA/SPRING_BOOT";
-//        Long id = categoryService.createCategoryIfNotExists(root, sub);
-//
-//        // When
-//        categoryService.changeCategory(root,sub,sub2);
-//
-//
-//        // Then
-//        Category category = categoryService.getCategory(root, sub2);
-//        assertThat(category.getId()).isNotNull();
-//        assertThat(category.getId()).isEqualTo(id);
-//
-//    }
 
 
 
+    @Test
+    public void getCategoryListTest(){
+
+        String username = "userA";
+
+        List<String> categories = List.of("/java/spring-boot", "/java/android","/python/tensorflow","/js/express");
+        List<Category> categoryList = categories.stream().map(s->Category.builder()
+            .fullName(username + s)
+            .root(username)
+            .postCount(0)
+            .build()).toList();
+
+        when(categoryRepository.findAllByRoot(any(String.class))).thenReturn(categoryList);
+
+        Map<String, List<String>> result = categoryService.getCategoryList(username);
+
+        assertNotNull(result);
+        assertNotNull(result.get("categories"));
+        assertEquals(categories.size(), result.get("categories").size());
+    }
+
+
+
+
+    @Test
+    public void changeCategoryTest(){
+
+        String username = "userA";
+        String before = "/dir1/dir2";
+        String after = "/cat1/cat2";
+        Category cat = Category.builder().fullName(username + before).root(username).build();
+
+
+        when(categoryRepository.findRelatedPostIds(any(String.class))).thenReturn(List.of(1L,2L));
+        when(categoryRepository.findByFullName(any(String.class))).thenReturn(Optional.of(cat));
+        when(categoryRepository.save(any(Category.class))).thenAnswer(invocation -> invocation.<Category>getArgument(0));
+        doNothing().when(cacheService).deleteCaches(any(), any());
+
+
+        categoryService.changeCategory(username, before, after);
+
+
+        assertEquals(username+after, cat.getFullName());
+
+    }
 }

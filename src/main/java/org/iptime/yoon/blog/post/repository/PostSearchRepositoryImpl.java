@@ -31,6 +31,8 @@ public class PostSearchRepositoryImpl implements PostSearchRepository{
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<PostPreviewDto> query = cb.createQuery(PostPreviewDto.class);
 
+        query.distinct(true);
+
         // From post
         Root<Post> root = query.from(Post.class);
 
@@ -44,6 +46,7 @@ public class PostSearchRepositoryImpl implements PostSearchRepository{
 
 
         TypedQuery<PostPreviewDto> typedQuery = entityManager.createQuery(query);
+
 
 
         // limit + offset (paging)
@@ -64,6 +67,7 @@ public class PostSearchRepositoryImpl implements PostSearchRepository{
     private TypedQuery<Long> getCountQuery(Specification<Post> spec){
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        countQuery.distinct(true);
 
         Root<Post> countRoot = countQuery.from(Post.class);
         countQuery.select(cb.count(countRoot));

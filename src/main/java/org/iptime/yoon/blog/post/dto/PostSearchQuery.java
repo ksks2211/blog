@@ -26,4 +26,5 @@ public class PostSearchQuery {
     private List<
         @NotBlank(message="Keyword cannot be blank")
         @Pattern(regexp =PostValidationConstants.TAG_RULE_REGEX, message = PostValidationConstants.TAG_RULE_MESSAGE) String> tags = new ArrayList<>();
+    private boolean allTags = false;
 }

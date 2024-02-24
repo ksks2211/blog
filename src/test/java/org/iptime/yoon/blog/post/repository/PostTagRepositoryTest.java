@@ -2,12 +2,14 @@ package org.iptime.yoon.blog.post.repository;
 
 import org.iptime.yoon.blog.common.config.JpaConfig;
 import org.iptime.yoon.blog.post.entity.Post;
+import org.iptime.yoon.blog.post.entity.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.iptime.yoon.blog.post.repository.PostTestHelper.createPostWithTags;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,8 +40,19 @@ class PostTagRepositoryTest {
 
         List<String> readTags = postTagRepository.findAllTagsByPostId(createdPost.getId());
 
-        readTags.forEach(tag->{
-            assertTrue(tagList.contains(tag));
-        });
+        readTags.forEach(tag-> assertTrue(tagList.contains(tag)));
+    }
+
+
+    @Test
+    void findByTagValueTest(){
+        String value = "example";
+        Tag tag = new Tag(value);
+        tagRepository.save(tag);
+
+        Optional<Tag> optional = tagRepository.findByValueIgnoreCase(value);
+        assertTrue(optional.isPresent());
+        assertNotNull(optional.get());
+        assertEquals(value,optional.get().getValue());
     }
 }

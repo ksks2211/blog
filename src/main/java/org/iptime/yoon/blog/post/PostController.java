@@ -100,15 +100,15 @@ public class PostController {
     // EntityNotFoundException handling
     @PutMapping("/{id}")
     @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
-    public PostResponse updatePostById(@PathVariable(name = "id") Long id, @RequestBody PostCreateRequest postCreateRequest) {
-        return postService.updatePost(id, postCreateRequest);
+    public ResponseEntity<?> updatePostById(@CurrentUsername String username,  @PathVariable(name = "id") Long id, @RequestBody PostCreateRequest postCreateRequest) {
+        postService.updatePost(username, id, postCreateRequest);
+        return ResponseEntity.ok().build();
     }
 
     // DELETE
     @DeleteMapping("/{id}")
     @PreAuthorize("@postServiceImpl.isOwner(#id, authentication.name)")
     public ResponseEntity<?> deletePostById(@PathVariable(name = "id") Long id) {
-
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }

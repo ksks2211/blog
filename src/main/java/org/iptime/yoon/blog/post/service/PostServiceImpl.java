@@ -1,6 +1,5 @@
 package org.iptime.yoon.blog.post.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.category.CategoryService;
@@ -16,7 +15,6 @@ import org.iptime.yoon.blog.post.repository.TagRepository;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewDto;
 import org.iptime.yoon.blog.post.repository.projection.PostPreviewProjection;
 import org.iptime.yoon.blog.security.auth.JwtUser;
-import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,6 +39,7 @@ import java.util.Optional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+
     private final PostTagRepository postTagRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
@@ -58,22 +57,16 @@ public class PostServiceImpl implements PostService {
         // Create|Fetch Tags
         List<Tag> tags = new ArrayList<>();
         for (String tagValue : postCreateRequest.getTags()) {
-            Tag tag = tagRepository.findByValue(tagValue).orElseGet(() -> new Tag(tagValue));
+
+
+
+            Tag tag = tagRepository.findByValueIgnoreCase(tagValue).orElseGet(() -> new Tag(tagValue));
             tags.add(tag);
         }
         tagRepository.saveAll(tags);
 
         // Mapping to PostRequest to Post
-        Post post = postMapper.postCreateRequestToPost(postCreateRequest);
-
-
-        // Fill Related Fields
-        tags.forEach(post::addTag);
-        post.setWriterName(authUser.getUsername());
-        post.setWriterDisplayName(authUser.getDisplayName());
-        post.setWriter(BlogUser.builder().id(authUser.getId()).build());
-        post.setCategory(category);
-
+        Post post = postMapper.postCreateRequestToPost(postCreateRequest, authUser, category, tags);
 
         // Save Entity
         postRepository.save(post);
@@ -85,13 +78,11 @@ public class PostServiceImpl implements PostService {
     @Override
     @Cacheable(value = "posts", key = "#id")
     @Transactional
-    public PostResponse findById(Long id) throws EntityNotFoundException {
+    public PostResponse findById(Long id) throws PostEntityNotFoundException {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         String category = post.getCategory().getFullName();
         List<String> tags = postTagRepository.findAllTagsByPostId(id);
-
-
-        return postMapper.postToPostResponse(post, tags, category);
+        return postMapper.postToPostResponse(post, tags, category, post.getCategory().getName());
     }
 
     @Override
@@ -129,12 +120,36 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     @CachePut(value = "posts", key = "#id")
-    public PostResponse updatePost(Long id, PostCreateRequest postCreateRequest) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
-        String category = post.getCategory().getFullName();
+    public PostResponse updatePost(String username,Long id, PostCreateRequest postCreateRequest) {
 
-        List<String> tags = postTagRepository.findAllTagsByPostId(post.getId());
-        return postMapper.postToPostResponse(post, tags, category);
+        Post originalPost = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
+
+        // Category change of a post
+        Category originalCategory = originalPost.getCategory();
+        if(!originalCategory.getName().equals(postCreateRequest.getCategory())){
+            categoryService.decreasePostCount(originalCategory);
+            Category newCategory = categoryService.createCategoryIfNotExists(username, postCreateRequest.getCategory());
+            categoryService.increasePostCount(newCategory);
+            originalPost.setCategory(newCategory);
+        }
+
+        List<String> originalTags = postTagRepository.findAllTagsByPostId(originalPost.getId());
+        List<Tag> newTags = new ArrayList<>();
+        postCreateRequest.getTags().forEach(tag->{
+            if(!originalTags.contains(tag)){
+                Tag newTag = tagRepository.findByValueIgnoreCase(tag).orElseGet(() -> new Tag(tag));
+                newTags.add(newTag);
+                originalPost.addTag(newTag);
+            }
+        });
+        tagRepository.saveAll(newTags);
+
+        originalPost.setContent(postCreateRequest.getContent());
+        originalPost.setTitle(postCreateRequest.getTitle());
+        postRepository.save(originalPost);
+
+        originalTags.addAll(newTags.stream().map(Tag::getValue).toList());
+        return postMapper.postToPostResponse(originalPost,originalTags, originalPost.getCategory().getFullName(), originalPost.getCategory().getName());
     }
     // changeTags
 
@@ -177,15 +192,8 @@ public class PostServiceImpl implements PostService {
     public PostPageResponse searchPostList(PostSearchQuery postSearchQuery, PageRequest pageable) {
         Specification<Post> spec = Specification.where(null);
         if (postSearchQuery != null) {
-            if (postSearchQuery.getWriter() != null) {
-                spec = spec.and(PostSpecification.wroteBy(postSearchQuery.getWriter()));
-            }
-            List<String> tags = postSearchQuery.getTags();
-            if (tags != null && !tags.isEmpty()) {
-                spec = spec.and(PostSpecification.haveAtLeastOneTag(tags.toArray(new String[0])));
-            }
+            spec = spec.and(PostSpecification.getPostSpecification(postSearchQuery));
         }
-
         Page<PostPreviewDto> result = postRepository.searchAllPosts(spec, pageable);
         return postMapper.postPreviewDtoPageToPostPageResponse(result);
     }

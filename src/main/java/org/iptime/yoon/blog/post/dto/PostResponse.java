@@ -25,4 +25,5 @@ public class PostResponse extends PostPreviewResponse implements Serializable {
     private String content;
     private List<String> tags;
     private String category;
+    private String postCategory;
 }

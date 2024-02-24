@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.image;
 
 import org.iptime.yoon.blog.image.exception.ImageEntityNotFoundException;
+import org.iptime.yoon.blog.image.exception.ImageUploadException;
 import org.iptime.yoon.blog.storage.StorageService;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author rival
@@ -38,14 +39,14 @@ class ImageServiceImplTest {
 
 
     private MultipartFile generateTestImageFile(int width, int height) throws IOException {
-        byte[] imageBytes = ImageFileCreator.createSampleImage(width, height);
-        return  MultipartFileCreator.createMultipartFile(imageBytes, "testImage", "testImage.png", "image/png");
+        byte[] imageBytes = ImageTestHelper.createSampleImage(width, height);
+        return  ImageTestHelper.createMultipartFile(imageBytes, "testImage", "testImage.png", "image/png");
     }
 
 
 
     @Test
-    void testCreateThumbnail() throws Exception {
+    void testUploadImage() throws Exception {
 
         MultipartFile multipartFile = generateTestImageFile(200, 200);
         String filename = multipartFile.getOriginalFilename();
@@ -76,11 +77,26 @@ class ImageServiceImplTest {
         Image foundImage = imageService.getImageById(id);
 
         assertEquals(imageId, id);
-        assertNotNull(foundImage);
+        assertEquals(multipartFile.getContentType(),foundImage.getContentType());
+        assertEquals(multipartFile.getSize(), foundImage.getSize());
+        assertEquals(multipartFile.getOriginalFilename(), foundImage.getOriginalName());
+        assertEquals(userId, foundImage.getOwner().getId());
 
-        assertThrows(ImageEntityNotFoundException.class, ()->{
-           imageService.getImageById(100L);
-        });
+
+        assertThrows(ImageEntityNotFoundException.class, ()-> imageService.getImageById(100L));
+    }
+
+
+    @Test
+    void testUploadImageFail() throws Exception{
+        MultipartFile multipartFile = generateTestImageFile(300, 150);
+        String filename = multipartFile.getOriginalFilename();
+        Long userId = 123L;
+
+
+        doThrow(new Exception("Fail to upload")).when(storageService).upload(any(), any(), any());
+
+        assertThrows(ImageUploadException.class, ()-> imageService.uploadImage(multipartFile, filename, userId));
     }
 
 }

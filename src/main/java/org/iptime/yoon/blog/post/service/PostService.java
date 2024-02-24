@@ -27,7 +27,7 @@ public interface PostService {
 
 
     // Update
-    PostResponse updatePost(Long id, PostCreateRequest createReqDto);
+    PostResponse updatePost(String username, Long id, PostCreateRequest createReqDto);
 
 
     // Delete

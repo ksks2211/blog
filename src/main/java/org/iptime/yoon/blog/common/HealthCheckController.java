@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 /**
  * @author rival
@@ -29,6 +30,11 @@ public class HealthCheckController {
     @Operation(summary = "Check Server", description = "Check if server is active and working!")
     public ResponseEntity<?> checkHealth(){
         var body = new MsgResponse("Server is alive");
+        return ResponseEntity.ok(body);
+    }
+
+    private ResponseEntity<?> fallbackMethod(Throwable t) {
+        var body = new MsgResponse("Server is down");
         return ResponseEntity.ok(body);
     }
 

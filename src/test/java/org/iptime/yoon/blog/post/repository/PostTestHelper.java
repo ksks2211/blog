@@ -2,12 +2,10 @@ package org.iptime.yoon.blog.post.repository;
 
 import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.post.entity.Post;
-import org.iptime.yoon.blog.post.entity.PostTag;
 import org.iptime.yoon.blog.post.entity.Tag;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author rival
