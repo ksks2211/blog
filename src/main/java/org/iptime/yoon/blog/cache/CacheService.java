@@ -1,5 +1,7 @@
 package org.iptime.yoon.blog.cache;
 
+import org.iptime.yoon.blog.post.dto.PostResponse;
+
 import java.util.List;
 
 /**
@@ -11,5 +13,7 @@ public interface CacheService {
     String getCacheKey(String cacheName, Object id);
 
     void deleteCaches(String cacheName, List<?> ids);
+
+    void createPostCache(String cacheName, Object id, PostResponse value);
 
 }

@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,9 +27,9 @@ public class PostCreateRequest {
     private String title;
     private String content;
     private String description;
-    private Set<
-        @NotBlank(message="Keyword cannot be blank")
-        @Pattern(regexp = PostValidationConstants.TAG_RULE_REGEX, message = PostValidationConstants.TAG_RULE_MESSAGE) String> tags = new HashSet<>();
+    private List<
+            @NotBlank(message="Keyword cannot be blank")
+            @Pattern(regexp = PostValidationConstants.TAG_RULE_REGEX, message = PostValidationConstants.TAG_RULE_MESSAGE) String> tags = new ArrayList<>();
 
 
     @NotBlank(message = "Category cannot be empty value")

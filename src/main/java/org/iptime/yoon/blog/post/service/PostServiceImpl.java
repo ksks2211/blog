@@ -1,6 +1,7 @@
 package org.iptime.yoon.blog.post.service;
 
 import lombok.RequiredArgsConstructor;
+import org.iptime.yoon.blog.cache.CacheService;
 import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.category.CategoryService;
 import org.iptime.yoon.blog.post.PostEntityNotFoundException;
@@ -44,10 +45,13 @@ public class PostServiceImpl implements PostService {
     private final TagRepository tagRepository;
     private final PostMapper postMapper;
     private final CategoryService categoryService;
+    private final CacheService cacheService;
+
 
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", key = "#authUser.username")
     public Long createPost(PostCreateRequest postCreateRequest, JwtUser authUser) {
 
         // Create Category
@@ -70,6 +74,12 @@ public class PostServiceImpl implements PostService {
 
         // Save Entity
         postRepository.save(post);
+
+
+
+        // Cache created Post
+        PostResponse postResponse = postMapper.postToPostResponse(post,postCreateRequest.getTags(), category.getFullName(), category.getName());
+        cacheService.createPostCache("posts",post.getId(), postResponse);
 
         // Return Created Post id
         return post.getId();
@@ -127,10 +137,14 @@ public class PostServiceImpl implements PostService {
         // Category change of a post
         Category originalCategory = originalPost.getCategory();
         if(!originalCategory.getName().equals(postCreateRequest.getCategory())){
+
             categoryService.decreasePostCount(originalCategory);
             Category newCategory = categoryService.createCategoryIfNotExists(username, postCreateRequest.getCategory());
             categoryService.increasePostCount(newCategory);
             originalPost.setCategory(newCategory);
+
+            // Delete Cache
+            cacheService.deleteCaches("categories",List.of(username));
         }
 
         List<String> originalTags = postTagRepository.findAllTagsByPostId(originalPost.getId());
@@ -157,7 +171,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     @CacheEvict(value = "posts", key = "#id")
-    public void deletePost(Long id) {
+    public void deletePost(String username, Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
 
 
@@ -166,6 +180,8 @@ public class PostServiceImpl implements PostService {
         Category category = post.getCategory();
         post.setCategory(null);
         categoryService.decreasePostCount(category);
+        cacheService.deleteCaches("categories",List.of(username));
+
 
         //  User Relation 정리
         post.setWriter(null);
@@ -175,6 +191,9 @@ public class PostServiceImpl implements PostService {
         post.removeAllPostTags();
 
         postRepository.delete(post);
+
+
+
     }
 
     @Override

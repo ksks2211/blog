@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -95,7 +95,7 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
             - [ ] https://github.com/octo-org/octo-repo/issues/740
             - [ ] Add delight to the experience when all tasks are complete :tada""");
 
-        taggedPost.setTags(Set.of("java", "python", "javascript"));
+        taggedPost.setTags(List.of("java", "python", "javascript"));
         taggedPost.setCategory("/folder1/folder2");
         taggedPost.setDescription("Describe My Post ...... Tagged");
         return taggedPost;

@@ -48,9 +48,8 @@ public class RefreshTokenController {
 
     }
 
-
-
     @DeleteMapping("/refresh")
+    @PreAuthorize("isAuthenticated()")
     public void deleteRefreshToken(@AuthenticationPrincipal JwtUser jwtUser,HttpServletResponse response){
         refreshTokenService.removeTokenByUserId(jwtUser.getId());
 

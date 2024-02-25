@@ -28,6 +28,8 @@ public class Category {
 
     private String root;
 
+
+    // root+name
     @Column(unique = true)
     @Setter
     private String fullName;

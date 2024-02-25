@@ -1,13 +1,14 @@
 package org.iptime.yoon.blog.cache;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.time.Duration;
 
@@ -18,6 +19,7 @@ import java.time.Duration;
 
 @Configuration
 @EnableCaching
+@RequiredArgsConstructor
 public class CacheConfig {
 
     @Value("${spring.data.redis.entry-ttl-minutes}")
@@ -26,16 +28,16 @@ public class CacheConfig {
     @Value("${spring.data.redis.cache-prefix}")
     private String CACHE_PREFIX;
 
+    private final RedisSerializer<Object> redisSerializer;
+
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
-
         return RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(ENTRY_TTL_MINUTES))
             .disableCachingNullValues()
             .prefixCacheNameWith(CACHE_PREFIX)
             .serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(serializer)
+                RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer)
             );
     }
 }
