@@ -49,7 +49,7 @@ dependencies {
 
 
     // minio
-    implementation 'org.apache.commons:commons-compress:1.26.0'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.squareup.okio:okio:3.4.0'
     implementation 'io.minio:minio:8.5.7'
 

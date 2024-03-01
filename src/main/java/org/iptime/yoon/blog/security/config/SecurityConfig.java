@@ -168,7 +168,6 @@ public class SecurityConfig {
                 auth
                     .requestMatchers(
                         new AntPathRequestMatcher("/api/categories/**"),
-                        new AntPathRequestMatcher("/api/images/**"),
                         new AntPathRequestMatcher("/api/posts/**")).authenticated()
                     .anyRequest().permitAll())
 

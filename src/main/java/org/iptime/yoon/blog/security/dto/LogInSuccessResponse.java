@@ -18,4 +18,5 @@ public class LogInSuccessResponse {
     private String token;
     private String username;
     private String displayName;
+    private Long profileImageId;
 }

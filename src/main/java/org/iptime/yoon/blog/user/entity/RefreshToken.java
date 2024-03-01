@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
-@ToString(callSuper = true)
 public class RefreshToken extends BaseEntity {
     @Id
     @UuidGenerator
@@ -25,12 +24,10 @@ public class RefreshToken extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    @ToString.Exclude
     private BlogUser user;
 
     private LocalDateTime expiryDate;
 
-    @Transient
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiryDate);
     }

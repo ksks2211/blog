@@ -53,10 +53,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         if (optional.isPresent() && !optional.get().isExpired()) {
             token = optional.get();
         } else {
-            optional.ifPresent(refreshToken -> refreshTokenRepository.deleteById(refreshToken.getId()));
+            optional.ifPresent(refreshToken -> {
+                refreshTokenRepository.deleteById(refreshToken.getId());
+                refreshTokenRepository.flush();
+            });
             token = RefreshToken.builder()
                 .expiryDate(getExpiryDate())
-                .user(BlogUser.builder().id(userId).build())
+                .user(user)
                 .build();
         }
         refreshTokenRepository.save(token);

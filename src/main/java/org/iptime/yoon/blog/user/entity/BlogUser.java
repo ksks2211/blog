@@ -22,6 +22,7 @@ import java.time.Period;
 @Table(
     name = "blog_user",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"provider","subject"})})
+@Setter
 public class BlogUser extends BaseEntity {
 
     @Id
@@ -31,19 +32,17 @@ public class BlogUser extends BaseEntity {
     @Column(unique = true)
     private String username;
 
-    @Setter
     private String password;
 
-    @Setter
     private String profile;
 
-    @Setter
+
+    private Long profileImageId;
+
     private LocalDate dateOfBirth;
 
-    @Setter
     private String displayName;
 
-    @Setter
     private String email;
 
 

@@ -31,8 +31,6 @@ public class BlogUserServiceImpl implements BlogUserService {
     private final PasswordEncoder passwordEncoder;
     private final BlogUserMapper blogUserMapper;
 
-
-
     @Override
     public BlogUser getBlogUserByUsername(String username) {
         return blogUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username : " + username + " is not found"));
@@ -45,12 +43,10 @@ public class BlogUserServiceImpl implements BlogUserService {
         if(blogUserRepository.existsByUsername(username)){
             throw new UsernameAlreadyTakenException("Username : "+username+" is already taken");
         }
-
         BlogUser blogUser = toEntity(username);
         blogUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         blogUser.setEmail(dto.getEmail());
         blogUserRepository.save(blogUser);
-
         return blogUserMapper.blogUserToBlogUserInfo(blogUser);
     }
 
@@ -62,6 +58,14 @@ public class BlogUserServiceImpl implements BlogUserService {
         if(profile!=null){
             blogUser.setProfile(profile);
         }
+
+
+        Long profileImageId = dto.getProfileImageId();
+
+        if(profileImageId!=null){
+            blogUser.setProfileImageId(profileImageId);
+        }
+
         blogUserRepository.save(blogUser);
         return blogUserMapper.blogUserToBlogUserInfo(blogUser);
     }
@@ -103,7 +107,6 @@ public class BlogUserServiceImpl implements BlogUserService {
     }
 
     public static BlogUser toEntity(AuthProvider provider, String subject, String displayName, String email){
-
         UUID uuid = UUID.randomUUID();
         String username = uuid.toString().replace("-","");
         return BlogUser.builder()
@@ -112,7 +115,6 @@ public class BlogUserServiceImpl implements BlogUserService {
             .displayName(displayName)
             .subject(subject)
             .email(email).build();
-
     }
 
 }

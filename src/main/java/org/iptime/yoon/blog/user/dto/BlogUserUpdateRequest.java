@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.user.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +17,9 @@ import lombok.Setter;
 public class BlogUserUpdateRequest
 {
 
-    @NotBlank
     private String profile;
+
+    private Long profileImageId;
 
     @Email
     private String email;

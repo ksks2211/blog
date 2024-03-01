@@ -84,6 +84,7 @@ public class JwtRefreshFilter extends OncePerRequestFilter {
         LogInSuccessResponse body = LogInSuccessResponse.builder()
             .token(token)
             .username(jwtUser.getUsername())
+            .profileImageId(jwtUser.getProfileImageId())
             .displayName(jwtUser.getDisplayName())
             .build();
 

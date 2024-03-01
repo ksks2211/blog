@@ -1,7 +1,6 @@
 package org.iptime.yoon.blog.security.auth;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,13 +12,17 @@ import java.util.Collection;
  * @since 2023-12-31
  */
 
-@Data
+@Setter
+@Getter
+@AllArgsConstructor
 @Builder
 public class JwtUser implements UserDetails {
 
     private final Long id;
     private final String username;
     private final String displayName;
+    private final Long profileImageId;
+
 
     @Builder.Default
     private final Collection<? extends GrantedAuthority> authorities = new ArrayList<>();

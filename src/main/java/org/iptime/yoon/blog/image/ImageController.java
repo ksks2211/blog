@@ -2,12 +2,15 @@ package org.iptime.yoon.blog.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.iptime.yoon.blog.common.dto.CreatedResourceIdResponse;
+import org.iptime.yoon.blog.image.exception.ImageAddressResponse;
 import org.iptime.yoon.blog.image.exception.ImageEntityNotFoundException;
 import org.iptime.yoon.blog.security.auth.JwtUser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
@@ -48,6 +50,7 @@ public class ImageController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal JwtUser jwtUser, MultipartFile uploadFile) throws Exception {
 
         if(!isImageFile(uploadFile)){
@@ -56,11 +59,13 @@ public class ImageController {
         String filename = generateRandomFilename(jwtUser.getUsername());
         Long id = imageService.uploadImage(uploadFile, filename, jwtUser.getId());
 
-        Map<String, Long> body = Map.of("id", id);
+
+        CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> downloadImage(
         @PathVariable(name="id") Long id,
         @RequestParam(value = "thumbnail", defaultValue = "false") boolean isThumbnail
@@ -79,12 +84,22 @@ public class ImageController {
     }
 
 
-    @GetMapping("/url/{id}")
-    public RedirectView getImageUrl(@PathVariable(name="id") Long id){
+    @GetMapping("/redirect/{id}")
+    public RedirectView redirectImageUrl(@PathVariable(name="id") Long id){
         return new RedirectView(imageService.getImageUrl(id));
     }
 
+
+
+
+    @GetMapping("/url/{id}")
+    public ResponseEntity<?> getImageUrl(@PathVariable(name="id") Long id){
+        String imageUrl = imageService.getImageUrl(id);
+        ImageAddressResponse body = new ImageAddressResponse(imageUrl);
+        return ResponseEntity.ok(body);
+    }
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteImage(@PathVariable(name="id")Long id) {
         imageService.deleteImage(id);
         return ResponseEntity.noContent().build();

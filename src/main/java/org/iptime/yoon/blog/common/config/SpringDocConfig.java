@@ -30,7 +30,6 @@ import java.util.Map;
 //@OpenAPIDefinition
 public class SpringDocConfig {
 
-
     @Bean
     public GroupedOpenApi healthCheckApi(){
         return GroupedOpenApi.builder()
@@ -44,12 +43,6 @@ public class SpringDocConfig {
             .group("user-api").pathsToMatch("/api/auth/**")
             .build();
     }
-
-
-
-
-
-
 
     @Bean
     public OpenAPI openAPI(){

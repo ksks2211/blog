@@ -75,8 +75,11 @@ public class JwtManager {
             Long id = result.getClaim("id").asLong();
             String displayName = result.getClaim("displayName").asString();
 
+            Long profileImageId = result.getClaim("profileImageId").asLong();
+
             jwtVerifyResult.setSubject(username);
             jwtVerifyResult.setAuthorities(authorities);
+            jwtVerifyResult.setProfileImageId(profileImageId);
             jwtVerifyResult.setId(id);
             jwtVerifyResult.setVerified(true);
             jwtVerifyResult.setDecoded(true);

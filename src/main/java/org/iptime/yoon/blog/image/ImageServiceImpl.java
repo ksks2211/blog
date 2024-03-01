@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 /**
  * @author rival
@@ -45,13 +46,15 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
-    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
+//    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
     public Long uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
-            byte[] thumbData = createThumbnail(imageData);
+
+
+//            byte[] thumbData = createThumbnail(imageData);
             storageService.upload(filename, multipartFile.getContentType(), imageData);
-            storageService.upload(filename + ".thumb", multipartFile.getContentType(), thumbData);
+//            storageService.upload(filename + ".thumb", multipartFile.getContentType(), thumbData);
         } catch(Exception e) {
             log.error("Failed to upload file: " + filename, e);
             throw new ImageUploadException(filename, e);
@@ -69,12 +72,13 @@ public class ImageServiceImpl implements ImageService{
 
 
     public Long fallbackResponse(Exception e) {
+        log.info("Fallback in image service", e);
         return -1L;
     }
 
 
-    public Image getImageById(Long id){
-        return imageRepository.findById(id).orElseThrow(() -> new ImageEntityNotFoundException(id));
+    public Image getImageById(Long imageId){
+        return imageRepository.findById(imageId).orElseThrow(() -> new ImageEntityNotFoundException(imageId));
     }
 
 
@@ -83,37 +87,47 @@ public class ImageServiceImpl implements ImageService{
         return storageService.download(filename);
     }
     @Transactional
-    public ImageDto downloadImage(Long id) throws Exception {
-        Image image = getImageById(id);
+    public ImageDto downloadImage(Long imageId) throws Exception {
+        Image image = getImageById(imageId);
         byte[] bytes = getImageBytes(image.getFilename());
-
         return imageMapper.imageToImageDto(image, bytes);
-
     }
 
 
     @Transactional
-    public ImageDto downloadImageThumbnail(Long id) throws Exception {
-        Image image = getImageById(id);
+    public ImageDto downloadImageThumbnail(Long imageId) throws Exception {
+        Image image = getImageById(imageId);
         byte[] bytes = getImageBytes(image.getFilename()+".thumb");
         return imageMapper.imageToImageDto(image, bytes);
     }
 
     @Transactional
-    @CacheEvict(value="images", key="#id")
-    public void deleteImage(Long id) {
-        Image image = getImageById(id);
+    @CacheEvict(value="images", key="#imageId")
+    public void deleteImage(Long imageId) {
+        Image image = getImageById(imageId);
         // storageService.deleteFile(image.getFilename());
         image.softDelete();
         imageRepository.save(image);
     }
 
     @Override
-    @Cacheable(value="images",key="#id")
-    public String getImageUrl(Long id) {
-        Image image = getImageById(id);
+    @Cacheable(value="images",key="#imageId")
+    public String getImageUrl(Long imageId) {
+        Image image = getImageById(imageId);
         String filename = image.getFilename();
-        return storageService.getUrl(filename);
+
+
+        if(image.isSignedUrlExpired()){
+            // Issue new URL
+            String signedUrl = storageService.getUrl(filename);
+            LocalDateTime expiresAt = LocalDateTime.now().plusHours(20);
+            image.setSignedUrl(signedUrl);
+            image.setSignedUrlExpiresAt(expiresAt);
+            return signedUrl;
+        }else{
+            // Use existing one
+            return image.getSignedUrl();
+        }
     }
 
 
