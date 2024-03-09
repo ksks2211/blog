@@ -48,7 +48,7 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         LogInSuccessResponse body = LogInSuccessResponse.builder()
             .token(token)
             .displayName(jwtUser.getDisplayName())
-            .profileImageId(jwtUser.getProfileImageId())
+            .profile(jwtUser.getProfile())
             .username(username).build();
         log.info("JWT Issued for {} : {}",username, token);
 

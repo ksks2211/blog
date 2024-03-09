@@ -14,6 +14,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatedResourceIdResponse {
-    private Long id;
+public class CreatedResourceIdResponse<T> {
+    private T id;
 }

@@ -36,9 +36,6 @@ public class BlogUser extends BaseEntity {
 
     private String profile;
 
-
-    private Long profileImageId;
-
     private LocalDate dateOfBirth;
 
     private String displayName;

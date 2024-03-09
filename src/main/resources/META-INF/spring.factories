@@ -1,0 +1,1 @@
+org.springframework.boot.env.EnvironmentPostProcessor=org.iptime.yoon.blog.common.config.SecretsManagerEnvironmentPostProcessor

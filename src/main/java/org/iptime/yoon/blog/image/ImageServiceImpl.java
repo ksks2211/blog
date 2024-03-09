@@ -1,6 +1,5 @@
 package org.iptime.yoon.blog.image;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -11,6 +10,7 @@ import org.iptime.yoon.blog.storage.StorageService;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 /**
  * @author rival
@@ -47,7 +46,7 @@ public class ImageServiceImpl implements ImageService{
 
     @Transactional
 //    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
-    public Long uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
+    public String uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
 
@@ -60,14 +59,18 @@ public class ImageServiceImpl implements ImageService{
             throw new ImageUploadException(filename, e);
         }
 
+
+        String imageUrl = storageService.getUrl(filename);
+
         Image image = Image.builder()
             .filename(filename)
             .owner(BlogUser.builder().id(userId).build())
             .originalName(multipartFile.getOriginalFilename())
             .contentType(multipartFile.getContentType())
             .size(multipartFile.getSize())
+            .imageUrl(imageUrl)
             .build();
-        return imageRepository.save(image).getId();
+        return imageRepository.save(image).getImageUrl();
     }
 
 
@@ -95,6 +98,14 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
+    public ImageResourceDto downloadImageResource(Long imageId) throws Exception {
+        Image image = getImageById(imageId);
+        Resource resource = storageService.downloadAsStream(image.getFilename());
+        return imageMapper.imageToImageResourceDto(image, resource);
+    }
+
+
+    @Transactional
     public ImageDto downloadImageThumbnail(Long imageId) throws Exception {
         Image image = getImageById(imageId);
         byte[] bytes = getImageBytes(image.getFilename()+".thumb");
@@ -114,20 +125,7 @@ public class ImageServiceImpl implements ImageService{
     @Cacheable(value="images",key="#imageId")
     public String getImageUrl(Long imageId) {
         Image image = getImageById(imageId);
-        String filename = image.getFilename();
-
-
-        if(image.isSignedUrlExpired()){
-            // Issue new URL
-            String signedUrl = storageService.getUrl(filename);
-            LocalDateTime expiresAt = LocalDateTime.now().plusHours(20);
-            image.setSignedUrl(signedUrl);
-            image.setSignedUrlExpiresAt(expiresAt);
-            return signedUrl;
-        }else{
-            // Use existing one
-            return image.getSignedUrl();
-        }
+        return image.getImageUrl();
     }
 
 

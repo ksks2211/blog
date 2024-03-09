@@ -2,6 +2,8 @@ package org.iptime.yoon.blog.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.iptime.yoon.blog.common.dto.CreatedResourceIdResponse;
 import org.iptime.yoon.blog.image.exception.ImageAddressResponse;
 import org.iptime.yoon.blog.image.exception.ImageEntityNotFoundException;
@@ -40,6 +42,16 @@ public class ImageController {
         return uploadFile !=null && uploadFile.getContentType() != null && uploadFile.getContentType().startsWith("image");
     }
 
+    public static String getExtensionFromMimeType(String mimeType) {
+        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+        try {
+            return allTypes.forName(mimeType).getExtension();
+        } catch (MimeTypeException ignored) {
+        }
+        // Return a default extension if the actual extension can't be determined
+        return ".unknown";
+    }
+
     private String generateRandomFilename(final String username) {
         LocalDate currentDate = LocalDate.now();
         String year = String.valueOf(currentDate.getYear());
@@ -52,35 +64,29 @@ public class ImageController {
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> uploadImage(@AuthenticationPrincipal JwtUser jwtUser, MultipartFile uploadFile) throws Exception {
-
         if(!isImageFile(uploadFile)){
             return createErrorResponse(HttpStatus.BAD_REQUEST, "Only support image file");
         }
-        String filename = generateRandomFilename(jwtUser.getUsername());
-        Long id = imageService.uploadImage(uploadFile, filename, jwtUser.getId());
-
-
-        CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
+        String filename = "images/"+generateRandomFilename(jwtUser.getUsername()) + getExtensionFromMimeType(uploadFile.getContentType());
+        String imageUrl = imageService.uploadImage(uploadFile, filename, jwtUser.getId());
+        var body = new CreatedResourceIdResponse<>(imageUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> downloadImage(
-        @PathVariable(name="id") Long id,
-        @RequestParam(value = "thumbnail", defaultValue = "false") boolean isThumbnail
+        @PathVariable(name="id") Long id
+//        @RequestParam(value = "thumbnail", defaultValue = "false") boolean isThumbnail
     ) throws Exception {
-        ImageDto imageDto;
-
-        if (isThumbnail) {
-            imageDto = imageService.downloadImageThumbnail(id);
-        } else {
-            imageDto = imageService.downloadImage(id);
-        }
-
+        ImageResourceDto imageDto;
+        imageDto = imageService.downloadImageResource(id);
         HttpHeaders headers = new HttpHeaders();
+
+
         headers.add(HttpHeaders.CONTENT_TYPE, imageDto.getContentType());
-        return new ResponseEntity<>(imageDto.getBytes(), headers, HttpStatus.OK);
+        headers.setCacheControl("public, max-age=1800");
+
+        return new ResponseEntity<>(imageDto.getResource(), headers, HttpStatus.OK);
     }
 
 

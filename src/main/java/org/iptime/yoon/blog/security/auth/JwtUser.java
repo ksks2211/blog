@@ -20,8 +20,8 @@ public class JwtUser implements UserDetails {
 
     private final Long id;
     private final String username;
+    private final String profile;
     private final String displayName;
-    private final Long profileImageId;
 
 
     @Builder.Default

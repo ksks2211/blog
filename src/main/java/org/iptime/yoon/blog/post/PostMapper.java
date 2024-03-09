@@ -34,6 +34,7 @@ public interface PostMapper {
         @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "localDateTimeConverter"),
         @Mapping(source = "updatedAt", target = "updatedAt", qualifiedByName = "localDateTimeConverter"),
         @Mapping(target = "category", ignore = true),
+        @Mapping(target = "postCategory", ignore = true),
         @Mapping(target = "tags", ignore = true)
     })
     PostResponse postToPostResponse(Post post);

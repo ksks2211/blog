@@ -1,6 +1,6 @@
 package org.iptime.yoon.blog.security.filter;
 
-import com.google.common.net.HttpHeaders;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +13,7 @@ import org.iptime.yoon.blog.security.jwt.JwtManager;
 import org.iptime.yoon.blog.security.jwt.JwtVerifyResult;
 import org.iptime.yoon.blog.user.BlogUserMapper;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,20 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.isNotBlank(authHeader) && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+
             JwtVerifyResult jwtVerifyResult = jwtManager.verifyToken(token);
 
             if (jwtVerifyResult.isVerified()) {
-
-
                 JwtUser user = blogUserMapper.jwtVerifyResultToJwtUser(jwtVerifyResult);
-
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     user,
                     null,
                     user.getAuthorities()
                 );
-
-
 
                 authenticationToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)

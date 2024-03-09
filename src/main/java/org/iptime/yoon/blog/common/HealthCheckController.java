@@ -20,13 +20,19 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
  */
 
 @RestController
-@RequestMapping(value="/api/health", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value="", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class HealthCheckController {
 
 
+    @GetMapping("")
+    public ResponseEntity<?> basic(){
+        var body = new MsgResponse("Server Index Page");
+        return ResponseEntity.ok(body);
+    }
 
 
-    @GetMapping(value = "" )
+
+    @GetMapping(value = "/api/health" )
     @Operation(summary = "Check Server", description = "Check if server is active and working!")
     public ResponseEntity<?> checkHealth(){
         var body = new MsgResponse("Server is alive");
@@ -38,7 +44,7 @@ public class HealthCheckController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("/admin")
+    @GetMapping("/api/health/admin")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
         summary = "Check if the client is ADMIN",
@@ -77,7 +83,7 @@ public class HealthCheckController {
                 content=@Content(schema = @Schema(implementation = MsgResponse.class)))
         }
     )
-    @GetMapping("/manager")
+    @GetMapping("/api/health/manager")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> manager(){
         var body = new MsgResponse("You are a manager");
@@ -100,7 +106,7 @@ public class HealthCheckController {
                 content=@Content(schema = @Schema(implementation = ErrorResponse.class)))
         }
     )
-    @GetMapping("/user")
+    @GetMapping("/api/health/user")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> user(){
         var body = new MsgResponse("You are a user");

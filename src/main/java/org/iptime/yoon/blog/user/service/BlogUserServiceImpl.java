@@ -60,11 +60,6 @@ public class BlogUserServiceImpl implements BlogUserService {
         }
 
 
-        Long profileImageId = dto.getProfileImageId();
-
-        if(profileImageId!=null){
-            blogUser.setProfileImageId(profileImageId);
-        }
 
         blogUserRepository.save(blogUser);
         return blogUserMapper.blogUserToBlogUserInfo(blogUser);

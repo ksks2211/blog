@@ -6,7 +6,6 @@ import org.hibernate.annotations.Where;
 import org.iptime.yoon.blog.common.entity.BaseEntity;
 import org.iptime.yoon.blog.user.entity.BlogUser;
 
-import java.time.LocalDateTime;
 
 /**
  * @author rival
@@ -34,17 +33,9 @@ public class Image extends BaseEntity {
     private Long size;
     private String originalName;
 
-    private String signedUrl;
-
-    private LocalDateTime signedUrlExpiresAt;
+    private String imageUrl;
 
 
-    public boolean isSignedUrlExpired(){
-        if(signedUrlExpiresAt==null){
-            return true;
-        }
-        return signedUrlExpiresAt.isBefore(LocalDateTime.now());
-    }
 
 
 

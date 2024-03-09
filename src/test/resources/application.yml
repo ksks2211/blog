@@ -1,0 +1,28 @@
+server:
+  port: 5000
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: never
+    include-exception: false
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+  datasource:
+    url: jdbc:h2:mem:myapp-test;
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true

@@ -34,6 +34,7 @@ Create an `env.list` file in the project root with the necessary environment var
 
 ### Building the Docker Image
 ```shell
+./gradlew build
 docker build -t spring_blog ./
 docker run -d --network mynetwork --name spring_blog --env-file ./env.list -p 8080:8080 spring_blog
 ```

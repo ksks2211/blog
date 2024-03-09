@@ -49,7 +49,7 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<?> createPost(@AuthenticationPrincipal JwtUser jwtUser, @Valid @RequestBody PostCreateRequest postCreateRequest) {
         Long id = postService.createPost(postCreateRequest, jwtUser);
-        CreatedResourceIdResponse body = new CreatedResourceIdResponse(id);
+        var body = new CreatedResourceIdResponse<>(id);
         return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 

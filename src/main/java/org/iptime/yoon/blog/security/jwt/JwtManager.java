@@ -70,21 +70,27 @@ public class JwtManager {
             DecodedJWT result = jwtVerifier
                 .verify(token);
 
-            List<String> authorities = result.getClaim("auths").asList(String.class);
-            String username = result.getSubject();
-            Long id = result.getClaim("id").asLong();
-            String displayName = result.getClaim("displayName").asString();
-
-            Long profileImageId = result.getClaim("profileImageId").asLong();
-
-            jwtVerifyResult.setSubject(username);
-            jwtVerifyResult.setAuthorities(authorities);
-            jwtVerifyResult.setProfileImageId(profileImageId);
-            jwtVerifyResult.setId(id);
             jwtVerifyResult.setVerified(true);
             jwtVerifyResult.setDecoded(true);
+
+
+            List<String> authorities = result.getClaim("auths").asList(String.class);
+            jwtVerifyResult.setAuthorities(authorities);
+
+            String username = result.getSubject();
+            jwtVerifyResult.setSubject(username);
+
+            Long id = result.getClaim("id").asLong();
+            jwtVerifyResult.setId(id);
+
+            String displayName = result.getClaim("displayName").asString();
             jwtVerifyResult.setDisplayName(displayName);
-            jwtVerifyResult.setExpiryDate(result.getExpiresAt());
+
+            String profile = result.getClaim("profile").asString();
+            jwtVerifyResult.setProfile(profile);
+
+            Date expiresAt = result.getExpiresAt();
+            jwtVerifyResult.setExpiryDate(expiresAt);
 
             return jwtVerifyResult;
         } catch (JWTVerificationException e) {

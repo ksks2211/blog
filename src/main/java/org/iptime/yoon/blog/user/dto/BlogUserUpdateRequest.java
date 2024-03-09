@@ -19,7 +19,6 @@ public class BlogUserUpdateRequest
 
     private String profile;
 
-    private Long profileImageId;
 
     @Email
     private String email;

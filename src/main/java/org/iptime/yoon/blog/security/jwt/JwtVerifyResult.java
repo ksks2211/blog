@@ -22,7 +22,5 @@ public class JwtVerifyResult {
     private Long id;
     private List<String> authorities;
     private Date expiryDate;
-
-    private Long profileImageId;
-
+    private String profile;
 }
