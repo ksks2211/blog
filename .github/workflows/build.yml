@@ -25,7 +25,11 @@ jobs:
           name: my-artifact
           path: build/libs/*.jar
       - name: Copy JAR to S3
-        run: aws s3 cp $(ls build/libs/*.jar | head -n 1) s3://${{ secrets.S3_BUCKET }}/my-app.jar
+        run: |
+          aws s3 cp $(ls build/libs/*.jar | head -n 1) s3://${{ secrets.S3_BUCKET }}/build/my-app.jar
+          VERSION_LABEL=$(date +%Y%m%d%H%M%S)-$(echo $GITHUB_SHA | cut -c1-8)
+          aws elasticbeanstalk create-application-version --application-name ${{ secrets.EB_APPLICATION_NAME }} --version-label $VERSION_LABEL --source-bundle S3Bucket="${{ secrets.S3_BUCKET }}",S3Key="build/my-app.jar"
+          aws elasticbeanstalk update-environment --application-name ${{ secrets.EB_APPLICATION_NAME }} --environment-name ${{ secrets.EB_ENVIRONMENT_NAME }} --version-label $VERSION_LABEL
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
