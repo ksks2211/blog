@@ -1,5 +1,9 @@
 server:
   port: 5000
+  servlet:
+    session:
+      cookie:
+        name: SPRING_SESSION
   error:
     whitelabel:
       enabled: false
