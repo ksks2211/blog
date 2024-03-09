@@ -56,7 +56,8 @@ public class SecretsManagerEnvironmentPostProcessor implements EnvironmentPostPr
 
             value = mapper.readTree(secretValue).get("spring.security.oauth2.client.registration.google.client-id").asText();
             System.setProperty("spring.security.oauth2.client.registration.google.client-id", value);
-
+            value = mapper.readTree(secretValue).get("spring.security.oauth2.client.registration.google.client-secret").asText();
+            System.setProperty("spring.security.oauth2.client.registration.google.client-secret", value);
 
             value = mapper.readTree(secretValue).get("spring.security.oauth2.client.registration.google.redirect-uri").asText();
             System.setProperty("spring.security.oauth2.client.registration.google.redirect-uri", value);

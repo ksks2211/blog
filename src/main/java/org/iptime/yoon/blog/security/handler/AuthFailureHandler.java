@@ -28,9 +28,12 @@ public class AuthFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         log.warn("Auth Failure", exception);
         ErrorResponse body = ErrorResponse.getErrorResponseBody(HttpStatus.BAD_REQUEST, exception.getMessage());
+
+
         HttpSession session = request.getSession(false);
-        if(session!=null){
+        if (session != null) {
             session.invalidate();
+
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
