@@ -81,6 +81,14 @@ public class SecretsManagerEnvironmentPostProcessor implements EnvironmentPostPr
             value = mapper.readTree(secretValue).get("cors.allowed").asText();
             System.setProperty("cors.allowed", value);
 
+
+
+            value = mapper.readTree(secretValue).get("auth.jwt.secret-key").asText();
+            System.setProperty("auth.jwt.secret-key", value);
+
+            value = mapper.readTree(secretValue).get("auth.jwt.issuer").asText();
+            System.setProperty("auth.jwt.issuer", value);
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
