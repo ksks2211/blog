@@ -1,5 +1,6 @@
 package org.iptime.yoon.blog.image;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
@@ -45,12 +46,10 @@ public class ImageServiceImpl implements ImageService{
 
 
     @Transactional
-//    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
+    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackResponse")
     public String uploadImage(MultipartFile multipartFile, String filename, Long userId) throws Exception {
         try{
             byte[] imageData = multipartFile.getBytes();
-
-
 //            byte[] thumbData = createThumbnail(imageData);
             storageService.upload(filename, multipartFile.getContentType(), imageData);
 //            storageService.upload(filename + ".thumb", multipartFile.getContentType(), thumbData);
@@ -61,7 +60,6 @@ public class ImageServiceImpl implements ImageService{
 
 
         String imageUrl = storageService.getUrl(filename);
-
         Image image = Image.builder()
             .filename(filename)
             .owner(BlogUser.builder().id(userId).build())
@@ -74,9 +72,9 @@ public class ImageServiceImpl implements ImageService{
     }
 
 
-    public Long fallbackResponse(Exception e) {
+    public String fallbackResponse(Exception e) {
         log.info("Fallback in image service", e);
-        return -1L;
+        return "No Content";
     }
 
 

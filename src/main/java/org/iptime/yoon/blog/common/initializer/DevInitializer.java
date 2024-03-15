@@ -35,7 +35,6 @@ public class DevInitializer implements ApplicationListener<ApplicationReadyEvent
     private final BlogUserService blogUserService;
     private final PostService postService;
     private final CategoryService categoryService;
-
     private final BlogUserMapper blogUserMapper;
 
 

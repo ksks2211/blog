@@ -35,7 +35,6 @@ import static org.iptime.yoon.blog.common.dto.ErrorResponse.createErrorResponse;
 @Slf4j
 public class ImageController {
 
-
     private final ImageService imageService;
 
     private boolean isImageFile(MultipartFile uploadFile){
@@ -76,12 +75,10 @@ public class ImageController {
     @GetMapping("/{id}")
     public ResponseEntity<?> downloadImage(
         @PathVariable(name="id") Long id
-//        @RequestParam(value = "thumbnail", defaultValue = "false") boolean isThumbnail
     ) throws Exception {
         ImageResourceDto imageDto;
         imageDto = imageService.downloadImageResource(id);
         HttpHeaders headers = new HttpHeaders();
-
 
         headers.add(HttpHeaders.CONTENT_TYPE, imageDto.getContentType());
         headers.setCacheControl("public, max-age=1800");

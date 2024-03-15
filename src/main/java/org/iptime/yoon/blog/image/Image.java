@@ -32,12 +32,7 @@ public class Image extends BaseEntity {
     private String contentType;
     private Long size;
     private String originalName;
-
     private String imageUrl;
-
-
-
-
 
     @ManyToOne
     @JoinColumn

@@ -77,6 +77,8 @@ public class CategoryServiceImpl implements CategoryService{
         Category category = categoryRepository.findByFullName(fullName).orElseThrow(() -> new CategoryEntityNotFoundException(fullName));
         if(category.getPostCount() == 0){
             categoryRepository.delete(category);
+
+            // remove cache on delete
             cacheService.deleteCaches("categories:list", List.of(root));
             cacheService.deleteCaches("categories",List.of(root));
         }else{

@@ -18,7 +18,6 @@ public class BeanUtil implements ApplicationContextAware {
         return context.getBean(beanClass);
     }
 
-
     @Override
     public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.iptime.yoon.blog.security.config.SecurityConfig.REFRESH_ENDPOINT;
+
 /**
  * @author rival
  * @since 2024-01-15
@@ -40,7 +42,7 @@ public class RefreshTokenController {
         String refreshToken = refreshTokenService.createToken(jwtUser.getId());
         Cookie cookie = new Cookie(refreshTokenName,refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setPath("/api/token/renew");
+        cookie.setPath(REFRESH_ENDPOINT);
         cookie.setMaxAge(60*60*REFRESH_EXP_HOURS);
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -52,10 +54,9 @@ public class RefreshTokenController {
     @PreAuthorize("isAuthenticated()")
     public void deleteRefreshToken(@AuthenticationPrincipal JwtUser jwtUser,HttpServletResponse response){
         refreshTokenService.removeTokenByUserId(jwtUser.getId());
-
         Cookie cookie = new Cookie(refreshTokenName,null);
         cookie.setHttpOnly(true);
-        cookie.setPath("/api/token/renew");
+        cookie.setPath(REFRESH_ENDPOINT);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);

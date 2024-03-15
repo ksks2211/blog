@@ -26,19 +26,27 @@ public class Category {
     @Setter
     private Long id;
 
+
+    // Equal to username of owner
     private String root;
 
 
-    // root+name
+    // root + category name e.g. "user123/java/spring_boot
     @Column(unique = true)
     @Setter
     private String fullName;
 
+
+    // category name  e.g. /java/spring_boot
     @Setter
     private String name;
 
+
+    // number of posts in the category
     @Builder.Default
     private Integer postCount = 0;
+
+
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @Builder.Default

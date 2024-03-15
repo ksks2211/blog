@@ -2,7 +2,6 @@ package org.iptime.yoon.blog.post.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-//import org.hibernate.annotations.DynamicUpdate;
 import org.iptime.yoon.blog.category.Category;
 import org.iptime.yoon.blog.common.entity.BaseEntity;
 import org.iptime.yoon.blog.user.entity.BlogUser;
@@ -28,7 +27,6 @@ import java.util.List;
     }
 )
 @EntityListeners(PostEntityListener.class)
-//@DynamicUpdate
 public class Post extends BaseEntity {
 
     @Id
@@ -54,7 +52,7 @@ public class Post extends BaseEntity {
     @JoinColumn
     private Category category;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<PostTag> postTags = new ArrayList<>();
 

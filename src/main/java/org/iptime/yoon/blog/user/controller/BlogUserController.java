@@ -54,8 +54,6 @@ public class BlogUserController {
 
     private final BlogUserService blogUserService;
 
-
-
     @Operation(
         summary = "Login",
         description = "Take username and password for login",

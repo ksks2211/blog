@@ -18,28 +18,4 @@ public class RedisConfig {
         return new GenericJackson2JsonRedisSerializer();
     }
 
-//    @Bean
-//    public StringRedisSerializer stringRedisSerializer(){
-//        return new StringRedisSerializer();
-//    }
-
-//    @Bean
-//    public RedisTemplate<String, PostResponse> redisTemplate(RedisConnectionFactory connectionFactory) {
-//        RedisTemplate<String, PostResponse> template = new RedisTemplate<>();
-//        template.setConnectionFactory(connectionFactory);
-//
-//        // Use StringRedisSerializer for the keys
-//        template.setKeySerializer(stringRedisSerializer());
-//
-//        // Use GenericJackson2JsonRedisSerializer for the values
-//        template.setValueSerializer(redisSerializer());
-//
-//
-//
-//        // Optionally, configure serializers for hash keys and values
-//        template.setHashKeySerializer(stringRedisSerializer());
-//        template.setHashValueSerializer(redisSerializer());
-//
-//        return template;
-//    }
 }

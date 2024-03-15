@@ -59,13 +59,17 @@ import java.util.List;
 @EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
-    @Value("${spring.security.debug:false}") // :기본값
+    @Value("${spring.security.debug:false}")
     boolean securityDebug;
 
 
 
     @Value("${cors.allowed}")
     String corsAllowed;
+
+    public static final String LOGIN_ENDPOINT = "/api/auth/login";
+    public static final String REFRESH_ENDPOINT = "/api/token/renew";
+    public static final String ROLE_HIERARCHY = "ROLE_ADMIN > ROLE_MANAGER > ROLE_USER";
 
 
     private final BlogUserRepository blogUserRepository;
@@ -123,7 +127,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtLoginFilter jwtLogInFilter() throws Exception {
-        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter("/api/auth/login", authenticationManager(), objectMapper);
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(LOGIN_ENDPOINT, authenticationManager(), objectMapper);
         jwtLoginFilter.setAuthenticationFailureHandler(authFailureHandler());
         jwtLoginFilter.setAuthenticationSuccessHandler(authSuccessHandler());
         return jwtLoginFilter;
@@ -136,7 +140,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtRefreshFilter jwtRefreshFilter() {
-        return new JwtRefreshFilter("/api/token/renew", refreshTokenService, jwtManager, objectMapper);
+        return new JwtRefreshFilter(REFRESH_ENDPOINT, refreshTokenService, jwtManager, objectMapper);
     }
 
     @Bean
@@ -149,10 +153,8 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
-
         final var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
@@ -176,7 +178,6 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/api/categories/**"),
                         new AntPathRequestMatcher("/api/posts/**")).authenticated()
                     .anyRequest().permitAll())
-
             .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(
@@ -185,7 +186,6 @@ public class SecurityConfig {
             .addFilterBefore(jwtRefreshFilter(), BasicAuthenticationFilter.class)
             .addFilterAt(jwtAuthenticationFilter(), BasicAuthenticationFilter.class)
             .addFilterAt(jwtLogInFilter(), UsernamePasswordAuthenticationFilter.class)
-
             .exceptionHandling(
                 config -> config
                         .accessDeniedHandler(accessDeniedHandler())
@@ -195,15 +195,13 @@ public class SecurityConfig {
                 .successHandler(authSuccessHandler())
                 .failureHandler(authFailureHandler())
             );
-
-
         return http.build();
     }
 
     @Bean
     RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_USER");
+        roleHierarchy.setHierarchy(ROLE_HIERARCHY);
         return roleHierarchy;
     }
 

@@ -1,7 +1,10 @@
 package org.iptime.yoon.blog.user.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 import org.iptime.yoon.blog.common.entity.BaseEntity;
 

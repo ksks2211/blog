@@ -16,7 +16,6 @@ public interface CategoryService {
     Category getCategory(String root, String sub);
     Category createCategoryIfNotExists(String root, String sub);
 
-
     void changeCategory(String root, String beforeSub, String afterSub);
     void deleteCategoryIfEmpty(String root, String sub) throws CategoryNotEmptyException;
 

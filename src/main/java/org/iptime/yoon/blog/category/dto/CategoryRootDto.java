@@ -27,9 +27,15 @@ public class CategoryRootDto {
         this.root.put(key, CategoryInfoDto.builder().build());
     }
 
-    public void insert(String path, int numOfPosts){
 
-        String[] parts = path.split("/");
+    /**
+     *
+     * @param categoryFullName  e.g. user123/category1/category2
+     * @param numOfPosts  number of posts in the categoryFullName
+     */
+    public void insert(String categoryFullName, int numOfPosts){
+
+        String[] parts = categoryFullName.split("/");
         Map<String, CategoryInfoDto> current = this.root;
 
         for(int i = 0; i< parts.length ; i++){

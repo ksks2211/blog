@@ -33,7 +33,6 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e){
         String message = e.getBindingResult().getFieldErrors().stream()
@@ -41,7 +40,6 @@ public class GlobalExceptionHandler {
             .collect(Collectors.joining(", "));
         return createErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
-
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e){
@@ -51,15 +49,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
-
-
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDenied(AccessDeniedException e){
         log.info("Access Denied", e);
         return createErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
-
 
     @ExceptionHandler(value= HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<?> httpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e){
@@ -67,17 +61,11 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<?> httpMessageNotReadableException(HttpMessageNotReadableException e){
         log.info("Http Message Not Readable",e);
         return createErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
-
-
-
-
-
 
     // Internal Server Error
     @ExceptionHandler(Exception.class)
@@ -85,7 +73,5 @@ public class GlobalExceptionHandler {
         log.error("An unexpected error occurred", e);
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,"An unexpected error occurred." );
     }
-
-
 
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OAuth2LoginController {
-
     @GetMapping(value = "/login/complete")
     public void clearSession(HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession(false);
@@ -20,6 +19,4 @@ public class OAuth2LoginController {
             session.invalidate();
         }
     }
-
-
 }

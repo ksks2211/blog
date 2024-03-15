@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -33,18 +31,12 @@ public class S3StorageService implements StorageService{
     private final String baseUrl;
 
     public S3StorageService(
-//        @Value("${cloud.aws.credentials.accessKey}") String accessKey,
-//        @Value("${cloud.aws.credentials.secretKey}") String secretKey,
         @Value("${cloud.aws.region.static}") String region,
         @Value("${cloud.aws.s3.bucket}") String bucketName,
         @Value("${cdn.baseUrl}") String baseUrl
         ) {
 
-
-//        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
-
         this.s3Client = S3Client.builder()
-//            .credentialsProvider(StaticCredentialsProvider.create(awsCreds)) // skip
             .region(Region.of(region))
             .build();
         this.bucketName = bucketName;

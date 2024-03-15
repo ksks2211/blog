@@ -58,9 +58,6 @@ public class BlogUserServiceImpl implements BlogUserService {
         if(profile!=null){
             blogUser.setProfile(profile);
         }
-
-
-
         blogUserRepository.save(blogUser);
         return blogUserMapper.blogUserToBlogUserInfo(blogUser);
     }
@@ -103,6 +100,7 @@ public class BlogUserServiceImpl implements BlogUserService {
 
     public static BlogUser toEntity(AuthProvider provider, String subject, String displayName, String email){
         UUID uuid = UUID.randomUUID();
+        // give random username for OAuth2.0 user
         String username = uuid.toString().replace("-","");
         return BlogUser.builder()
             .provider(provider)

@@ -16,7 +16,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     generate-ddl: true
     show-sql: false
     properties:
@@ -30,7 +30,7 @@ spring:
       max-file-size: 100MB
       max-request-size: 200MB
   security:
-    debug: true
+    debug: false
     oauth2:
       client:
         registration:
