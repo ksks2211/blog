@@ -24,7 +24,6 @@ public class CategoryInfoDto {
     @Builder.Default
     Integer numOfPosts = 0;
 
-
     @Schema(description = "Number of All Posts", example = "50")
     @Builder.Default
     Integer numOfAllPosts = 0;
