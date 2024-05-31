@@ -100,11 +100,12 @@ public interface PostMapper {
 
 
 
-    default PostResponse postToPostResponse(Post post, List<String> tags, String category, String postCategory) {
+    default PostResponse postToPostResponse(Post post, List<String> tags, String category) {
         PostResponse postResponse = postToPostResponse(post);
         postResponse.setTags(tags);
         postResponse.setCategory(category);
-        postResponse.setPostCategory(postCategory);
+        int i = category.indexOf("/");
+        postResponse.setPostCategory(category.substring(i));
         return postResponse;
     }
 

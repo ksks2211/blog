@@ -49,7 +49,7 @@ class PostMapperTest {
 
         List<String> tags = List.of("hello","world");
         String category = "sdasdsa/greetings";
-        PostResponse postResponse = postMapper.postToPostResponse(post, tags, category,category);
+        PostResponse postResponse = postMapper.postToPostResponse(post, tags, category);
 
 
         assertNotNull(postResponse);

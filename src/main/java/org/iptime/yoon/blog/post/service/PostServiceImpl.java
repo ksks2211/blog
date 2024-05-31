@@ -78,7 +78,7 @@ public class PostServiceImpl implements PostService {
 
 
         // Cache created Post
-        PostResponse postResponse = postMapper.postToPostResponse(post,postCreateRequest.getTags(), category.getFullName(), category.getName());
+        PostResponse postResponse = postMapper.postToPostResponse(post,postCreateRequest.getTags(), category.getFullName());
         cacheService.createPostCache("posts",post.getId(), postResponse);
 
         // Return Created Post id
@@ -92,7 +92,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostEntityNotFoundException(id));
         String category = post.getCategory().getFullName();
         List<String> tags = postTagRepository.findAllTagsByPostId(id);
-        return postMapper.postToPostResponse(post, tags, category, post.getCategory().getName());
+        return postMapper.postToPostResponse(post, tags, category);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class PostServiceImpl implements PostService {
         postRepository.save(originalPost);
 
         originalTags.addAll(newTags.stream().map(Tag::getValue).toList());
-        return postMapper.postToPostResponse(originalPost,originalTags, originalPost.getCategory().getFullName(), originalPost.getCategory().getName());
+        return postMapper.postToPostResponse(originalPost,originalTags, originalPost.getCategory().getFullName());
     }
     // changeTags
 
